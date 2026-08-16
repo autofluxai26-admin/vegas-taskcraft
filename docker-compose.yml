@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  vegas-taskcraft:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vegas_taskcraft_app
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+      - N8N_CHAT_WEBHOOK_URL=${N8N_CHAT_WEBHOOK_URL}
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
