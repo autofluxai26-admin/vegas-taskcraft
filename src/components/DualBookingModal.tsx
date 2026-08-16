@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Calendar, Clock, CheckCircle, ShieldCheck, MapPin, User, Phone, Sparkles, Layers, DollarSign, Calculator, Lock, Plus, Minus, Wrench, Tv, Frame, Shield, Cpu, Video, Check } from 'lucide-react';
 import { OnlinePaymentModal } from './OnlinePaymentModal';
+import { Logo } from './Logo';
 
 interface DualBookingModalProps {
   isOpen: boolean;
@@ -26,24 +27,24 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
   // Hourly states
   const [furnitureHours, setFurnitureHours] = useState<number>(2);
-  const [artHours, setArtHours] = useState<number>(1); // Repisas y artes pequeños ($60/hr)
-  const [lampHours, setLampHours] = useState<number>(1); // Lámparas y ventiladores ($150/hr)
-  const [paintHours, setPaintHours] = useState<number>(2); // Trabajos de pintura ($150/hr)
-  const [curtainWindows, setCurtainWindows] = useState<number>(2); // Cortinas ($50 por ventana)
+  const [artHours, setArtHours] = useState<number>(1);
+  const [lampHours, setLampHours] = useState<number>(1);
+  const [paintHours, setPaintHours] = useState<number>(2);
+  const [curtainWindows, setCurtainWindows] = useState<number>(2);
 
   // Sub-option selections
-  const [tvSizeOption, setTvSizeOption] = useState<'small' | 'medium' | 'large'>('medium'); // $100 | $150 | $200
-  const [artOption, setArtOption] = useState<'addon' | 'standalone'>('addon'); // $50 addon | $90 standalone
+  const [tvSizeOption, setTvSizeOption] = useState<'small' | 'medium' | 'large'>('medium');
+  const [artOption, setArtOption] = useState<'addon' | 'standalone'>('addon');
 
   const [repairItems, setRepairItems] = useState({
-    wallPatch: true, // $100
-    panelInstall: false, // $150
-    electronicsSetup: false, // $40
+    wallPatch: true,
+    panelInstall: false,
+    electronicsSetup: false,
   });
 
   const [smartHomeItems, setSmartHomeItems] = useState({
-    automation3point: true, // $180 (TV, comedor, cocina con Alexa + enchufes smart)
-    outdoorSurveillance: false, // $250 (Cámaras WiFi + Energía Solar)
+    automation3point: true,
+    outdoorSurveillance: false,
   });
 
   const [formData, setFormData] = useState({
@@ -63,42 +64,37 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
   let grandTotal = 0;
 
   if (selectedServices.tv) {
-    if (tvSizeOption === 'small') grandTotal += 100.0; // Hasta 42"
-    else if (tvSizeOption === 'medium') grandTotal += 150.0; // Hasta 65"
-    else if (tvSizeOption === 'large') grandTotal += 200.0; // 65" en adelante
+    if (tvSizeOption === 'small') grandTotal += 100.0;
+    else if (tvSizeOption === 'medium') grandTotal += 150.0;
+    else if (tvSizeOption === 'large') grandTotal += 200.0;
   }
 
-  // Ensamblajes ($120/hr)
   if (selectedServices.furniture) {
     grandTotal += furnitureHours * 120.0;
   }
 
-  // Repisas & Espejos
   if (selectedServices.art) {
-    grandTotal += artHours * 60.0; // Repisas y artes pequeños $60/hr
-    if (artOption === 'addon') grandTotal += 50.0; // Espejos/artes grandes adicional
-    else if (artOption === 'standalone') grandTotal += 90.0; // Contrato independiente
+    grandTotal += artHours * 60.0;
+    if (artOption === 'addon') grandTotal += 50.0;
+    else if (artOption === 'standalone') grandTotal += 90.0;
   }
 
-  // Reparaciones & Acabados
   if (selectedServices.repairs) {
-    grandTotal += curtainWindows * 50.0; // $50 por ventana
-    if (repairItems.wallPatch) grandTotal += 100.0; // Parches en pared desde $100
-    if (repairItems.panelInstall) grandTotal += 150.0; // Instalación de paneles desde $150
-    if (repairItems.electronicsSetup) grandTotal += 40.0; // Setup Roku/FireTV/Alexa $40
-    grandTotal += lampHours * 150.0; // Lámparas / ventiladores $150/hr
-    if (paintHours > 0) grandTotal += paintHours * 150.0; // Trabajos de pintura $150/hr
+    grandTotal += curtainWindows * 50.0;
+    if (repairItems.wallPatch) grandTotal += 100.0;
+    if (repairItems.panelInstall) grandTotal += 150.0;
+    if (repairItems.electronicsSetup) grandTotal += 40.0;
+    grandTotal += lampHours * 150.0;
+    if (paintHours > 0) grandTotal += paintHours * 150.0;
   }
 
-  // Smart Home & Seguridad
   if (selectedServices.smarthome) {
     if (smartHomeItems.automation3point) grandTotal += 180.0;
     if (smartHomeItems.outdoorSurveillance) grandTotal += 250.0;
   }
 
-  // Visita técnica cobro fijo $25 si aplica o en visita presencial
   if (activeTab === 'visit') {
-    grandTotal = 25.0; // Cobro por visita presencial $25
+    grandTotal = 25.0;
   }
 
   const handleStartPayment = (e: React.FormEvent) => {
@@ -113,18 +109,16 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
         <div className="relative w-full max-w-4xl bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl shadow-[0_0_50px_rgba(0,240,255,0.3)] overflow-hidden text-white my-4 max-h-[94vh] flex flex-col">
           
-          {/* Header Bar - Modern Space Blue */}
+          {/* Header Bar - Official Logo Implemented at Top Left */}
           <div className="px-6 py-4 bg-[#10172A] border-b border-cyan-500/30 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
-                <Sparkles className="w-5 h-5" />
-              </div>
+              <Logo size="sm" />
               <div>
                 <span className="font-extrabold text-base tracking-tight text-white block leading-none">
                   Reserva & Checkout Interactivo
                 </span>
                 <span className="text-[10px] text-cyan-400 font-extrabold tracking-widest uppercase">
-                  Vegas TaskCraft • Precios Transparentes Sin Impuestos Ocultos
+                  Vegas TaskCraft • contact@vegastaskcraft.com
                 </span>
               </div>
             </div>
@@ -402,7 +396,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     )}
                   </div>
 
-                  {/* Service 5: Smart Home & Seguridad (NUEVO) */}
+                  {/* Service 5: Smart Home & Seguridad */}
                   <div className={`p-4 rounded-2xl border transition-all ${selectedServices.smarthome ? 'bg-[#10172A] border-cyan-500 shadow-[0_0_15px_rgba(0,240,255,0.15)]' : 'bg-[#0A101F] border-gray-800 opacity-60'}`}>
                     <div className="flex items-center justify-between cursor-pointer" onClick={() => setSelectedServices({ ...selectedServices, smarthome: !selectedServices.smarthome })}>
                       <label className="flex items-center gap-3 cursor-pointer">

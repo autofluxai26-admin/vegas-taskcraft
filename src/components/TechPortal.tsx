@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Calendar as CalendarIcon, Clock, MapPin, Phone, User, CheckCircle2, FileText, DollarSign, Wrench, ChevronLeft, ChevronRight, Printer, Download, Sparkles } from 'lucide-react';
+import { X, Calendar as CalendarIcon, Clock, MapPin, Phone, User, CheckCircle2, FileText, DollarSign, Wrench, ChevronLeft, ChevronRight, Printer, Download, Sparkles, Mail } from 'lucide-react';
+import { Logo } from './Logo';
 
 interface TechPortalProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [selectedCalendarDay, setSelectedCalendarDay] = useState(28);
 
-  // Generate dynamic neon space heatmap status for all 31 days of the month
+  // Dynamic neon space heatmap status for all 31 days of the month
   const getDayStatus = (day: number) => {
     if (day === 12 || day === 18 || day === 27 || day === 29) {
       return { level: 'red', count: 4, text: '🔴 Ocupado (4)' };
@@ -31,6 +32,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       id: 'VTC-90412',
       customer: 'Elena Rostova',
       phone: '(702) 891-2390',
+      email: 'elena.r@example.com',
       address: '10432 Summerlin Centre Dr, Las Vegas, NV 89135',
       service: 'Montaje de TV 75" + Soundbar + Ocultador de Cableado',
       surface: 'Drywall sobre vigas de madera con anclajes Toggle Bolt',
@@ -45,6 +47,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       id: 'VTC-90415',
       customer: 'Marcus Vance',
       phone: '(702) 412-8831',
+      email: 'marcus.vance@example.com',
       address: 'Veer Towers - 3722 S Las Vegas Blvd #1804',
       service: 'Instalación Espejo 90 lbs + Galería de Arte 4 Piezas',
       surface: 'Pared de Concreto / Mampostería en Condominio High-Rise',
@@ -59,6 +62,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       id: 'VTC-90420',
       customer: 'Robert Vance',
       phone: '(702) 998-1124',
+      email: 'robert.vance@example.com',
       address: '2214 Green Valley Pkwy, Henderson, NV 89014',
       service: 'Ensamblaje Juego de Habitación King IKEA + Escritorio ($120/hr)',
       surface: 'Superficie de madera / anclaje anti-vuelco a la pared',
@@ -83,9 +87,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
         {/* Header Bar - Electric Space Blue Theme */}
         <div className="px-6 py-4 bg-[#10172A] border-b border-cyan-500/30 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
-              <Wrench className="w-5 h-5" />
-            </div>
+            <Logo size="sm" />
             <div>
               <h3 className="font-extrabold text-white text-base flex items-center gap-2">
                 <span>Portal de Operaciones & Facturación de Técnicos</span>
@@ -94,12 +96,22 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                 </span>
               </h3>
               <p className="text-xs text-cyan-400 font-bold tracking-wide">
-                Vegas TaskCraft LLC • Carlos & Jonathan Operational Hub
+                Vegas TaskCraft LLC • contact@vegastaskcraft.com
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Quick Invoice Model Preview Button */}
+            <button
+              type="button"
+              onClick={() => setSelectedJobForInvoice(jobs[0])}
+              className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-400/50 text-cyan-300 hover:bg-cyan-500 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-[0_0_12px_rgba(0,240,255,0.2)]"
+            >
+              <FileText className="w-4 h-4 text-cyan-400" />
+              <span>Ver Formato Factura</span>
+            </button>
+
             {/* Tech Selector */}
             <div className="flex bg-[#070A12] p-1 rounded-xl border border-cyan-500/30 text-xs font-bold">
               <button
@@ -278,14 +290,14 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                     </div>
 
                     <p className="text-[11px] text-gray-400 italic">
-                       Superfice: {job.surface}
+                       Superficie: {job.surface}
                     </p>
                   </div>
 
                   {/* Actions & Price */}
                   <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-gray-800">
                     <div className="text-right">
-                      <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Est.:</span>
+                      <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Neto:</span>
                       <span className="text-xl font-black text-cyan-400">${job.total.toFixed(2)} USD</span>
                     </div>
 
@@ -306,84 +318,106 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
         </div>
 
-        {/* Invoice Generator Modal Overlay */}
+        {/* Invoice Generator Modal Overlay (Official Legal Invoice Format with Logo & Email) */}
         {selectedJobForInvoice && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="relative w-full max-w-2xl bg-[#070A12] border-2 border-cyan-400 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.4)] text-white space-y-6">
+            <div className="relative w-full max-w-2xl bg-[#070A12] border-2 border-cyan-400 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.5)] text-white space-y-6">
               
+              {/* Invoice Header with Official Logo & Contact Email */}
               <div className="flex items-center justify-between border-b border-cyan-500/30 pb-4">
                 <div className="flex items-center gap-3">
-                  <FileText className="w-6 h-6 text-cyan-400" />
-                  <div>
-                    <h4 className="text-lg font-black text-white">Factura de Trabajo Oficial</h4>
-                    <p className="text-xs text-cyan-400 font-bold">Vegas TaskCraft LLC • {selectedJobForInvoice.id}</p>
-                  </div>
+                  <Logo size="md" />
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setSelectedJobForInvoice(null)}
-                  className="p-1.5 rounded-lg bg-[#10172A] text-gray-400 hover:text-white"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <span className="text-xs font-black text-cyan-400 block">FACTURA # {selectedJobForInvoice.id}</span>
+                    <span className="text-[11px] text-gray-300 block font-semibold">contact@vegastaskcraft.com</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedJobForInvoice(null)}
+                    className="p-1.5 rounded-xl bg-[#10172A] text-gray-400 hover:text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               {/* Invoice Printable Body */}
-              <div className="bg-[#10172A] p-5 rounded-2xl border border-gray-800 space-y-4 text-xs">
-                <div className="flex justify-between border-b border-gray-800 pb-3">
-                  <div>
-                    <span className="font-bold text-gray-400 block">Cliente:</span>
-                    <span className="font-black text-white text-sm">{selectedJobForInvoice.customer}</span>
-                    <span className="block text-gray-300">{selectedJobForInvoice.address}</span>
+              <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-4 text-xs">
+                
+                {/* Provider & Client Grid */}
+                <div className="grid grid-cols-2 gap-4 border-b border-gray-800 pb-4">
+                  <div className="space-y-1">
+                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">PROVEEDOR DEL SERVICIO:</span>
+                    <span className="font-black text-white text-sm block">Vegas TaskCraft LLC</span>
+                    <span className="text-gray-300 block">Las Vegas Valley, NV</span>
+                    <span className="text-cyan-300 font-semibold block flex items-center gap-1">
+                      <Mail className="w-3 h-3 text-cyan-400" /> contact@vegastaskcraft.com
+                    </span>
+                    <span className="text-gray-300 block">(702) 555-TASK</span>
                   </div>
-                  <div className="text-right">
-                    <span className="font-bold text-gray-400 block">Técnico Responsable:</span>
-                    <span className="font-extrabold text-cyan-400">{selectedJobForInvoice.assignedTo}</span>
-                    <span className="block text-gray-300">{selectedJobForInvoice.time}</span>
+
+                  <div className="space-y-1 text-right">
+                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">CLIENTE RECEPTOR:</span>
+                    <span className="font-black text-white text-sm block">{selectedJobForInvoice.customer}</span>
+                    <span className="text-gray-300 block">{selectedJobForInvoice.address}</span>
+                    <span className="text-gray-300 block">{selectedJobForInvoice.phone}</span>
+                    <span className="text-gray-400 block italic">{selectedJobForInvoice.email || 'contact@vegastaskcraft.com'}</span>
                   </div>
                 </div>
 
+                {/* Service Details */}
                 <div>
-                  <span className="font-bold text-gray-400 block mb-1">Detalle del Servicio:</span>
-                  <p className="font-extrabold text-white bg-[#070A12] p-3 rounded-xl border border-gray-800">
+                  <span className="font-bold text-gray-400 block mb-1">Descripción del Servicio Realizado:</span>
+                  <p className="font-extrabold text-white bg-[#070A12] p-3 rounded-xl border border-gray-800 leading-relaxed">
                     {selectedJobForInvoice.service}
+                  </p>
+                  <p className="text-[11px] text-gray-400 mt-1 italic">
+                    Superficie / Fijación: {selectedJobForInvoice.surface}
                   </p>
                 </div>
 
                 {/* Charges Breakdown */}
-                <div className="space-y-1.5 pt-2 border-t border-gray-800">
+                <div className="space-y-2 pt-2 border-t border-gray-800">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Mano de Obra Especializada:</span>
+                    <span className="text-gray-300">Mano de Obra Certificada (Carlos / Jonathan):</span>
                     <span className="font-bold text-white">${selectedJobForInvoice.laborCost.toFixed(2)} USD</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Herrajes / Anclajes Heavy Duty:</span>
+                    <span className="text-gray-300">Herrajes & Anclajes Heavy Duty:</span>
                     <span className="font-bold text-white">${selectedJobForInvoice.hardwareCost.toFixed(2)} USD</span>
                   </div>
-                  <div className="flex justify-between text-sm font-black text-cyan-400 pt-2 border-t border-gray-700">
-                    <span>Monto Total a Cobrar:</span>
+                  <div className="flex justify-between text-base font-black text-cyan-400 pt-2 border-t border-gray-700">
+                    <span>Monto Total Neto Pagado:</span>
                     <span>${selectedJobForInvoice.total.toFixed(2)} USD</span>
                   </div>
                 </div>
               </div>
 
               {/* Invoice Actions */}
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => alert(`Imprimiendo Factura ${selectedJobForInvoice.id}...`)}
-                  className="px-4 py-2 rounded-xl bg-[#10172A] border border-gray-700 text-white font-bold text-xs hover:border-cyan-400 flex items-center gap-1.5"
-                >
-                  <Printer className="w-4 h-4 text-cyan-400" /> Imprimir
-                </button>
-                <button
-                  type="button"
-                  onClick={() => alert(`Descargando PDF Factura ${selectedJobForInvoice.id}...`)}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs hover:scale-105 transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
-                >
-                  <Download className="w-4 h-4" /> Descargar PDF Legal
-                </button>
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-[11px] text-gray-400 italic">
+                  Documento digital válido para propósitos de seguro e impuestos comerciales.
+                </span>
+                
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => alert(`Imprimiendo Factura ${selectedJobForInvoice.id}...`)}
+                    className="px-4 py-2 rounded-xl bg-[#10172A] border border-gray-700 text-white font-bold text-xs hover:border-cyan-400 flex items-center gap-1.5"
+                  >
+                    <Printer className="w-4 h-4 text-cyan-400" /> Imprimir Factura
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => alert(`Descargando PDF Factura ${selectedJobForInvoice.id}...`)}
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs hover:scale-105 transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
+                  >
+                    <Download className="w-4 h-4" /> Descargar PDF
+                  </button>
+                </div>
               </div>
 
             </div>

@@ -6,7 +6,7 @@ export const Footer: React.FC = () => {
   const [formSent, setFormSent] = useState(false);
 
   return (
-    <footer className="bg-[#0B0F19] text-white border-t border-slate-800 pt-14 pb-10">
+    <footer className="bg-[#070A12] text-white border-t border-space-cardBorder pt-14 pb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
         {/* Main Footer Grid */}
@@ -17,13 +17,17 @@ export const Footer: React.FC = () => {
             <Logo size="md" />
 
             <div className="space-y-2 pt-2 text-xs">
-              <a href="tel:7025558275" className="flex items-center gap-2 text-amber-400 font-extrabold text-base hover:underline">
-                <Phone className="w-5 h-5 text-amber-400" />
+              <a href="tel:7025558275" className="flex items-center gap-2 text-cyan-400 font-extrabold text-base hover:underline">
+                <Phone className="w-5 h-5 text-cyan-400" />
                 <span>(702) 555-TASK</span>
               </a>
-              <p className="text-slate-300 font-mono">www.vegastaskcraft.com</p>
-              <p className="text-slate-400 flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-slate-500" />
+              <a href="mailto:contact@vegastaskcraft.com" className="flex items-center gap-2 text-cyan-300 font-bold hover:underline">
+                <Mail className="w-4 h-4 text-cyan-400" />
+                <span>contact@vegastaskcraft.com</span>
+              </a>
+              <p className="text-gray-400 font-mono">www.vegastaskcraft.com</p>
+              <p className="text-gray-400 flex items-center gap-1.5 pt-1">
+                <MapPin className="w-4 h-4 text-gray-500" />
                 <span>Las Vegas, NV • Serving Summerlin, Henderson & LV Valley</span>
               </p>
             </div>
@@ -32,18 +36,18 @@ export const Footer: React.FC = () => {
           {/* Middle Column: Quick Links */}
           <div className="lg:col-span-3 grid grid-cols-2 gap-4 text-xs font-semibold">
             <div>
-              <h4 className="font-bold text-amber-400 uppercase tracking-wider mb-3 text-xs">Navegación</h4>
-              <ul className="space-y-2 text-slate-300">
-                <li><a href="#inicio" className="hover:text-amber-400">Inicio</a></li>
-                <li><a href="#servicios" className="hover:text-amber-400">Servicios</a></li>
-                <li><a href="#nosotros" className="hover:text-amber-400">Equipo</a></li>
-                <li><a href="#cobertura" className="hover:text-amber-400">Cobertura</a></li>
+              <h4 className="font-bold text-cyan-400 uppercase tracking-wider mb-3 text-xs">Navegación</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><a href="#inicio" className="hover:text-cyan-400">Inicio</a></li>
+                <li><a href="#servicios" className="hover:text-cyan-400">Servicios</a></li>
+                <li><a href="#nosotros" className="hover:text-cyan-400">Equipo</a></li>
+                <li><a href="#cobertura" className="hover:text-cyan-400">Cobertura</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-amber-400 uppercase tracking-wider mb-3 text-xs">Garantía</h4>
-              <ul className="space-y-2 text-slate-300">
+              <h4 className="font-bold text-cyan-400 uppercase tracking-wider mb-3 text-xs">Garantía</h4>
+              <ul className="space-y-2 text-gray-300">
                 <li><span>Licenciados</span></li>
                 <li><span>Asegurados</span></li>
                 <li><span>Mismo Día</span></li>
@@ -53,7 +57,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Right Column: Quick Contact Form */}
-          <div className="lg:col-span-5 bg-slate-900/90 p-5 rounded-3xl border border-slate-800 space-y-3">
+          <div className="lg:col-span-5 bg-[#10172A] p-5 rounded-3xl border border-cyan-500/30 space-y-3 shadow-lg">
             <h4 className="font-bold text-white text-xs uppercase tracking-wider">Contacto Rápido Directo</h4>
 
             {!formSent ? (
@@ -63,33 +67,33 @@ export const Footer: React.FC = () => {
                     type="text"
                     required
                     placeholder="Nombre"
-                    className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-amber-400"
+                    className="w-full bg-[#070A12] border border-gray-700 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-cyan-400"
                   />
                   <input
                     type="text"
                     required
                     placeholder="Dirección"
-                    className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-amber-400"
+                    className="w-full bg-[#070A12] border border-gray-700 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-cyan-400"
                   />
                 </div>
 
                 <input
                   type="email"
                   required
-                  placeholder="Email / Teléfono"
-                  className="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-amber-400"
+                  placeholder="Email (contact@vegastaskcraft.com)"
+                  className="w-full bg-[#070A12] border border-gray-700 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-cyan-400"
                 />
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-full bg-gradient-to-r from-amber-500 to-[#D97706] hover:from-[#D97706] hover:to-amber-600 text-black font-black text-xs uppercase tracking-wider shadow-gold-cosmic"
+                  className="w-full py-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]"
                 >
                   SEND / ENVIAR MENSAJE
                 </button>
               </form>
             ) : (
               <div className="text-center py-4 text-emerald-400 text-xs font-bold">
-                ✓ ¡Mensaje enviado con éxito! Nos comunicaremos en breve.
+                ✓ ¡Mensaje enviado con éxito! Nos comunicaremos a tu email en breve.
               </div>
             )}
           </div>
@@ -97,8 +101,8 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom copyright line */}
-        <div className="pt-6 border-t border-slate-800 text-center text-[11px] text-slate-500">
-          © {new Date().getFullYear()} Vegas TaskCraft • Residential Decor and Solutions. Todos los derechos reservados.
+        <div className="pt-6 border-t border-gray-800 text-center text-[11px] text-gray-500">
+          © {new Date().getFullYear()} Vegas TaskCraft LLC • Residential Decor and Solutions • contact@vegastaskcraft.com
         </div>
 
       </div>

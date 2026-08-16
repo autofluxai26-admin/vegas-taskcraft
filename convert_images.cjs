@@ -12,6 +12,8 @@ const mapping = {
   'hero_handyman': ['hero_handyman.png.jpeg', 'hero_handyman.png', 'hero_handyman.jpg'],
   'logo': ['logo.png', 'logo.png.png'],
   'repairs_smarthome': ['repairs_smarthome.png.PNG', 'repairs_smarthome.png', 'repairs_smarthome.jpg'],
+  'curtains_painting': ['curtains_painting.jpg', 'curtains_painting.png'],
+  'smarthome_security': ['smarthome_security.jpg', 'smarthome_security.png'],
   'tv_mounting': ['tv_mounting.png.jpeg', 'tv_mounting.png', 'tv_mounting.jpg'],
   'vegas_map_carpet': ['vegas_map_carpet.png.PNG', 'vegas_map_carpet.png', 'vegas_map_carpet.jpg']
 };
