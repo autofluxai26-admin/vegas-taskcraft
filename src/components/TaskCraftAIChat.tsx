@@ -32,9 +32,9 @@ export const TaskCraftAIChat: React.FC<TaskCraftAIChatProps> = ({ onOpenBooking 
   ]);
 
   const quickQuestions = [
-    { label: '💰 Cotizar Montaje de TV', query: '¿Cuánto cuesta montar una TV de 75" en Las Vegas?' },
-    { label: '🛋️ Ensamblaje IKEA', query: '¿Arman muebles de IKEA o Wayfair en Summerlin?' },
-    { label: '📅 Disponibilidad Hoy', query: '¿Tienen técnicos disponibles para el día de hoy?' }
+    { label: '💰 Cotizar Montaje de TV', query: '¿Cuánto cuesta montar una TV en Las Vegas?' },
+    { label: '🛋️ Ensamblaje Muebles', query: '¿Cuánto cuesta el ensamblaje de muebles IKEA?' },
+    { label: '🤖 Smart Home & Cámaras', query: '¿Qué servicios ofrecen de Smart Home y Cámaras Solar WiFi?' }
   ];
 
   useEffect(() => {
@@ -83,15 +83,19 @@ export const TaskCraftAIChat: React.FC<TaskCraftAIChatProps> = ({ onOpenBooking 
         let replyText = 'Con gusto podemos ayudarte con eso. Nuestros especialistas en Las Vegas realizan montajes y ensamblajes con precisión y garantía por escrito.';
         let btnLabel = 'Reservar Servicio';
 
-        if (queryText.toLowerCase().includes('tv') || queryText.toLowerCase().includes('televisor')) {
-          replyText = 'El montaje de TV tiene una guía de precio desde $95. Incluye detección de vigas, anclajes pesados y nivelación láser. ¿Te gustaría agendar una hora?';
+        const lower = queryText.toLowerCase();
+        if (lower.includes('tv') || lower.includes('televisor')) {
+          replyText = 'El montaje de TV en Las Vegas cuesta $100 (hasta 42"), $150 (hasta 65") y $200 (65" en adelante). Incluye detección de vigas, anclajes Toggle Bolt y nivelación láser.';
           btnLabel = 'Reservar Montaje de TV';
-        } else if (queryText.toLowerCase().includes('ikea') || queryText.toLowerCase().includes('mueble')) {
-          replyText = '¡Sí! Ensamblamos todo tipo de muebles de IKEA, Wayfair y Amazon en Summerlin, Henderson y todo el valle. El costo promedio inicia en $85.';
+        } else if (lower.includes('ikea') || lower.includes('mueble')) {
+          replyText = '¡Sí! Ensamblamos todo tipo de muebles de IKEA, Wayfair y Amazon en Summerlin, Henderson y todo el valle a $120 la hora con herramientas de torque preciso.';
           btnLabel = 'Reservar Ensamblaje';
-        } else if (queryText.toLowerCase().includes('hoy') || queryText.toLowerCase().includes('disponib')) {
-          replyText = '¡Tenemos unidades en ruta activas hoy en Las Vegas! Podemos llegar a tu domicilio en 2 horas o menos.';
-          btnLabel = 'Ver Franjas de Hoy';
+        } else if (lower.includes('smart') || lower.includes('cámara') || lower.includes('seguridad')) {
+          replyText = 'Ofrecemos automatización de 3 puntos (TV, comedor, cocina) con Alexa ($180) y sistemas de cámaras outdoor WiFi con energía solar ($250).';
+          btnLabel = 'Reservar Smart Home';
+        } else if (lower.includes('repisa') || lower.includes('arte') || lower.includes('espejo')) {
+          replyText = 'Repisas y artes pequeños a $60/hr. Espejos y cuadros grandes por $50 adicional en obra o $90 contrato independiente.';
+          btnLabel = 'Reservar Repisas & Espejos';
         }
 
         const botReply: Message = {
@@ -104,150 +108,123 @@ export const TaskCraftAIChat: React.FC<TaskCraftAIChatProps> = ({ onOpenBooking 
 
         setMessages((prev) => [...prev, botReply]);
         setIsTyping(false);
-      }, 900);
+      }, 700);
       return;
-    } finally {
-      setIsTyping(false);
     }
+
+    setIsTyping(false);
   };
 
   return (
     <>
-      {/* Floating Trigger Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-40 p-4 rounded-full bg-gradient-to-r from-amber-500 via-vegas-gold to-amber-600 text-black shadow-gold-glow hover:scale-110 active:scale-95 transition-all duration-300 flex items-center gap-2 font-bold text-sm"
-        aria-label="Abrir Chat Asistente IA"
-      >
-        <div className="relative">
-          <Bot className="w-6 h-6" />
-          <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-          </span>
-        </div>
-        <span className="hidden sm:inline">Vegas TaskBot IA</span>
-      </button>
+      {/* Floating Launcher Button */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black px-5 py-3.5 rounded-full font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(0,240,255,0.6)] hover:scale-105 transition-all duration-300 flex items-center gap-2 group"
+        >
+          <Bot className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+          <span>Vegas TaskBot IA</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        </button>
+      )}
 
-      {/* Chat Window Container */}
+      {/* Floating Chat Modal */}
       {isOpen && (
-        <div className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] h-[520px] bg-[#0E131F] border border-vegas-gold/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm sm:max-w-md bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl shadow-[0_0_40px_rgba(0,240,255,0.4)] overflow-hidden text-white flex flex-col h-[520px] animate-in slide-in-from-bottom duration-300">
           
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-amber-950/80 via-[#131926] to-[#0E131F] border-b border-vegas-cardBorder flex items-center justify-between">
+          <div className="px-5 py-4 bg-[#10172A] border-b border-cyan-500/30 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-vegas-gold/20 border border-vegas-gold/40 flex items-center justify-center text-vegas-gold">
-                <Bot className="w-6 h-6" />
+              <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(0,240,255,0.4)]">
+                <Bot className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-extrabold text-white text-sm flex items-center gap-1.5">
-                  Vegas TaskBot
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-500/30">
-                    IA Conectada
-                  </span>
-                </h3>
-                <p className="text-[11px] text-gray-400">Asistente de Cotización & Reservas 24/7</p>
+                <h4 className="font-black text-sm text-white flex items-center gap-1.5">
+                  <span>TaskBot IA</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-500/30 font-bold">● En Línea</span>
+                </h4>
+                <p className="text-[10px] text-cyan-300 font-semibold">Vegas TaskCraft Assistant</p>
               </div>
             </div>
 
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 rounded-lg bg-vegas-cardBg hover:bg-white/10 text-gray-400 hover:text-white"
+              className="p-1.5 rounded-xl bg-[#070A12] text-gray-400 hover:text-white hover:border-cyan-400 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Messages Scroll Area */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#0A0D14]/80">
+          {/* Messages Body */}
+          <div className="p-4 overflow-y-auto flex-1 space-y-3.5 custom-scrollbar bg-[#070A12]">
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex gap-2.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
               >
-                {msg.sender === 'bot' && (
-                  <div className="w-7 h-7 rounded-xl bg-vegas-gold/20 border border-vegas-gold/40 flex items-center justify-center text-vegas-gold shrink-0 mt-1">
-                    <Bot className="w-4 h-4" />
-                  </div>
-                )}
-
-                <div className={`max-w-[80%] rounded-2xl p-3.5 text-xs leading-relaxed ${
-                  msg.sender === 'user'
-                    ? 'bg-amber-500 text-black font-semibold rounded-tr-none'
-                    : 'bg-[#151C2C] text-gray-200 border border-vegas-cardBorder rounded-tl-none'
-                }`}>
+                <div
+                  className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed ${
+                    msg.sender === 'user'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-bold rounded-tr-none shadow-[0_0_15px_rgba(0,240,255,0.3)]'
+                      : 'bg-[#10172A] text-gray-200 border border-cyan-500/30 rounded-tl-none'
+                  }`}
+                >
                   <p className="whitespace-pre-line">{msg.text}</p>
-                  <span className={`block text-[9px] mt-1.5 ${msg.sender === 'user' ? 'text-black/70' : 'text-gray-400'}`}>
-                    {msg.timestamp}
-                  </span>
 
-                  {/* Optional Action CTA button inside chat */}
                   {msg.actionButton && (
                     <button
-                      onClick={() => {
-                        setIsOpen(false);
-                        onOpenBooking(msg.actionButton?.service);
-                      }}
-                      className="mt-3 w-full py-2 rounded-xl bg-gradient-to-r from-amber-500 to-vegas-gold text-black font-extrabold text-xs shadow-md hover:scale-105 transition-transform"
+                      onClick={() => onOpenBooking(msg.actionButton?.service)}
+                      className="mt-2.5 w-full py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-[11px] uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-1.5"
                     >
-                      {msg.actionButton.label}
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{msg.actionButton.label}</span>
                     </button>
                   )}
                 </div>
-
-                {msg.sender === 'user' && (
-                  <div className="w-7 h-7 rounded-xl bg-vegas-cardBg border border-vegas-cardBorder flex items-center justify-center text-gray-300 shrink-0 mt-1">
-                    <User className="w-4 h-4" />
-                  </div>
-                )}
+                <span className="text-[9px] text-gray-500 mt-1 px-1">{msg.timestamp}</span>
               </div>
             ))}
 
             {isTyping && (
-              <div className="flex items-center gap-2 text-gray-400 text-xs italic">
-                <Bot className="w-4 h-4 text-vegas-gold animate-bounce" />
+              <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold p-2 bg-[#10172A] rounded-xl border border-cyan-500/30 w-fit">
+                <Sparkles className="w-4 h-4 animate-spin text-cyan-400" />
                 <span>TaskBot está escribiendo...</span>
               </div>
             )}
-
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Questions Chips */}
-          <div className="p-2 bg-[#0E131F] border-t border-vegas-cardBorder/60 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          {/* Quick Action Chips */}
+          <div className="p-2.5 bg-[#0A101F] border-t border-gray-800 flex gap-2 overflow-x-auto custom-scrollbar text-[11px]">
             {quickQuestions.map((q, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(q.query)}
-                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-vegas-cardBg border border-vegas-cardBorder text-[10px] font-semibold text-amber-300 hover:border-amber-400 transition-colors"
+                className="whitespace-nowrap px-3 py-1 rounded-full bg-[#10172A] border border-cyan-500/30 text-cyan-300 font-semibold hover:bg-cyan-500/20 transition-all shrink-0"
               >
                 {q.label}
               </button>
             ))}
           </div>
 
-          {/* Input Box */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-            className="p-3 bg-[#0E131F] border-t border-vegas-cardBorder flex items-center gap-2"
-          >
+          {/* Input Footer */}
+          <div className="p-3 bg-[#10172A] border-t border-cyan-500/30 flex items-center gap-2">
             <input
               type="text"
               placeholder="Escribe tu consulta aquí..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="flex-1 bg-[#0A0D14] border border-vegas-cardBorder text-white text-xs rounded-xl px-3 py-2.5 focus:border-vegas-gold focus:outline-none"
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              className="flex-1 bg-[#070A12] border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:border-cyan-400 focus:outline-none"
             />
             <button
-              type="submit"
-              className="p-2.5 rounded-xl bg-amber-500 text-black hover:bg-amber-400 font-bold transition-colors"
+              onClick={() => handleSend()}
+              className="p-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black transition-all shadow-[0_0_10px_rgba(0,240,255,0.4)]"
             >
               <Send className="w-4 h-4" />
             </button>
-          </form>
+          </div>
 
         </div>
       )}

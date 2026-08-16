@@ -29,44 +29,91 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handlePaySubmit = (e: React.FormEvent) => {
+  const handlePay = (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
+
     setTimeout(() => {
       setIsProcessing(false);
       setIsPaid(true);
-    }, 1200);
+    }, 1800);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-[#0B0F19] border border-amber-500/40 rounded-3xl shadow-space-glass overflow-hidden text-white my-6 flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
+      <div className="relative w-full max-w-lg bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl shadow-[0_0_50px_rgba(0,240,255,0.4)] overflow-hidden text-white my-4 flex flex-col">
         
-        {/* Header */}
-        <div className="px-6 py-4 bg-[#141C2E] border-b border-space-cardBorder flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Lock className="w-4 h-4 text-emerald-400" />
-            <span className="font-extrabold text-sm tracking-tight text-white">Pasarela de Pago Segura • SSL 256-bit</span>
+        {/* Header Bar */}
+        <div className="px-6 py-4 bg-[#10172A] border-b border-cyan-500/30 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(0,240,255,0.4)]">
+              <Lock className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="font-extrabold text-white text-base">Pasarela de Pago Segura</h4>
+              <p className="text-xs text-cyan-400 font-bold">Vegas TaskCraft LLC • 256-bit SSL Encrypted</p>
+            </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full bg-black/50 text-gray-400 hover:text-white"
+            className="p-1.5 rounded-xl bg-[#070A12] text-gray-400 hover:text-white hover:border-cyan-400 transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 space-y-6">
-          {!isPaid ? (
-            <form onSubmit={handlePaySubmit} className="space-y-5">
+        <div className="p-6 space-y-5">
+          
+          {isPaid ? (
+            /* Success Receipt View */
+            <div className="text-center space-y-4 py-4 animate-in zoom-in-95 duration-200">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_20px_rgba(52,211,153,0.4)]">
+                <CheckCircle2 className="w-10 h-10" />
+              </div>
+
+              <div>
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest block">¡Reserva Confirmada Exitosamente!</span>
+                <h3 className="text-2xl font-black text-white mt-1">Pago Procesado con Éxito</h3>
+              </div>
+
+              <div className="bg-[#10172A] p-4 rounded-2xl border border-gray-800 space-y-2 text-xs text-left">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Código de Reserva:</span>
+                  <span className="font-black text-cyan-400">{bookingCode}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Cliente:</span>
+                  <span className="font-bold text-white">{customerName || 'Cliente Estimado'}</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-gray-800 text-sm">
+                  <span className="font-bold text-white">Monto Pagado:</span>
+                  <span className="font-black text-cyan-400">${totalAmount.toFixed(2)} USD</span>
+                </div>
+              </div>
+
+              <button
+                onClick={onClose}
+                className="w-full py-3.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]"
+              >
+                Cerrar & Volver a Inicio
+              </button>
+            </div>
+          ) : (
+            /* Payment Form */
+            <form onSubmit={handlePay} className="space-y-5">
               
-              {/* Amount Box */}
-              <div className="bg-[#141C2E] p-4 rounded-2xl border border-amber-500/30 text-center space-y-1">
-                <span className="text-xs text-gray-400 font-semibold block">Total a Pagar (Taxes Incluidos):</span>
-                <span className="text-3xl font-black text-amber-400">${totalAmount.toFixed(2)} USD</span>
-                <span className="text-[10px] text-emerald-400 font-bold block">Orden N°: {bookingCode}</span>
+              {/* Order Summary Box */}
+              <div className="bg-[#10172A] p-4 rounded-2xl border border-cyan-500/30 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Reserva {bookingCode}</span>
+                  <span className="text-xs text-gray-200 font-semibold">{customerName || 'Cliente Vegas TaskCraft'}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-cyan-400 font-bold uppercase block">Total Neto:</span>
+                  <span className="text-xl font-black text-cyan-400">${totalAmount.toFixed(2)} USD</span>
+                </div>
               </div>
 
               {/* Payment Method Selector */}
@@ -74,10 +121,8 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('card')}
-                  className={`p-3 rounded-2xl border text-xs font-bold transition-all flex flex-col items-center gap-1.5 ${
-                    paymentMethod === 'card'
-                      ? 'bg-amber-500 text-black border-amber-400 shadow-gold-cosmic'
-                      : 'bg-[#141C2E] border-gray-800 text-gray-300'
+                  className={`p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center gap-1 ${
+                    paymentMethod === 'card' ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.3)]' : 'bg-[#10172A] border-gray-800 text-gray-400'
                   }`}
                 >
                   <CreditCard className="w-5 h-5" />
@@ -87,10 +132,8 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('apple')}
-                  className={`p-3 rounded-2xl border text-xs font-bold transition-all flex flex-col items-center gap-1.5 ${
-                    paymentMethod === 'apple'
-                      ? 'bg-white text-black border-white shadow-lg'
-                      : 'bg-[#141C2E] border-gray-800 text-gray-300'
+                  className={`p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center gap-1 ${
+                    paymentMethod === 'apple' ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.3)]' : 'bg-[#10172A] border-gray-800 text-gray-400'
                   }`}
                 >
                   <Smartphone className="w-5 h-5" />
@@ -100,136 +143,96 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('google')}
-                  className={`p-3 rounded-2xl border text-xs font-bold transition-all flex flex-col items-center gap-1.5 ${
-                    paymentMethod === 'google'
-                      ? 'bg-cyan-500 text-black border-cyan-400 shadow-cyan-cosmic'
-                      : 'bg-[#141C2E] border-gray-800 text-gray-300'
+                  className={`p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center gap-1 ${
+                    paymentMethod === 'google' ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.3)]' : 'bg-[#10172A] border-gray-800 text-gray-400'
                   }`}
                 >
-                  <Sparkles className="w-5 h-5" />
+                  <DollarSign className="w-5 h-5" />
                   <span>Google Pay</span>
                 </button>
               </div>
 
-              {/* Card Form */}
-              {paymentMethod === 'card' && (
-                <div className="space-y-3 pt-2">
+              {/* Card Inputs */}
+              {paymentMethod === 'card' ? (
+                <div className="space-y-3 text-xs">
                   <div>
-                    <label className="block text-[11px] font-bold text-gray-300 uppercase mb-1">
-                      Número de Tarjeta de Crédito/Débito:
-                    </label>
-                    <div className="relative">
-                      <CreditCard className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                      <input
-                        type="text"
-                        required
-                        placeholder="4532 •••• •••• 8912"
-                        value={cardData.number}
-                        onChange={(e) => setCardData({ ...cardData, number: e.target.value })}
-                        className="w-full pl-9 pr-3 py-2.5 bg-[#141C2E] border border-gray-700 text-white text-xs rounded-xl focus:border-amber-400 focus:outline-none"
-                      />
-                    </div>
+                    <label className="block font-bold text-gray-300 mb-1">Número de Tarjeta:</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="4532 •••• •••• 8921"
+                      value={cardData.number}
+                      onChange={(e) => setCardData({ ...cardData, number: e.target.value })}
+                      className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
+                    />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">
-                        Expiración:
-                      </label>
+                      <label className="block font-bold text-gray-300 mb-1">Expiración:</label>
                       <input
                         type="text"
                         required
-                        placeholder="MM/AA"
+                        placeholder="MM/YY"
                         value={cardData.expiry}
                         onChange={(e) => setCardData({ ...cardData, expiry: e.target.value })}
-                        className="w-full p-2.5 bg-[#141C2E] border border-gray-700 text-white text-xs rounded-xl text-center focus:border-amber-400"
+                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
                       />
                     </div>
-
                     <div>
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">
-                        CVC / CVV:
-                      </label>
+                      <label className="block font-bold text-gray-300 mb-1">CVC:</label>
                       <input
                         type="text"
                         required
                         placeholder="123"
-                        maxLength={4}
                         value={cardData.cvc}
                         onChange={(e) => setCardData({ ...cardData, cvc: e.target.value })}
-                        className="w-full p-2.5 bg-[#141C2E] border border-gray-700 text-white text-xs rounded-xl text-center focus:border-amber-400"
+                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
                       />
                     </div>
-
                     <div>
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">
-                        Código ZIP:
-                      </label>
+                      <label className="block font-bold text-gray-300 mb-1">ZIP Code:</label>
                       <input
                         type="text"
                         required
                         placeholder="89135"
                         value={cardData.zip}
                         onChange={(e) => setCardData({ ...cardData, zip: e.target.value })}
-                        className="w-full p-2.5 bg-[#141C2E] border border-gray-700 text-white text-xs rounded-xl text-center focus:border-amber-400"
+                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
                       />
                     </div>
                   </div>
                 </div>
+              ) : (
+                <div className="p-6 bg-[#10172A] rounded-2xl border border-gray-800 text-center space-y-2">
+                  <p className="text-xs font-extrabold text-cyan-300">
+                    Se abrirá la ventana emergente de {paymentMethod === 'apple' ? 'Apple Pay' : 'Google Pay'} para autorizar la transacción de ${totalAmount.toFixed(2)} USD.
+                  </p>
+                </div>
               )}
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-black font-black text-sm uppercase tracking-wider shadow-gold-cosmic hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.5)] transition-all flex items-center justify-center gap-2"
               >
                 {isProcessing ? (
-                  <span>Procesando Pago Seguro...</span>
+                  <>
+                    <Sparkles className="w-4 h-4 animate-spin" />
+                    <span>Procesando Encriptación Stripe...</span>
+                  </>
                 ) : (
                   <>
-                    <Lock className="w-4 h-4" />
-                    <span>Pagar ${totalAmount.toFixed(2)} USD Ahora</span>
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>PAGAR CON SEGURIDAD (${totalAmount.toFixed(2)} USD)</span>
                   </>
                 )}
               </button>
 
-              <p className="text-[10px] text-center text-gray-400 flex items-center justify-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Pago procesado con encriptación bancaria. Garantía total Vegas TaskCraft.</span>
-              </p>
-
             </form>
-          ) : (
-            /* Paid Receipt Confirmation */
-            <div className="text-center py-8 space-y-5 animate-in zoom-in-95 duration-200">
-              <div className="w-20 h-20 bg-emerald-500/20 border-2 border-emerald-400 text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-2xl">
-                <CheckCircle2 className="w-10 h-10" />
-              </div>
-
-              <div className="space-y-1">
-                <h4 className="text-2xl font-black text-white">¡Pago Confirmado!</h4>
-                <p className="text-xs text-gray-300">
-                  Gracias <span className="font-bold text-white">{customerName}</span>. Tu transacción ha sido procesada con éxito.
-                </p>
-              </div>
-
-              <div className="bg-[#141C2E] p-4 rounded-2xl border border-amber-500/40 max-w-xs mx-auto space-y-1">
-                <span className="text-[10px] text-gray-400 block">Número de Recibo Oficial:</span>
-                <span className="text-xl font-mono font-black text-amber-400">{bookingCode}</span>
-                <span className="text-xs text-emerald-400 font-bold block pt-1">Monto Cobrado: ${totalAmount.toFixed(2)} USD</span>
-              </div>
-
-              <button
-                onClick={onClose}
-                className="px-8 py-3 rounded-full bg-gray-800 text-white font-bold text-xs hover:bg-gray-700"
-              >
-                Finalizar
-              </button>
-            </div>
           )}
-        </div>
 
+        </div>
       </div>
     </div>
   );

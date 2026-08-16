@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, CheckCircle, ShieldCheck, Layers, Wrench, ArrowRight, Zap, AlertCircle } from 'lucide-react';
+import { X, CheckCircle2, ShieldCheck, Wrench, ArrowRight, Layers, DollarSign, Sparkles } from 'lucide-react';
 
 export interface ServiceDetail {
   id: string;
@@ -18,7 +18,7 @@ interface ServiceDetailModalProps {
   service: ServiceDetail | null;
   isOpen: boolean;
   onClose: () => void;
-  onSelectForCheckout: (service: ServiceDetail) => void;
+  onSelectForCheckout: () => void;
 }
 
 export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
@@ -30,99 +30,95 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
   if (!isOpen || !service) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-3xl bg-[#0F1626] border border-amber-500/40 rounded-3xl shadow-space-glass overflow-hidden text-white my-8 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
+      <div className="relative w-full max-w-3xl bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl shadow-[0_0_50px_rgba(0,240,255,0.3)] overflow-hidden text-white my-4 max-h-[94vh] flex flex-col">
         
-        {/* Header */}
-        <div className="relative h-48 sm:h-56 overflow-hidden">
+        {/* Header Image & Title Banner */}
+        <div className="relative h-48 sm:h-56 shrink-0 bg-[#10172A]">
           <img
             src={service.image}
-            alt={service.title}
+            alt={service.spanishTitle}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0F1626] via-[#0F1626]/60 to-transparent"></div>
-          
+          <div className="absolute inset-0 bg-gradient-to-t from-[#070A12] via-[#070A12]/40 to-transparent"></div>
+
+          {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-black/60 border border-white/20 text-white hover:bg-amber-500 hover:text-black transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-xl bg-[#070A12]/80 border border-gray-700 text-gray-300 hover:text-white hover:border-cyan-400 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <div className="absolute bottom-4 left-6 right-6 flex items-end justify-between">
-            <div>
-              <span className="px-3 py-1 bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs font-bold uppercase rounded-md tracking-wider">
-                Detalle Técnico & Procedimientos
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-black text-white mt-1">{service.spanishTitle}</h3>
-            </div>
-            <div className="text-right">
-              <span className="text-xs text-gray-400 block">Tarifa Guía:</span>
-              <span className="text-2xl font-black text-amber-400">{service.priceGuide}</span>
-            </div>
+          {/* Title Overlay */}
+          <div className="absolute bottom-4 left-6 right-6">
+            <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 text-[10px] font-extrabold uppercase tracking-wider mb-1 inline-block">
+              Ficha Técnica de Trabajo Residencial
+            </span>
+            <h3 className="text-xl sm:text-3xl font-black text-white">{service.spanishTitle}</h3>
           </div>
         </div>
 
-        {/* Modal Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1">
+        {/* Modal Scrollable Content */}
+        <div className="p-6 overflow-y-auto space-y-6 custom-scrollbar flex-1 text-xs sm:text-sm">
           
           {/* Overview Description */}
-          <div className="bg-[#141C2E] p-4 rounded-2xl border border-gray-800">
-            <p className="text-sm text-gray-300 leading-relaxed font-medium">
-              {service.description}
-            </p>
-          </div>
+          <p className="text-gray-300 leading-relaxed bg-[#10172A] p-4 rounded-2xl border border-cyan-500/30">
+            {service.description}
+          </p>
 
-          {/* 1. Procedimientos Aplicados Paso a Paso */}
+          {/* Step-by-step Procedures */}
           <div className="space-y-3">
-            <h4 className="text-sm font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-400" />
-              <span>1. Procedimientos de Seguridad & Montaje Aplicados:</span>
+            <h4 className="font-extrabold text-cyan-400 uppercase text-xs tracking-wider flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-cyan-400" />
+              <span>Procedimiento Paso a Paso:</span>
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-2">
               {service.procedures.map((proc, idx) => (
-                <div key={idx} className="bg-[#141C2E] p-3 rounded-xl border border-space-cardBorder flex items-start gap-2.5">
-                  <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span className="text-xs text-gray-200 font-medium leading-normal">{proc}</span>
+                <div key={idx} className="flex items-start gap-3 bg-[#10172A] p-3 rounded-xl border border-gray-800">
+                  <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 border border-cyan-500/40">
+                    {idx + 1}
+                  </span>
+                  <span className="text-gray-200 text-xs font-semibold">{proc}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* 2. Superficies Compatibles */}
+          {/* Compatible Surfaces */}
           <div className="space-y-3">
-            <h4 className="text-sm font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+            <h4 className="font-extrabold text-cyan-400 uppercase text-xs tracking-wider flex items-center gap-2">
               <Layers className="w-4 h-4 text-cyan-400" />
-              <span>2. Superficies Compatibles en Domicilio:</span>
+              <span>Superficies Compatibles & Tipo de Fijación:</span>
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {service.surfaces.map((surf, idx) => (
-                <div key={idx} className="bg-[#141C2E] p-3 rounded-xl border border-space-cardBorder flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-white block">{surf.name}</span>
-                    <span className="text-[10px] text-gray-400">{surf.note}</span>
+                <div key={idx} className="bg-[#10172A] p-3.5 rounded-xl border border-gray-800 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-extrabold text-white text-xs">{surf.name}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-500/30">
+                      {surf.status}
+                    </span>
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/30 rounded-md font-bold">
-                    {surf.status}
-                  </span>
+                  <p className="text-[11px] text-gray-400">{surf.note}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* 3. Herramientas & Equipamiento Usado */}
+          {/* Specialized Tools Applied */}
           <div className="space-y-3">
-            <h4 className="text-sm font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2">
-              <Wrench className="w-4 h-4 text-purple-400" />
-              <span>3. Herramientas de Grado Comercial Utilizadas:</span>
+            <h4 className="font-extrabold text-cyan-400 uppercase text-xs tracking-wider flex items-center gap-2">
+              <Wrench className="w-4 h-4 text-cyan-400" />
+              <span>Herramientas Profesionales Aplicadas:</span>
             </h4>
 
             <div className="flex flex-wrap gap-2">
               {service.tools.map((tool, idx) => (
-                <span key={idx} className="px-3 py-1.5 bg-[#141C2E] border border-gray-700 text-gray-300 text-xs font-semibold rounded-lg">
-                  🛠️ {tool}
+                <span key={idx} className="px-3 py-1 rounded-lg bg-[#10172A] border border-cyan-500/30 text-cyan-300 text-xs font-bold">
+                  ✓ {tool}
                 </span>
               ))}
             </div>
@@ -130,32 +126,23 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
 
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-4 bg-[#141C2E] border-t border-gray-800 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Garantía por escrito de 1 año</span>
+        {/* Footer Action Bar */}
+        <div className="p-4 bg-[#10172A] border-t border-cyan-500/30 flex items-center justify-between gap-4">
+          <div>
+            <span className="text-[10px] text-gray-400 block font-bold uppercase">Guía de Precio:</span>
+            <span className="text-base sm:text-lg font-black text-cyan-400">{service.priceGuide}</span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2.5 rounded-xl bg-gray-800 text-xs font-bold text-white hover:bg-gray-700"
-            >
-              Cerrar
-            </button>
-            
-            <button
-              onClick={() => {
-                onClose();
-                onSelectForCheckout(service);
-              }}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-extrabold text-xs shadow-gold-cosmic hover:scale-105 transition-all flex items-center gap-2"
-            >
-              <span>Añadir a Cotización / Checkout</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              onClose();
+              onSelectForCheckout();
+            }}
+            className="px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider hover:scale-105 transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)] flex items-center gap-2"
+          >
+            <span>Reservar Este Servicio</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
 
       </div>

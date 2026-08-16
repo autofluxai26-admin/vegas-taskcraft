@@ -21,6 +21,9 @@ export function App() {
 
   const [isTechPortalOpen, setIsTechPortalOpen] = useState(false);
 
+  // Global Accessibility Font Scaling State ('sm' | 'md' | 'lg')
+  const [fontScale, setFontScale] = useState<'sm' | 'md' | 'lg'>('md');
+
   const handleOpenDualBooking = (serviceName?: string) => {
     setSelectedBookingService(serviceName);
     setIsDualBookingOpen(true);
@@ -31,13 +34,21 @@ export function App() {
     setIsDetailModalOpen(true);
   };
 
+  const fontScaleStyles = {
+    sm: 'text-[14px]',
+    md: 'text-[16px]',
+    lg: 'text-[18px]',
+  };
+
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-gray-100 font-sans selection:bg-amber-500 selection:text-black">
+    <div className={`min-h-screen bg-[#070A12] text-gray-100 font-sans selection:bg-cyan-500 selection:text-black transition-all duration-300 ${fontScaleStyles[fontScale]}`}>
       
-      {/* Space Dark Navbar */}
+      {/* Space Dark Navbar with Accessibility Font Size Control */}
       <Navbar
         onOpenBooking={() => handleOpenDualBooking()}
         onOpenTechPortal={() => setIsTechPortalOpen(true)}
+        fontScale={fontScale}
+        onChangeFontScale={setFontScale}
       />
 
       {/* Main Sections */}
@@ -57,11 +68,11 @@ export function App() {
         <TeamSection />
 
         {/* Interactive Month Calendar Picker & Time Slots Section */}
-        <section className="py-16 bg-[#0B0F19] border-b border-space-cardBorder">
+        <section className="py-16 bg-[#070A12] border-b border-space-cardBorder">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-black text-white tracking-tight">
-                Reserva a Futuro • <span className="text-gradient-gold">Calendario Mensual</span>
+                Reserva a Futuro • <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Calendario Mensual</span>
               </h2>
               <p className="text-gray-400 text-sm">
                 Selecciona cualquier día del mes para ver las franjas horarias libres y asegurar la atención de Carlos o Jonathan.
@@ -69,7 +80,7 @@ export function App() {
             </div>
 
             <InteractiveCalendarSlots
-              onSelectSlot={(date, time) => {
+              onSelectSlot={() => {
                 handleOpenDualBooking();
               }}
             />

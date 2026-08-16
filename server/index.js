@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3001;
 // 1. Cybersecurity Headers (Helmet)
 app.use(
   helmet({
-    contentSecurityPolicy: false, // Permitir Vite/Assets en producción
+    contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
   })
 );
@@ -26,24 +26,24 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: '10kb' })); // Prevenir payload inyecciones masivas
+app.use(express.json({ limit: '10kb' }));
 
-// 3. Rate Limiting for AI Endpoint (Prevención de ataques Billing DDoS & Abuse)
+// 3. Rate Limiting for AI Endpoint
 const chatLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minuto
-  max: 10, // Máximo 10 peticiones por minuto por IP
+  windowMs: 1 * 60 * 1000,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Límite de solicitudes alcanzado. Por favor intenta en 1 minuto.' },
 });
 
 const leadLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
+  windowMs: 15 * 60 * 1000,
   max: 5,
   message: { error: 'Demasiados intentos de reserva. Por favor intenta más tarde.' },
 });
 
-// Healthcheck Route for Dokploy Container Monitoring
+// Healthcheck Route
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString(), app: 'Vegas TaskCraft API' });
 });
@@ -70,7 +70,6 @@ app.post('/api/lead', leadLimiter, (req, res) => {
       timestamp: new Date().toISOString(),
     });
 
-    // Opcional: Aquí se puede enviar una notificación a n8n, Telegram o Supabase
     if (process.env.N8N_WEBHOOK_URL) {
       fetch(process.env.N8N_WEBHOOK_URL, {
         method: 'POST',
@@ -100,7 +99,6 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Mensaje requerido' });
     }
 
-    // Si existe N8N_CHAT_WEBHOOK_URL o OPENAI_API_KEY en .env, conectar
     if (process.env.N8N_CHAT_WEBHOOK_URL) {
       const n8nRes = await fetch(process.env.N8N_CHAT_WEBHOOK_URL, {
         method: 'POST',
@@ -111,20 +109,19 @@ app.post('/api/chat', chatLimiter, async (req, res) => {
       return res.json({ reply: data.output || data.reply });
     }
 
-    // Respuesta Inteligente de Fallback para Las Vegas
-    let reply = 'Con gusto te asistimos en Vegas TaskCraft. Realizamos montaje de TV, ensamblaje de muebles IKEA/Wayfair y reparaciones a domicilio en todo Las Vegas Valley.';
+    let reply = 'Con gusto te asistimos en Vegas TaskCraft. Realizamos montaje de TV, ensamblaje de muebles IKEA/Wayfair, cortinas, pintura y Smart Home en todo Las Vegas Valley.';
     let actionButton = { label: 'Reservar Servicio' };
 
     const lower = message.toLowerCase();
     if (lower.includes('tv') || lower.includes('televisor')) {
-      reply = 'El montaje de TV en Las Vegas inicia desde $95. Incluye detección de vigas, anclajes de alta resistencia y nivelación láser. ¿Te gustaría agendar una hora para hoy o mañana?';
+      reply = 'El montaje de TV en Las Vegas cuesta $100 (hasta 42"), $150 (hasta 65") y $200 (65" en adelante). Incluye anclajes Toggle Bolt y nivelación láser.';
       actionButton = { label: 'Reservar Montaje de TV', service: 'Montaje de TV & Home Theater' };
     } else if (lower.includes('ikea') || lower.includes('mueble')) {
-      reply = '¡Armamos todo tipo de muebles de IKEA, Wayfair y Target en Summerlin, Henderson y North LV! La guía de precio inicia en $85.';
-      actionButton = { label: 'Reservar Ensamblaje', service: 'Ensamblaje de Muebles (IKEA/Wayfair)' };
-    } else if (lower.includes('hoy') || lower.includes('disponib')) {
-      reply = '¡Sí! Tenemos unidades activas hoy en Las Vegas Valley con tiempo de llegada en menos de 2 horas.';
-      actionButton = { label: 'Ver Horarios de Hoy' };
+      reply = '¡Armamos todo tipo de muebles de IKEA, Wayfair y Amazon en Summerlin, Henderson y North LV por $120 la hora!';
+      actionButton = { label: 'Reservar Ensamblaje', service: 'Ensamblaje de Muebles' };
+    } else if (lower.includes('smart') || lower.includes('cámara') || lower.includes('seguridad')) {
+      reply = 'Ofrecemos automatización de 3 puntos (TV, comedor, cocina) con Alexa ($180) y sistemas de cámaras outdoor WiFi con energía solar ($250).';
+      actionButton = { label: 'Reservar Smart Home', service: 'Smart Home & Seguridad' };
     }
 
     return res.json({ reply, actionButton });
