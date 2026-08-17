@@ -60,38 +60,64 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Dynamic Real-time Pricing Calculation WITHOUT TAX PERCENTAGE
-  let grandTotal = 0;
+  // Build Detailed Service Description & Itemized Items
+  const serviceSummaryParts: string[] = [];
+  const itemizedLines: { name: string; unitPrice: number; qty: number; subtotal: number }[] = [];
 
   if (selectedServices.tv) {
-    if (tvSizeOption === 'small') grandTotal += 100.0;
-    else if (tvSizeOption === 'medium') grandTotal += 150.0;
-    else if (tvSizeOption === 'large') grandTotal += 200.0;
+    const tvPrice = tvSizeOption === 'small' ? 100 : tvSizeOption === 'medium' ? 150 : 200;
+    const tvLabel = `TV Mounting (${tvSizeOption === 'small' ? 'Up to 42"' : tvSizeOption === 'medium' ? 'Up to 65"' : '65"+'})`;
+    serviceSummaryParts.push(tvLabel);
+    itemizedLines.push({ name: tvLabel, unitPrice: tvPrice, qty: 1, subtotal: tvPrice });
   }
 
   if (selectedServices.furniture) {
-    grandTotal += furnitureHours * 120.0;
+    const furnPrice = furnitureHours * 120;
+    serviceSummaryParts.push(`Furniture Assembly (${furnitureHours} hrs @ $120/hr)`);
+    itemizedLines.push({ name: 'Furniture Assembly Labor', unitPrice: 120, qty: furnitureHours, subtotal: furnPrice });
   }
 
   if (selectedServices.art) {
-    grandTotal += artHours * 60.0;
-    if (artOption === 'addon') grandTotal += 50.0;
-    else if (artOption === 'standalone') grandTotal += 90.0;
+    const artBase = artHours * 60;
+    const mirrorPrice = artOption === 'addon' ? 50 : 90;
+    serviceSummaryParts.push(`Art & Shelves (${artHours} hrs) + ${artOption === 'addon' ? 'Heavy Mirror Add-on' : 'Standalone Mirror'}`);
+    itemizedLines.push({ name: 'Shelves & Art Hanging', unitPrice: 60, qty: artHours, subtotal: artBase });
+    itemizedLines.push({ name: artOption === 'addon' ? 'Heavy Mirror Add-on' : 'Standalone Heavy Mirror Contract', unitPrice: mirrorPrice, qty: 1, subtotal: mirrorPrice });
   }
 
   if (selectedServices.repairs) {
-    grandTotal += curtainWindows * 50.0;
-    if (repairItems.wallPatch) grandTotal += 100.0;
-    if (repairItems.panelInstall) grandTotal += 150.0;
-    if (repairItems.electronicsSetup) grandTotal += 40.0;
-    grandTotal += lampHours * 150.0;
-    if (paintHours > 0) grandTotal += paintHours * 150.0;
+    if (curtainWindows > 0) {
+      serviceSummaryParts.push(`Window Curtains (${curtainWindows} windows)`);
+      itemizedLines.push({ name: 'Window Curtains & Blinds', unitPrice: 50, qty: curtainWindows, subtotal: curtainWindows * 50 });
+    }
+    if (lampHours > 0) {
+      serviceSummaryParts.push(`Light Fixtures / Ceiling Fans (${lampHours} hrs)`);
+      itemizedLines.push({ name: 'Light Fixture Installation', unitPrice: 150, qty: lampHours, subtotal: lampHours * 150 });
+    }
+    if (paintHours > 0) {
+      serviceSummaryParts.push(`Accent Painting (${paintHours} hrs)`);
+      itemizedLines.push({ name: 'Accent Wall Painting', unitPrice: 150, qty: paintHours, subtotal: paintHours * 150 });
+    }
+    if (repairItems.wallPatch) {
+      serviceSummaryParts.push('Drywall Wall Patches');
+      itemizedLines.push({ name: 'Drywall Patch Repair', unitPrice: 100, qty: 1, subtotal: 100 });
+    }
   }
 
   if (selectedServices.smarthome) {
-    if (smartHomeItems.automation3point) grandTotal += 180.0;
-    if (smartHomeItems.outdoorSurveillance) grandTotal += 250.0;
+    if (smartHomeItems.automation3point) {
+      serviceSummaryParts.push('3-Point Alexa Smart Automation');
+      itemizedLines.push({ name: '3-Point Alexa Automation System', unitPrice: 180, qty: 1, subtotal: 180 });
+    }
+    if (smartHomeItems.outdoorSurveillance) {
+      serviceSummaryParts.push('Outdoor Solar Security Camera System');
+      itemizedLines.push({ name: 'Outdoor Solar Camera Installation', unitPrice: 250, qty: 1, subtotal: 250 });
+    }
   }
+
+  // Dynamic Real-time Pricing Calculation
+  let grandTotal = itemizedLines.reduce((sum, item) => sum + item.subtotal, 0);
+  if (grandTotal === 0 && selectedServices.tv) grandTotal = 150.0;
 
   if (activeTab === 'visit') {
     grandTotal = 25.0;
@@ -101,6 +127,10 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
     e.preventDefault();
     const code = 'VTC-' + Math.floor(100000 + Math.random() * 900000);
     setGeneratedBookingCode(code);
+
+    const detailedServiceText = activeTab === 'checkout'
+      ? serviceSummaryParts.join(' + ') || 'Multi-Service Assembly & Mounting'
+      : 'On-Site Estimate & Dimension Visit ($25)';
 
     // Send payload to backend / n8n
     fetch('/api/lead', {
@@ -112,11 +142,12 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
         phone: formData.phone,
         email: formData.email,
         address: formData.address,
-        service: activeTab === 'checkout' ? 'Multi-Service Assembly & Mounting' : 'On-Site Estimate Visit ($25)',
+        service: detailedServiceText,
         bookingType: activeTab === 'checkout' ? 'Service Checkout' : 'On-Site Estimate ($25)',
-        date: 'August 2026 28',
+        date: 'August 28, 2026',
         timeSlot: '02:00 PM - 04:00 PM',
-        totalAmount: grandTotal
+        totalAmount: grandTotal,
+        itemizedLines: activeTab === 'checkout' ? itemizedLines : [{ name: 'On-Site Estimate Visit Fee', unitPrice: 25, qty: 1, subtotal: 25 }]
       })
     }).catch(err => console.error('API submit error:', err));
 
