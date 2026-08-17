@@ -198,7 +198,7 @@ app.post('/api/lead', async (req, res) => {
   try {
     const validatedData = LeadSchema.parse(req.body);
     const bookingCode = req.body.bookingCode || ('VTC-' + Math.floor(100000 + Math.random() * 900000));
-    const recipientEmail = validatedData.email || 'autofluxai26@gmail.com';
+    const recipientEmail = validatedData.email || 'vegastaskcraft@gmail.com';
 
     const newBooking = {
       id: bookingCode,
@@ -229,7 +229,7 @@ app.post('/api/lead', async (req, res) => {
     if (process.env.SMTP_PASS) {
       smtpTransporter.sendMail({
         from: '"Vegas TaskCraft LLC" <contact@vegastaskcraft.com>',
-        to: recipientEmail,
+        to: [recipientEmail, 'vegastaskcraft@gmail.com'],
         subject: `Appointment Confirmation - Vegas TaskCraft [${bookingCode}]`,
         html: generateHtmlConfirmation(newBooking)
       }).then(info => console.log('✅ Direct Hostinger SMTP Email sent:', info.messageId))
