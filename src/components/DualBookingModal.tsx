@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, CheckCircle, ShieldCheck, MapPin, User, Phone, Sparkles, Layers, DollarSign, Calculator, Lock, Plus, Minus, Wrench, Tv, Frame, Shield, Cpu, Video, Check, Mail } from 'lucide-react';
 import { OnlinePaymentModal } from './OnlinePaymentModal';
 import { Logo } from './Logo';
@@ -56,6 +56,29 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
     date: 'August 31, 2026',
     timeSlot: '11:30 AM - 01:30 PM',
   });
+
+  const [existingBookings, setExistingBookings] = useState<any[]>([]);
+
+  // Load existing bookings for conflict checking
+  useEffect(() => {
+    fetch('/api/bookings')
+      .then((res) => res.json())
+      .then((data) => {
+        let list: any[] = [];
+        if (data.success && Array.isArray(data.bookings)) list = data.bookings;
+        try {
+          const local = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
+          if (Array.isArray(local)) list = [...local, ...list];
+        } catch (e) {}
+        setExistingBookings(list);
+      })
+      .catch(() => {
+        try {
+          const local = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
+          setExistingBookings(local);
+        } catch (e) {}
+      });
+  }, [isOpen]);
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [generatedBookingCode, setGeneratedBookingCode] = useState('');
@@ -126,8 +149,34 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
     grandTotal = 25.0;
   }
 
+  // Available Time Slots for Visit
+  const timeSlotOptions = [
+    '09:00 AM - 11:00 AM',
+    '11:30 AM - 01:30 PM',
+    '02:00 PM - 04:00 PM',
+    '04:30 PM - 06:30 PM'
+  ];
+
+  // Conflict Checker for Selected Date & Slot
+  const isSlotOccupied = (dateStr: string, slotStr: string) => {
+    return existingBookings.some(b => {
+      if (!b.date) return false;
+      const bDate = String(b.date).toLowerCase();
+      const targetDate = String(dateStr).toLowerCase();
+      const bTime = (b.time || b.timeSlot || '').toLowerCase();
+      const targetTime = String(slotStr).toLowerCase();
+      return bDate.includes(targetDate) && (bTime === targetTime || bTime.includes(targetTime.substring(0, 5)));
+    });
+  };
+
   const handleStartPayment = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSlotOccupied(formData.date, formData.timeSlot)) {
+      alert(`⚠️ The selected time slot (${formData.timeSlot} on ${formData.date}) is already booked. Please choose an open slot.`);
+      return;
+    }
+
     const code = 'VTC-' + Math.floor(100000 + Math.random() * 900000);
     setGeneratedBookingCode(code);
 
@@ -157,7 +206,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
     setCurrentBookingPayload(bookingPayload);
 
-    // Save to localStorage immediately so calendar and tech portal pick it up
+    // Save to localStorage immediately
     try {
       const existing = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
       existing.unshift(bookingPayload);
@@ -522,7 +571,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
                 </div>
 
-                {/* 2. Customer Contact Form (WITH EMAIL & DATE FIELDS) */}
+                {/* 2. Customer Contact Form */}
                 <div className="space-y-4 pt-2">
                   <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] border border-cyan-400 shrink-0">2</span>
@@ -575,13 +624,20 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     </div>
                     <div>
                       <label className="block font-bold text-gray-300 mb-1">Selected Time Slot:</label>
-                      <input
-                        type="text"
-                        required
+                      <select
                         value={formData.timeSlot}
                         onChange={(e) => setFormData({ ...formData, timeSlot: e.target.value })}
-                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white font-bold"
-                      />
+                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white font-bold focus:border-cyan-400 focus:outline-none"
+                      >
+                        {timeSlotOptions.map(slot => {
+                          const occupied = isSlotOccupied(formData.date, slot);
+                          return (
+                            <option key={slot} value={slot} disabled={occupied} className={occupied ? 'text-gray-500 bg-[#070A12]' : 'text-white bg-[#10172A]'}>
+                              {slot} {occupied ? '(FULL / BOOKED)' : '(AVAILABLE)'}
+                            </option>
+                          );
+                        })}
+                      </select>
                     </div>
                     <div className="sm:col-span-2">
                       <label className="block font-bold text-gray-300 mb-1">Exact Address in Las Vegas Valley / High-Rise Tower:</label>
@@ -617,7 +673,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
               </form>
             ) : (
-              /* VISIT TAB ($25 On-Site Estimate Fee) */
+              /* VISIT TAB ($25 On-Site Estimate Fee) WITH DATE & TIME SLOT SELECTION & CONFLICT CHECKING */
               <form onSubmit={handleStartPayment} className="space-y-6">
                 <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/40 space-y-3">
                   <div className="flex items-center gap-3">
@@ -665,6 +721,39 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       className="w-full bg-[#10172A] border border-cyan-500/50 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none font-bold"
                     />
                   </div>
+
+                  {/* DATE SELECTION FOR ON-SITE VISIT */}
+                  <div>
+                    <label className="block font-bold text-cyan-400 mb-1">📅 Desired Visit Date:</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. August 31, 2026"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      className="w-full bg-[#10172A] border border-cyan-500/60 rounded-xl p-3 text-white font-bold focus:border-cyan-400 focus:outline-none"
+                    />
+                  </div>
+
+                  {/* TIME SLOT SELECTION WITH CONFLICT VALIDATION */}
+                  <div>
+                    <label className="block font-bold text-cyan-400 mb-1">⏰ Desired Visit Time Window:</label>
+                    <select
+                      value={formData.timeSlot}
+                      onChange={(e) => setFormData({ ...formData, timeSlot: e.target.value })}
+                      className="w-full bg-[#10172A] border border-cyan-500/60 rounded-xl p-3 text-white font-bold focus:border-cyan-400 focus:outline-none"
+                    >
+                      {timeSlotOptions.map(slot => {
+                        const occupied = isSlotOccupied(formData.date, slot);
+                        return (
+                          <option key={slot} value={slot} disabled={occupied} className={occupied ? 'text-gray-500 bg-[#070A12]' : 'text-white bg-[#10172A]'}>
+                            {slot} {occupied ? '(FULL / BOOKED)' : '(AVAILABLE FOR VISIT)'}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+
                   <div className="sm:col-span-2">
                     <label className="block font-bold text-gray-300 mb-1">Visit Address:</label>
                     <input
@@ -678,8 +767,11 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                   </div>
                 </div>
 
-                <div className="bg-[#10172A] p-4 rounded-xl border border-gray-800 flex justify-between items-center text-sm">
-                  <span className="font-bold text-gray-300">Flat On-Site Visit Fee:</span>
+                <div className="bg-[#10172A] p-4 rounded-xl border border-cyan-500/40 flex justify-between items-center text-sm">
+                  <div>
+                    <span className="font-bold text-gray-300 block">Flat On-Site Visit Fee:</span>
+                    <span className="text-[11px] text-cyan-400 font-semibold italic">Checked against craftsman availability: No time slot collisions</span>
+                  </div>
                   <span className="text-xl font-black text-cyan-400">$25.00 USD</span>
                 </div>
 

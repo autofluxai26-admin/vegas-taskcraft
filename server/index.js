@@ -5,11 +5,23 @@ import { z } from 'zod';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Hostinger SMTP Transporter Setup
+const smtpTransporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+  port: parseInt(process.env.SMTP_PORT || '465'),
+  secure: true, // SSL port 465
+  auth: {
+    user: process.env.SMTP_USER || 'contact@vegastaskcraft.com',
+    pass: process.env.SMTP_PASS || '',
+  },
+});
 
 // 1. Cybersecurity Headers (Helmet)
 app.use(
@@ -33,6 +45,26 @@ const BOOKINGS_FILE = path.join(process.cwd(), 'server', 'bookings.json');
 
 // Initial default bookings if file doesn't exist
 const initialBookings = [
+  {
+    id: 'VTC-768394',
+    customer: 'Jonathan Rodriguez',
+    phone: '(702) 772-4116',
+    email: 'vegastaskcraft@gmail.com',
+    address: '3722 S Las Vegas Blvd, High-Rise Condo #1804',
+    service: '75" TV Mounting + IKEA King Bedroom Assembly + Soundbar',
+    surface: 'Concrete / Masonry Wall in High-Rise Condo Tower',
+    date: 'August 31, 2026',
+    time: '11:30 AM - 01:30 PM',
+    assignedTo: 'Jonathan Rodriguez',
+    status: 'Confirmed',
+    bookingType: 'Service Checkout',
+    itemizedLines: [
+      { name: '75" TV Mounting & Audio Bar', unitPrice: 200.00, qty: 1, subtotal: 200.00 },
+      { name: 'IKEA Bedroom Assembly Labor', unitPrice: 120.00, qty: 4, subtotal: 480.00 },
+      { name: 'Accent Wall & Heavy Mirror Add-on', unitPrice: 700.00, qty: 1, subtotal: 700.00 }
+    ],
+    total: 1380.00
+  },
   {
     id: 'VTC-90412',
     customer: 'Elena Rostova',
@@ -91,7 +123,6 @@ const initialBookings = [
   }
 ];
 
-// Helper to load bookings
 function loadBookings() {
   try {
     if (fs.existsSync(BOOKINGS_FILE)) {
@@ -104,7 +135,6 @@ function loadBookings() {
   return initialBookings;
 }
 
-// Helper to save bookings
 function saveBookings(bookings) {
   try {
     const dir = path.dirname(BOOKINGS_FILE);
@@ -116,6 +146,70 @@ function saveBookings(bookings) {
 }
 
 let activeBookings = loadBookings();
+
+function generateHtmlConfirmation(booking) {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #F1F5F9; color: #0F172A; margin: 0; padding: 25px; }
+    .card { max-width: 600px; margin: 0 auto; background: #FFFFFF; border: 2px solid #00F0FF; border-radius: 24px; overflow: hidden; padding: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
+    .logo-header { text-align: center; padding-bottom: 20px; border-bottom: 2px solid #E2E8F0; }
+    .logo-img { width: 220px; height: auto; display: block; margin: 0 auto; }
+    .status-badge { display: inline-block; background: #E0F2FE; border: 1.5px solid #0284C7; color: #0369A1; padding: 6px 18px; border-radius: 30px; font-weight: 800; font-size: 12px; text-transform: uppercase; margin-top: 15px; }
+    h2 { color: #0F172A; text-align: center; margin-top: 25px; font-size: 24px; font-weight: 900; }
+    .details-box { background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 16px; padding: 22px; margin: 25px 0; }
+    .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #E2E8F0; font-size: 14px; }
+    .row:last-child { border-bottom: none; }
+    .label { color: #475569; font-weight: 700; }
+    .value { color: #0F172A; font-weight: 800; text-align: right; }
+    .total-row { font-size: 19px; color: #0284C7; font-weight: 900; margin-top: 12px; text-align: right; }
+    .footer-signature { text-align: center; margin-top: 30px; padding-top: 25px; border-top: 2px solid #E2E8F0; font-size: 13px; color: #475569; }
+    .sig-logo { width: 140px; height: auto; display: block; margin: 0 auto 12px auto; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-header">
+      <img src="https://vegastaskcraft.com/images/logo.png" alt="Vegas TaskCraft LLC" class="logo-img" />
+      <div><span class="status-badge">✓ Appointment Confirmed</span></div>
+    </div>
+
+    <h2>Booking Confirmation</h2>
+    <p style="text-align:center; color:#334155; font-size:15px; line-height:1.6;">
+      Dear <strong>${booking.customer}</strong>, thank you for booking with Vegas TaskCraft LLC! Your appointment has been scheduled with precision craftsman guarantee.
+    </p>
+
+    <div class="details-box">
+      <div class="row"><span class="label">Booking Code:</span><span class="value" style="color:#0284C7;">${booking.id}</span></div>
+      <div class="row"><span class="label">Service Requested:</span><span class="value">${booking.service}</span></div>
+      <div class="row"><span class="label">Appointment Date:</span><span class="value">${booking.date}</span></div>
+      <div class="row"><span class="label">Time Window:</span><span class="value">${booking.time}</span></div>
+      <div class="row"><span class="label">Assigned Craftsman:</span><span class="value">${booking.assignedTo}</span></div>
+      <div class="row"><span class="label">Service Location:</span><span class="value">${booking.address}</span></div>
+      <div class="total-row">Total Net Amount: $${(booking.total || 0).toFixed(2)} USD</div>
+    </div>
+
+    <p style="font-size:13px; color:#64748B; text-align:center; font-style:italic;">
+      Our master technician will arrive with specialized tools, 3D laser levels, and heavy-duty anchors. Flat rate with 0% hidden taxes.
+    </p>
+
+    <div class="footer-signature">
+      <img src="https://vegastaskcraft.com/images/logo.png" alt="Vegas TaskCraft LLC" class="sig-logo" />
+      <strong style="color:#0F172A; font-size:15px; display:block; margin-bottom:4px;">Vegas TaskCraft LLC</strong>
+      Residential Decor & Assembly Solutions<br/>
+      Summerlin • Henderson • Las Vegas High-Rises<br/>
+      📞 Direct Call/Text: <a href="tel:7027724116" style="color:#0284C7; font-weight:bold; text-decoration:none;">(702) 772-4116</a><br/>
+      ✉️ Email: <a href="mailto:contact@vegastaskcraft.com" style="color:#0284C7; font-weight:bold; text-decoration:none;">contact@vegastaskcraft.com</a><br/>
+      🌐 Web: <a href="https://vegastaskcraft.com" style="color:#0284C7; font-weight:bold; text-decoration:none;">www.vegastaskcraft.com</a>
+    </div>
+  </div>
+</body>
+</html>
+`;
+}
 
 // Healthcheck Route
 app.get('/health', (req, res) => {
@@ -179,6 +273,17 @@ app.post('/api/lead', async (req, res) => {
     saveBookings(activeBookings);
 
     console.log('📌 NUEVA RESERVA EN VIVO GUARDADA:', newBooking);
+
+    // If SMTP_PASS is configured, send email directly via Hostinger SMTP from contact@vegastaskcraft.com
+    if (process.env.SMTP_PASS) {
+      smtpTransporter.sendMail({
+        from: '"Vegas TaskCraft LLC" <contact@vegastaskcraft.com>',
+        to: [recipientEmail, 'vegastaskcraft@gmail.com'],
+        subject: `Appointment Confirmation - Vegas TaskCraft [${bookingCode}]`,
+        html: generateHtmlConfirmation(newBooking)
+      }).then(info => console.log('✅ Direct Hostinger SMTP Email sent:', info.messageId))
+        .catch(err => console.error('Hostinger SMTP error:', err));
+    }
 
     // Forward to n8n Webhook
     const n8nUrl = process.env.N8N_WEBHOOK_URL || 'https://n8nautofluxweb.autofluxai26.com/webhook/vegas-taskcraft-lead';
