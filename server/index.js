@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import { z } from 'zod';
 import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -87,6 +88,71 @@ const activeBookings = [
   }
 ];
 
+// Helper: Build Professional HTML Email
+function generateHtmlConfirmation(booking) {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #070A12; color: #FFFFFF; margin: 0; padding: 20px; }
+    .card { max-width: 600px; margin: 0 auto; background: #10172A; border: 2px solid #00F0FF; border-radius: 20px; overflow: hidden; padding: 30px; }
+    .logo-header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #1E293B; }
+    .logo-img { width: 180px; height: auto; }
+    .status-badge { display: inline-block; background: rgba(0,240,255,0.15); border: 1px solid #00F0FF; color: #00F0FF; padding: 6px 16px; border-radius: 30px; font-weight: bold; font-size: 12px; text-transform: uppercase; margin-top: 15px; }
+    h2 { color: #00F0FF; text-align: center; margin-top: 20px; }
+    .details-box { background: #070A12; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin: 20px 0; }
+    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1E293B; font-size: 14px; }
+    .row:last-child { border-bottom: none; }
+    .label { color: #94A3B8; font-weight: 600; }
+    .value { color: #FFFFFF; font-weight: 700; text-align: right; }
+    .total-row { font-size: 18px; color: #00F0FF; font-weight: 900; margin-top: 10px; text-align: right; }
+    .footer-signature { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #1E293B; font-size: 12px; color: #94A3B8; }
+    .sig-logo { width: 140px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-header">
+      <img src="https://vegastaskcraft.com/images/logo.png" alt="Vegas TaskCraft LLC" class="logo-img" />
+      <div><span class="status-badge">✓ Appointment Confirmed</span></div>
+    </div>
+
+    <h2>Booking Confirmation</h2>
+    <p style="text-align:center; color:#E2E8F0; font-size:14px;">
+      Dear <strong>${booking.customer}</strong>, thank you for booking with Vegas TaskCraft LLC! Your appointment has been scheduled with precision craftsman guarantee.
+    </p>
+
+    <div class="details-box">
+      <div class="row"><span class="label">Booking Code:</span><span class="value" style="color:#00F0FF;">${booking.id}</span></div>
+      <div class="row"><span class="label">Service Requested:</span><span class="value">${booking.service}</span></div>
+      <div class="row"><span class="label">Appointment Date:</span><span class="value">${booking.date}</span></div>
+      <div class="row"><span class="label">Time Window:</span><span class="value">${booking.time}</span></div>
+      <div class="row"><span class="label">Assigned Craftsman:</span><span class="value">${booking.assignedTo}</span></div>
+      <div class="row"><span class="label">Service Location:</span><span class="value">${booking.address}</span></div>
+      <div class="total-row">Total Net Amount: $${(booking.total || 0).toFixed(2)} USD</div>
+    </div>
+
+    <p style="font-size:12px; color:#94A3B8; text-align:center; font-style:italic;">
+      Our master technician will arrive with specialized tools, 3D laser levels, and heavy-duty anchors. Flat rate with 0% hidden taxes.
+    </p>
+
+    <div class="footer-signature">
+      <img src="https://vegastaskcraft.com/images/logo.png" alt="Vegas TaskCraft LLC" class="sig-logo" /><br/>
+      <strong style="color:#FFFFFF; font-size:14px;">Vegas TaskCraft LLC</strong><br/>
+      Residential Decor & Assembly Solutions<br/>
+      Summerlin • Henderson • Las Vegas High-Rises<br/>
+      📞 Direct Call/Text: <a href="tel:7027724116" style="color:#00F0FF; text-decoration:none;">(702) 772-4116</a><br/>
+      ✉️ Email: <a href="mailto:contact@vegastaskcraft.com" style="color:#00F0FF; text-decoration:none;">contact@vegastaskcraft.com</a><br/>
+      🌐 Web: <a href="https://vegastaskcraft.com" style="color:#00F0FF; text-decoration:none;">www.vegastaskcraft.com</a>
+    </div>
+  </div>
+</body>
+</html>
+`;
+}
+
 // Healthcheck Route
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString(), app: 'Vegas TaskCraft API' });
@@ -117,16 +183,17 @@ const LeadSchema = z.object({
 });
 
 // Endpoint: Capture Lead / Reservation
-app.post('/api/lead', (req, res) => {
+app.post('/api/lead', async (req, res) => {
   try {
     const validatedData = LeadSchema.parse(req.body);
     const bookingCode = req.body.bookingCode || ('VTC-' + Math.floor(100000 + Math.random() * 900000));
+    const recipientEmail = validatedData.email || 'autofluxai26@gmail.com';
 
     const newBooking = {
       id: bookingCode,
       customer: validatedData.name,
       phone: validatedData.phone,
-      email: validatedData.email || 'contact@vegastaskcraft.com',
+      email: recipientEmail,
       address: validatedData.address,
       service: validatedData.service,
       surface: 'Standard Wall Surface / Multi-Anchor',
@@ -147,14 +214,14 @@ app.post('/api/lead', (req, res) => {
 
     console.log('📌 NUEVA RESERVA EN VIVO:', newBooking);
 
-    // Forward to n8n Webhook
+    // 1. Forward to n8n Webhook
     const n8nUrl = process.env.N8N_WEBHOOK_URL || 'https://n8nautofluxweb.autofluxai26.com/webhook/vegas-taskcraft-lead';
     fetch(n8nUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newBooking),
     })
-    .then(r => console.log('n8n Webhook response status:', r.status))
+    .then(r => console.log('n8n Webhook status:', r.status))
     .catch((err) => console.error('Error enviando a n8n:', err));
 
     return res.status(200).json({
