@@ -53,10 +53,13 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
     email: '',
     address: '',
     notes: '',
+    date: 'August 31, 2026',
+    timeSlot: '11:30 AM - 01:30 PM',
   });
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [generatedBookingCode, setGeneratedBookingCode] = useState('');
+  const [currentBookingPayload, setCurrentBookingPayload] = useState<any>(null);
 
   if (!isOpen) return null;
 
@@ -132,23 +135,41 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
       ? serviceSummaryParts.join(' + ') || 'Multi-Service Assembly & Mounting'
       : 'On-Site Estimate & Dimension Visit ($25)';
 
+    const bookingPayload = {
+      bookingCode: code,
+      id: code,
+      customer: formData.name,
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email || 'vegastaskcraft@gmail.com',
+      address: formData.address,
+      service: detailedServiceText,
+      bookingType: activeTab === 'checkout' ? 'Service Checkout' : 'On-Site Estimate ($25)',
+      date: formData.date || 'August 31, 2026',
+      time: formData.timeSlot || '11:30 AM - 01:30 PM',
+      timeSlot: formData.timeSlot || '11:30 AM - 01:30 PM',
+      assignedTo: 'Jonathan Rodriguez',
+      assignedTech: 'Jonathan Rodriguez',
+      total: grandTotal,
+      totalAmount: grandTotal,
+      itemizedLines: activeTab === 'checkout' ? itemizedLines : [{ name: 'On-Site Estimate Visit Fee', unitPrice: 25, qty: 1, subtotal: 25 }]
+    };
+
+    setCurrentBookingPayload(bookingPayload);
+
+    // Save to localStorage immediately so calendar and tech portal pick it up
+    try {
+      const existing = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
+      existing.unshift(bookingPayload);
+      localStorage.setItem('vtc_bookings', JSON.stringify(existing));
+      window.dispatchEvent(new Event('vtc_booking_updated'));
+    } catch (err) {}
+
     // Send payload to backend / n8n
     fetch('/api/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        bookingCode: code,
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email,
-        address: formData.address,
-        service: detailedServiceText,
-        bookingType: activeTab === 'checkout' ? 'Service Checkout' : 'On-Site Estimate ($25)',
-        date: 'August 28, 2026',
-        timeSlot: '02:00 PM - 04:00 PM',
-        totalAmount: grandTotal,
-        itemizedLines: activeTab === 'checkout' ? itemizedLines : [{ name: 'On-Site Estimate Visit Fee', unitPrice: 25, qty: 1, subtotal: 25 }]
-      })
+      body: JSON.stringify(bookingPayload)
     }).catch(err => console.error('API submit error:', err));
 
     setIsPaymentModalOpen(true);
@@ -501,7 +522,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
                 </div>
 
-                {/* 2. Customer Contact Form (WITH EMAIL FIELD) */}
+                {/* 2. Customer Contact Form (WITH EMAIL & DATE FIELDS) */}
                 <div className="space-y-4 pt-2">
                   <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] border border-cyan-400 shrink-0">2</span>
@@ -514,7 +535,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       <input
                         type="text"
                         required
-                        placeholder="e.g. John Doe"
+                        placeholder="e.g. Jonathan Rodriguez"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
@@ -536,10 +557,30 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       <input
                         type="email"
                         required
-                        placeholder="e.g. client@example.com"
+                        placeholder="e.g. vegastaskcraft@gmail.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="w-full bg-[#10172A] border border-cyan-500/50 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-gray-300 mb-1">Selected Date:</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.date}
+                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-gray-300 mb-1">Selected Time Slot:</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.timeSlot}
+                        onChange={(e) => setFormData({ ...formData, timeSlot: e.target.value })}
+                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white font-bold"
                       />
                     </div>
                     <div className="sm:col-span-2">
@@ -547,7 +588,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       <input
                         type="text"
                         required
-                        placeholder="e.g. Summerlin, Henderson, or High-Rise Condo Tower Name"
+                        placeholder="e.g. 3722 S Las Vegas Blvd, High-Rise Condo #1804"
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
@@ -563,7 +604,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     <span className="text-2xl text-cyan-400 font-black">${grandTotal.toFixed(2)} USD</span>
                   </div>
                   <p className="text-[11px] text-cyan-300 font-semibold italic text-center">
-                    ✓ Transparent flat-rate pricing with 0% hidden taxes. Confirmation email sent instantly.
+                    ✓ Transparent flat-rate pricing with 0% hidden taxes. Confirmation email sent instantly to client & vegastaskcraft@gmail.com.
                   </p>
                 </div>
 
@@ -596,7 +637,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     <input
                       type="text"
                       required
-                      placeholder="e.g. John Doe"
+                      placeholder="e.g. Jonathan Rodriguez"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
@@ -618,7 +659,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     <input
                       type="email"
                       required
-                      placeholder="e.g. client@example.com"
+                      placeholder="e.g. vegastaskcraft@gmail.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full bg-[#10172A] border border-cyan-500/50 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none font-bold"
@@ -658,10 +699,14 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
       {/* Online Payment Modal */}
       <OnlinePaymentModal
         isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
+        onClose={() => {
+          setIsPaymentModalOpen(false);
+          onClose();
+        }}
         bookingCode={generatedBookingCode}
         customerName={formData.name}
         totalAmount={grandTotal}
+        bookingPayload={currentBookingPayload}
       />
     </>
   );

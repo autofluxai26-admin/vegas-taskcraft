@@ -8,20 +8,41 @@ interface InteractiveCalendarSlotsProps {
 export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> = ({ onSelectSlot }) => {
   const months = ['July 2026', 'August 2026', 'September 2026', 'October 2026'];
   const [currentMonthIdx, setCurrentMonthIdx] = useState(1);
-  const [selectedDay, setSelectedDay] = useState<number>(28);
+  const [selectedDay, setSelectedDay] = useState<number>(31);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [liveBookings, setLiveBookings] = useState<any[]>([]);
 
-  // Fetch real-time active bookings from API
-  useEffect(() => {
+  const fetchBookings = () => {
     fetch('/api/bookings')
       .then((res) => res.json())
       .then((data) => {
+        let list: any[] = [];
         if (data.success && Array.isArray(data.bookings)) {
-          setLiveBookings(data.bookings);
+          list = data.bookings;
         }
+        // Merge local storage bookings
+        try {
+          const local = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
+          if (Array.isArray(local)) {
+            list = [...local, ...list];
+          }
+        } catch (e) {}
+
+        setLiveBookings(list);
       })
-      .catch(() => {});
+      .catch(() => {
+        try {
+          const local = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
+          setLiveBookings(local);
+        } catch (e) {}
+      });
+  };
+
+  // Fetch real-time active bookings from API & localStorage
+  useEffect(() => {
+    fetchBookings();
+    window.addEventListener('vtc_booking_updated', fetchBookings);
+    return () => window.removeEventListener('vtc_booking_updated', fetchBookings);
   }, []);
 
   // Dynamic slot calculation per day
@@ -34,10 +55,19 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
     ];
 
     // Check if any live booking exists for this day
-    const dayBookings = liveBookings.filter(b => b.date && b.date.includes(`${day}`));
+    const dayBookings = liveBookings.filter(b => {
+      if (!b.date) return false;
+      const dateStr = String(b.date);
+      return dateStr.includes(` ${day},`) || dateStr.includes(` ${day} `) || dateStr.endsWith(` ${day}`);
+    });
 
     return baseSlots.map(slot => {
-      const isBooked = dayBookings.some(b => b.time === slot.time || (day === 28 && slot.time.includes('02:00 PM')));
+      const isBooked = dayBookings.some(b => {
+        const slotTimeStr = slot.time.toLowerCase();
+        const bTime = (b.time || b.timeSlot || '').toLowerCase();
+        return bTime === slotTimeStr || bTime.includes(slotTimeStr.substring(0, 5));
+      }) || (day === 28 && slot.time.includes('02:00 PM'));
+
       return {
         ...slot,
         status: isBooked ? 'Booked' : 'Available'
@@ -89,6 +119,8 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
 
         {daysInMonth.map((day) => {
           const isSelected = selectedDay === day;
+          const hasBookings = getSlotsForDay(day).some(s => s.status === 'Booked');
+
           return (
             <button
               key={day}
@@ -97,6 +129,8 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
               className={`p-2.5 rounded-xl border font-bold transition-all text-xs flex flex-col items-center justify-center ${
                 isSelected
                   ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.6)] font-black scale-105'
+                  : hasBookings
+                  ? 'bg-cyan-950/60 border-cyan-500/40 text-cyan-300'
                   : 'bg-[#070A12] border-gray-800 text-gray-300 hover:border-cyan-500/50'
               }`}
             >
@@ -123,12 +157,12 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
                   onSelectSlot(`${months[currentMonthIdx]} ${selectedDay}`, slot.time, slot.tech);
                 }
               }}
-              className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
+              className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between ${
                 slot.status === 'Booked'
-                  ? 'bg-[#070A12]/50 border-gray-800 opacity-40 cursor-not-allowed'
+                  ? 'bg-rose-950/30 border-rose-500/40 opacity-70 cursor-not-allowed'
                   : selectedTimeSlot === slot.time
-                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_12px_rgba(0,240,255,0.3)]'
-                  : 'bg-[#070A12] border-gray-800 text-gray-200 hover:border-cyan-500/50'
+                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_12px_rgba(0,240,255,0.3)] cursor-pointer'
+                  : 'bg-[#070A12] border-gray-800 text-gray-200 hover:border-cyan-500/50 cursor-pointer'
               }`}
             >
               <div className="space-y-0.5">
@@ -139,7 +173,7 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
               <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border ${
                 slot.status === 'Available'
                   ? 'bg-emerald-950 text-emerald-400 border-emerald-500/40'
-                  : 'bg-rose-950 text-rose-400 border-rose-500/40'
+                  : 'bg-rose-950 text-rose-400 border-rose-500/50'
               }`}>
                 {slot.status === 'Available' ? '✓ Book Slot' : 'Full / Booked'}
               </span>

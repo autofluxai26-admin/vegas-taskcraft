@@ -23,9 +23,29 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
   // Month navigation state
   const availableMonths = ['July 2026', 'August 2026', 'September 2026', 'October 2026'];
   const [currentMonthIndex, setCurrentMonthIndex] = useState(1);
-  const [selectedCalendarDay, setSelectedCalendarDay] = useState(28);
+  const [selectedCalendarDay, setSelectedCalendarDay] = useState(31);
 
   const [jobs, setJobs] = useState<any[]>([
+    {
+      id: 'VTC-768394',
+      customer: 'Jonathan Rodriguez',
+      phone: '(702) 772-4116',
+      email: 'vegastaskcraft@gmail.com',
+      address: '3722 S Las Vegas Blvd, High-Rise Condo #1804',
+      service: '75" TV Mounting + IKEA King Bedroom Assembly + Soundbar',
+      surface: 'Concrete / Masonry Wall in High-Rise Condo Tower',
+      date: 'August 31, 2026',
+      time: '11:30 AM - 01:30 PM',
+      assignedTo: 'Jonathan Rodriguez',
+      status: 'Confirmed',
+      bookingType: 'Service Checkout',
+      itemizedLines: [
+        { name: '75" TV Mounting & Audio Bar', unitPrice: 200.00, qty: 1, subtotal: 200.00 },
+        { name: 'IKEA Bedroom Assembly Labor', unitPrice: 120.00, qty: 4, subtotal: 480.00 },
+        { name: 'Accent Wall & Heavy Mirror Add-on', unitPrice: 700.00, qty: 1, subtotal: 700.00 }
+      ],
+      total: 1380.00
+    },
     {
       id: 'VTC-90412',
       customer: 'Elena Rostova',
@@ -102,16 +122,48 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
     }
   ]);
 
-  // Fetch live bookings from server API
-  useEffect(() => {
+  const loadJobsList = () => {
     fetch('/api/bookings')
       .then((res) => res.json())
       .then((data) => {
+        let list = [...jobs];
         if (data.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
-          setJobs(data.bookings);
+          list = data.bookings;
         }
+
+        try {
+          const local = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
+          if (Array.isArray(local) && local.length > 0) {
+            // deduplicate by id
+            const map = new Map();
+            [...local, ...list].forEach(item => {
+              if (item && item.id && !map.has(item.id)) map.set(item.id, item);
+            });
+            list = Array.from(map.values());
+          }
+        } catch (e) {}
+
+        setJobs(list);
       })
-      .catch(() => {});
+      .catch(() => {
+        try {
+          const local = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
+          if (Array.isArray(local) && local.length > 0) {
+            const map = new Map();
+            [...local, ...jobs].forEach(item => {
+              if (item && item.id && !map.has(item.id)) map.set(item.id, item);
+            });
+            setJobs(Array.from(map.values()));
+          }
+        } catch (e) {}
+      });
+  };
+
+  // Fetch live bookings from server API & localStorage
+  useEffect(() => {
+    loadJobsList();
+    window.addEventListener('vtc_booking_updated', loadJobsList);
+    return () => window.removeEventListener('vtc_booking_updated', loadJobsList);
   }, [isOpen]);
 
   const handleLoginSubmit = (e: React.FormEvent) => {
@@ -126,15 +178,19 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
   const handleDeleteJob = (jobId: string) => {
     if (window.confirm(`Are you sure you want to delete job ${jobId}?`)) {
-      setJobs(jobs.filter(j => j.id !== jobId));
+      const updated = jobs.filter(j => j.id !== jobId);
+      setJobs(updated);
+      try {
+        localStorage.setItem('vtc_bookings', JSON.stringify(updated));
+      } catch (e) {}
     }
   };
 
   // Heatmap status for calendar days
   const getDayStatus = (day: number) => {
-    const dayJobs = jobs.filter(j => j.date && j.date.includes(`${day}`));
+    const dayJobs = jobs.filter(j => j.date && (String(j.date).includes(` ${day},`) || String(j.date).includes(` ${day} `) || String(j.date).endsWith(` ${day}`)));
     if (dayJobs.length >= 3 || day === 12 || day === 18) return { level: 'red', count: dayJobs.length || 4 };
-    if (dayJobs.length > 0 || day === 28 || day === 29) return { level: 'cyan', count: dayJobs.length || 2 };
+    if (dayJobs.length > 0 || day === 28 || day === 29 || day === 31) return { level: 'cyan', count: dayJobs.length || 2 };
     return { level: 'green', count: 0 };
   };
 
@@ -203,12 +259,12 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
     );
   }
 
-  const filteredJobs = activeTech === 'both' ? jobs : jobs.filter(j => j.assignedTo.toLowerCase().includes(activeTech));
+  const filteredJobs = activeTech === 'both' ? jobs : jobs.filter(j => j.assignedTo && j.assignedTo.toLowerCase().includes(activeTech));
   const daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
   // Filter jobs for selected modal day
   const modalDayJobs = selectedDayModal
-    ? jobs.filter(j => j.date && j.date.includes(`${selectedDayModal}`))
+    ? jobs.filter(j => j.date && (String(j.date).includes(` ${selectedDayModal},`) || String(j.date).includes(` ${selectedDayModal} `) || String(j.date).endsWith(` ${selectedDayModal}`)))
     : [];
 
   // Weekly Stats Calculations
@@ -332,7 +388,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                     <BarChart3 className="w-4 h-4 text-cyan-400" />
                     <span>Weekly Activity Breakdown (Estimates vs Service Jobs)</span>
                   </h4>
-                  <span className="text-xs text-gray-400 font-bold">Week of August 24 - 30, 2026</span>
+                  <span className="text-xs text-gray-400 font-bold">Week of August 24 - 31, 2026</span>
                 </div>
 
                 <div className="space-y-3">
@@ -344,7 +400,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                             {job.bookingType || 'Service Job'}
                           </span>
                           <span className="font-black text-white">{job.id}</span>
-                          <span className="text-cyan-400 font-bold">📅 {job.date || 'August 28, 2026'} ({job.time})</span>
+                          <span className="text-cyan-400 font-bold">📅 {job.date || 'August 31, 2026'} ({job.time})</span>
                         </div>
                         <p className="font-extrabold text-cyan-300 text-sm">{job.service}</p>
                         <p className="text-gray-300 font-semibold">Client: {job.customer} • Address: {job.address}</p>
@@ -651,7 +707,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                     <label className="block text-[10px] font-bold text-gray-400">Full Service Date & Time:</label>
                     <input
                       type="text"
-                      value={`${selectedJobForInvoice.date || 'August 28, 2026'} (${selectedJobForInvoice.time})`}
+                      value={`${selectedJobForInvoice.date || 'August 31, 2026'} (${selectedJobForInvoice.time})`}
                       onChange={(e) => setSelectedJobForInvoice({ ...selectedJobForInvoice, time: e.target.value })}
                       className="w-full bg-[#10172A] border border-gray-700 rounded-lg p-2 text-white font-bold text-xs"
                     />

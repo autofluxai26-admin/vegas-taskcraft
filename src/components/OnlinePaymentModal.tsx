@@ -7,6 +7,7 @@ interface OnlinePaymentModalProps {
   bookingCode: string;
   customerName: string;
   totalAmount: number;
+  bookingPayload?: any;
 }
 
 export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
@@ -15,6 +16,7 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
   bookingCode,
   customerName,
   totalAmount,
+  bookingPayload,
 }) => {
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple' | 'google'>('card');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -32,6 +34,22 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
   const handlePay = (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
+
+    // Save and send lead payload
+    if (bookingPayload) {
+      try {
+        const existing = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
+        existing.unshift(bookingPayload);
+        localStorage.setItem('vtc_bookings', JSON.stringify(existing));
+        window.dispatchEvent(new Event('vtc_booking_updated'));
+      } catch (err) {}
+
+      fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingPayload)
+      }).catch(err => console.error('API submit error:', err));
+    }
 
     setTimeout(() => {
       setIsProcessing(false);
