@@ -185,8 +185,8 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
               onClick={() => setSelectedJobForInvoice(jobs[0])}
               className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-400/50 text-cyan-300 hover:bg-cyan-500 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-[0_0_12px_rgba(0,240,255,0.2)]"
             >
-              <Edit3 className="w-4 h-4 text-cyan-400" />
-              <span>Editable Invoice Generator</span>
+              <FileText className="w-4 h-4 text-cyan-400" />
+              <span>Invoice Generator</span>
             </button>
 
             {/* Tech Selector */}
@@ -383,7 +383,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                       className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs transition-all shadow-[0_0_12px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
                     >
                       <FileText className="w-4 h-4" />
-                      <span>Edit & Print Invoice</span>
+                      <span>Generate Official Invoice</span>
                     </button>
                   </div>
 
@@ -394,7 +394,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
         </div>
 
-        {/* FULLY EDITABLE INVOICE MODAL OVERLAY */}
+        {/* INVOICE MODAL OVERLAY */}
         {selectedJobForInvoice && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
             <div className="relative w-full max-w-3xl bg-[#070A12] border-2 border-cyan-400 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.5)] text-white space-y-6 max-h-[92vh] flex flex-col">
@@ -407,7 +407,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <span className="text-xs font-black text-cyan-400 block">EDITABLE INVOICE</span>
+                    <span className="text-xs font-black text-cyan-400 block">OFFICIAL INVOICE GENERATOR</span>
                     <span className="text-[11px] text-gray-300 block font-semibold">contact@vegastaskcraft.com</span>
                   </div>
                   <button
@@ -420,7 +420,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Invoice Printable & Editable Body */}
+              {/* Invoice Printable Body */}
               <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-4 text-xs overflow-y-auto custom-scrollbar flex-1">
                 
                 {/* Invoice ID & Date inputs */}
@@ -458,7 +458,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   </div>
 
                   <div className="space-y-2">
-                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">RECIPIENT CLIENT (EDITABLE):</span>
+                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">RECIPIENT CLIENT:</span>
                     <div className="space-y-1.5">
                       <input
                         type="text"
@@ -487,7 +487,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
                 {/* Service Details */}
                 <div className="space-y-2">
-                  <label className="font-bold text-gray-300 block">Service Performed Description (Editable):</label>
+                  <label className="font-bold text-gray-300 block">Service Performed Description:</label>
                   <textarea
                     rows={2}
                     value={selectedJobForInvoice.service}

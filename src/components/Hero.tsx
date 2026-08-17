@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, ShieldCheck, Star, MapPin, Award, ArrowRight, Phone, Sparkles, CheckCircle2, Zap } from 'lucide-react';
+import { Calendar, ShieldCheck, Star, MapPin, Award, ArrowRight, Phone, Sparkles, CheckCircle2, Zap, Mail } from 'lucide-react';
 import { IMAGES } from '../assets/imagesData';
 import { Logo } from './Logo';
 
@@ -40,7 +40,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenDualBooking }) => {
       {/* Background Neon Grid Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-8">
         
         {/* 1. Header Text Section */}
         <div className="text-center max-w-4xl mx-auto space-y-4">
@@ -49,16 +49,16 @@ export const Hero: React.FC<HeroProps> = ({ onOpenDualBooking }) => {
             <span>#1 Premium Residential Craftsmen in Las Vegas Valley</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight">
             Your Home <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Assembled & Decorated</span> to Perfection
           </h1>
 
-          <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed">
+          <p className="text-gray-300 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
             Professional TV mounting, heavy mirror hanging, IKEA/Wayfair furniture assembly, and smart home security systems by certified master craftsmen Carlos Chavez & Jonathan Rodriguez.
           </p>
 
           {/* Key Trust Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-bold pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 text-xs font-bold pt-1">
             <div className="flex items-center gap-2 bg-[#10172A] px-3 py-2 rounded-xl border border-gray-800 text-gray-200">
               <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>Licensed & Insured</span>
@@ -74,36 +74,42 @@ export const Hero: React.FC<HeroProps> = ({ onOpenDualBooking }) => {
           </div>
         </div>
 
-        {/* 2. Main Vegas TaskCraft Hero Showcase Image */}
-        <div className="relative rounded-3xl overflow-hidden border-2 border-cyan-500/40 shadow-[0_0_50px_rgba(0,240,255,0.25)] bg-[#10172A] max-w-4xl mx-auto aspect-[16/9] sm:aspect-[21/9]">
-          <img
-            src={IMAGES.hero_handyman}
-            alt="Vegas TaskCraft Master Technician"
-            className="w-full h-full object-cover object-top"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#070A12] via-transparent to-transparent opacity-90"></div>
-
-          {/* Logo Badge Overlay */}
-          <div className="absolute top-4 left-4 bg-[#070A12]/90 backdrop-blur-md p-3 rounded-2xl border border-cyan-400/40 shadow-xl">
-            <Logo size="sm" />
-          </div>
-
-          {/* Bottom Banner Overlay */}
-          <div className="absolute bottom-4 left-4 right-4 bg-[#070A12]/90 backdrop-blur-md p-4 rounded-2xl border border-cyan-500/40 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-            <div>
-              <span className="font-black text-white text-sm block">100% Satisfaction Guaranteed</span>
-              <span className="text-gray-400 text-[11px]">Serving Summerlin, Henderson & Luxury High-Rise Condo Towers</span>
+        {/* 2. Main Vegas TaskCraft Hero Showcase Block */}
+        <div className="space-y-3 max-w-4xl mx-auto">
+          
+          {/* Logo Component Centered ABOVE Image */}
+          <div className="flex justify-center">
+            <div className="bg-[#10172A] px-5 py-3 rounded-2xl border border-cyan-400/40 shadow-xl inline-block">
+              <Logo size="md" />
             </div>
-            <span className="px-3 py-1 rounded-full bg-emerald-950 text-emerald-400 text-xs font-bold border border-emerald-500/30 whitespace-nowrap">
-              ✓ Active Units in LV
-            </span>
           </div>
+
+          {/* Clean HD Image Container (No dark overlay or text over image!) */}
+          <div className="relative rounded-3xl overflow-hidden border-2 border-cyan-500/40 shadow-[0_0_40px_rgba(0,240,255,0.25)] bg-[#10172A] aspect-[16/9] sm:aspect-[21/9]">
+            <img
+              src={IMAGES.hero_handyman}
+              alt="Vegas TaskCraft Master Technician"
+              className="w-full h-full object-cover object-top"
+            />
+          </div>
+
+          {/* Guarantee Banner Box Centered BELOW Image */}
+          <div className="bg-[#10172A] p-4 rounded-2xl border border-cyan-500/40 text-center space-y-1 shadow-lg">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+              <span className="font-black text-white text-sm">100% Satisfaction Guaranteed</span>
+              <span className="text-gray-300 text-xs font-medium">Serving Summerlin, Henderson & Luxury High-Rise Condo Towers</span>
+              <span className="px-3 py-0.5 rounded-full bg-emerald-950 text-emerald-400 text-xs font-bold border border-emerald-500/30 whitespace-nowrap">
+                ✓ Active Units in LV
+              </span>
+            </div>
+          </div>
+
         </div>
 
         {/* 3. Instant Price Estimator & CTAs */}
         <div className="max-w-4xl mx-auto space-y-6">
           
-          <div className="bg-[#10172A] p-6 rounded-3xl border border-cyan-500/30 space-y-4 shadow-xl">
+          <div className="bg-[#10172A] p-5 sm:p-6 rounded-3xl border border-cyan-500/30 space-y-4 shadow-xl">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-gray-800 pb-3">
               <span className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Zap className="w-4 h-4 text-cyan-400" />
@@ -161,7 +167,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenDualBooking }) => {
             )}
 
             {/* Result Bar */}
-            <div className="flex items-center justify-between bg-[#070A12] p-4 rounded-2xl border border-gray-800">
+            <div className="flex items-center justify-between bg-[#070A12] p-3.5 rounded-2xl border border-gray-800">
               <span className="text-xs text-gray-300 font-bold">Estimated Net Total:</span>
               <span className="text-2xl font-black text-cyan-400">{calculatePrice()}</span>
             </div>
@@ -186,10 +192,17 @@ export const Hero: React.FC<HeroProps> = ({ onOpenDualBooking }) => {
             </button>
           </div>
 
-          {/* Direct Phone Bar */}
-          <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
-            <Phone className="w-4 h-4 text-cyan-400" />
-            <span>Direct Call / Text: <a href="tel:7027724116" className="font-extrabold text-white hover:text-cyan-400 underline">(702) 772-4116</a></span>
+          {/* Direct Phone & Email Bar Below Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs text-gray-300 font-semibold bg-[#10172A] py-3 px-4 rounded-2xl border border-gray-800 max-w-xl mx-auto shadow-md">
+            <a href="tel:7027724116" className="flex items-center gap-1.5 hover:text-cyan-400 transition-colors">
+              <Phone className="w-4 h-4 text-cyan-400" />
+              <span>Direct Phone: <strong className="text-white underline">(702) 772-4116</strong></span>
+            </a>
+            <span className="hidden sm:inline text-gray-600">•</span>
+            <a href="mailto:contact@vegastaskcraft.com" className="flex items-center gap-1.5 hover:text-cyan-400 transition-colors">
+              <Mail className="w-4 h-4 text-cyan-400" />
+              <span>Email: <strong className="text-cyan-400 underline">contact@vegastaskcraft.com</strong></span>
+            </a>
           </div>
 
         </div>

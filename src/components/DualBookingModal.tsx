@@ -106,18 +106,20 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
-        <div className="relative w-full max-w-4xl bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl shadow-[0_0_50px_rgba(0,240,255,0.3)] overflow-hidden text-white my-4 max-h-[94vh] flex flex-col">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
+        <div className="relative w-full max-w-4xl bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl shadow-[0_0_50px_rgba(0,240,255,0.3)] overflow-hidden text-white my-2 max-h-[96vh] flex flex-col">
           
-          {/* Header Bar - Official Logo Implemented at Top Left */}
-          <div className="px-6 py-4 bg-[#10172A] border-b border-cyan-500/30 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Logo size="sm" />
-              <div>
-                <span className="font-extrabold text-base tracking-tight text-white block leading-none">
+          {/* Header Bar - Clean Responsive Mobile & Desktop Layout */}
+          <div className="px-4 sm:px-6 py-3.5 bg-[#10172A] border-b border-cyan-500/30 flex items-center justify-between gap-3 relative">
+            <div className="flex items-center gap-3 min-w-0 pr-8 sm:pr-0">
+              <div className="shrink-0">
+                <Logo size="sm" showText={false} />
+              </div>
+              <div className="min-w-0">
+                <span className="font-extrabold text-xs sm:text-base tracking-tight text-white block leading-tight truncate">
                   Interactive Booking & Checkout
                 </span>
-                <span className="text-[10px] text-cyan-400 font-extrabold tracking-widest uppercase">
+                <span className="text-[9px] sm:text-[10px] text-cyan-400 font-bold tracking-wider uppercase block mt-0.5 truncate">
                   Vegas TaskCraft • contact@vegastaskcraft.com
                 </span>
               </div>
@@ -125,52 +127,53 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-xl bg-[#070A12] border border-gray-700 text-gray-400 hover:text-white hover:border-cyan-400 transition-colors"
+              className="p-1.5 sm:p-2 rounded-xl bg-[#070A12] border border-gray-700 text-gray-400 hover:text-white hover:border-cyan-400 transition-colors shrink-0"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Option Selector Tabs */}
-          <div className="grid grid-cols-2 bg-[#0A101F] p-1.5 border-b border-gray-800 text-xs font-black">
+          <div className="grid grid-cols-1 sm:grid-cols-2 bg-[#0A101F] p-1.5 border-b border-gray-800 text-[11px] sm:text-xs font-black gap-1">
             <button
               type="button"
               onClick={() => setActiveTab('checkout')}
-              className={`py-3 rounded-xl flex items-center justify-center gap-2 transition-all ${
+              className={`py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 transition-all ${
                 activeTab === 'checkout'
                   ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(0,240,255,0.6)] font-black'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Calculator className="w-4 h-4" />
-              <span>OPTION 1: MULTI-SERVICE CHECKOUT (DIRECT ONLINE PAYMENT)</span>
+              <Calculator className="w-4 h-4 shrink-0" />
+              <span>OPTION 1: ONLINE CHECKOUT</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('visit')}
-              className={`py-3 rounded-xl flex items-center justify-center gap-2 transition-all ${
+              className={`py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 transition-all ${
                 activeTab === 'visit'
                   ? 'bg-cyan-500 text-black shadow-[0_0_15px_rgba(0,240,255,0.6)] font-black'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <MapPin className="w-4 h-4" />
+              <MapPin className="w-4 h-4 shrink-0" />
               <span>OPTION 2: ON-SITE ESTIMATE ($25 VISIT FEE)</span>
             </button>
           </div>
 
           {/* Form Body Container */}
-          <div className="p-6 overflow-y-auto space-y-6 custom-scrollbar flex-1">
+          <div className="p-4 sm:p-6 overflow-y-auto space-y-6 custom-scrollbar flex-1">
             
             {activeTab === 'checkout' ? (
               <form onSubmit={handleStartPayment} className="space-y-6">
                 
                 {/* 1. Services Selection Panel */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] border border-cyan-400">1</span>
+                      <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] border border-cyan-400 shrink-0">1</span>
                       <span>SELECT YOUR SERVICES & CONFIGURE OPTIONS:</span>
                     </h4>
                     <span className="text-[11px] text-cyan-300 font-bold">Transparent Prices & 0% Hidden Taxes</span>
@@ -186,11 +189,11 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                           onChange={() => {}}
                           className="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-gray-900 border-gray-700"
                         />
-                        <span className="font-extrabold text-sm text-white flex items-center gap-2">
-                          <Tv className="w-4 h-4 text-cyan-400" /> TV Mounting & Home Theater
+                        <span className="font-extrabold text-xs sm:text-sm text-white flex items-center gap-2">
+                          <Tv className="w-4 h-4 text-cyan-400 shrink-0" /> TV Mounting & Home Theater
                         </span>
                       </label>
-                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-500/40">
+                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-2.5 py-1 rounded-full border border-cyan-500/40">
                         ${tvSizeOption === 'small' ? '100' : tvSizeOption === 'medium' ? '150' : '200'} USD
                       </span>
                     </div>
@@ -232,11 +235,11 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                           onChange={() => {}}
                           className="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-gray-900 border-gray-700"
                         />
-                        <span className="font-extrabold text-sm text-white flex items-center gap-2">
-                          <Wrench className="w-4 h-4 text-cyan-400" /> Furniture Assembly ($120 / Hour)
+                        <span className="font-extrabold text-xs sm:text-sm text-white flex items-center gap-2">
+                          <Wrench className="w-4 h-4 text-cyan-400 shrink-0" /> Furniture Assembly ($120 / Hour)
                         </span>
                       </label>
-                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-500/40">
+                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-2.5 py-1 rounded-full border border-cyan-500/40">
                         ${furnitureHours * 120} USD ({furnitureHours}h)
                       </span>
                     </div>
@@ -275,11 +278,11 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                           onChange={() => {}}
                           className="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-gray-900 border-gray-700"
                         />
-                        <span className="font-extrabold text-sm text-white flex items-center gap-2">
-                          <Frame className="w-4 h-4 text-cyan-400" /> Art, Shelves & Heavy Mirrors
+                        <span className="font-extrabold text-xs sm:text-sm text-white flex items-center gap-2">
+                          <Frame className="w-4 h-4 text-cyan-400 shrink-0" /> Art, Shelves & Heavy Mirrors
                         </span>
                       </label>
-                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-500/40">
+                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-2.5 py-1 rounded-full border border-cyan-500/40">
                         ${artHours * 60 + (artOption === 'addon' ? 50 : 90)} USD
                       </span>
                     </div>
@@ -295,7 +298,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                           <button
                             type="button"
                             onClick={() => setArtOption('addon')}
@@ -325,11 +328,11 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                           onChange={() => {}}
                           className="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-gray-900 border-gray-700"
                         />
-                        <span className="font-extrabold text-sm text-white flex items-center gap-2">
-                          <Wrench className="w-4 h-4 text-cyan-400" /> Curtains, Painting, Lamps & Patches
+                        <span className="font-extrabold text-xs sm:text-sm text-white flex items-center gap-2">
+                          <Wrench className="w-4 h-4 text-cyan-400 shrink-0" /> Curtains, Painting, Lamps & Patches
                         </span>
                       </label>
-                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-500/40">
+                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-2.5 py-1 rounded-full border border-cyan-500/40">
                         Custom Estimate
                       </span>
                     </div>
@@ -363,7 +366,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-800/80">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-gray-800/80">
                           <label className="flex items-center gap-2 p-2 rounded-xl bg-[#070A12] border border-gray-800 cursor-pointer">
                             <input
                               type="checkbox"
@@ -406,11 +409,11 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                           onChange={() => {}}
                           className="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-gray-900 border-gray-700"
                         />
-                        <span className="font-extrabold text-sm text-white flex items-center gap-2">
-                          <Cpu className="w-4 h-4 text-cyan-400" /> Smart Home & Security Systems
+                        <span className="font-extrabold text-xs sm:text-sm text-white flex items-center gap-2">
+                          <Cpu className="w-4 h-4 text-cyan-400 shrink-0" /> Smart Home & Security Systems
                         </span>
                       </label>
-                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-500/40">
+                      <span className="text-xs font-black text-cyan-400 bg-cyan-950/80 px-2.5 py-1 rounded-full border border-cyan-500/40">
                         NEW
                       </span>
                     </div>
@@ -451,7 +454,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                 {/* 2. Customer Contact Form */}
                 <div className="space-y-4 pt-2">
                   <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] border border-cyan-400">2</span>
+                    <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] border border-cyan-400 shrink-0">2</span>
                     <span>APPOINTMENT BOOKING DETAILS:</span>
                   </h4>
 
