@@ -10,6 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Hostinger SMTP Transporter Setup
+const smtpTransporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+  port: parseInt(process.env.SMTP_PORT || '465'),
+  secure: true, // SSL port 465
+  auth: {
+    user: process.env.SMTP_USER || 'contact@vegastaskcraft.com',
+    pass: process.env.SMTP_PASS || '',
+  },
+});
+
 // 1. Cybersecurity Headers (Helmet)
 app.use(
   helmet({
@@ -213,6 +224,17 @@ app.post('/api/lead', async (req, res) => {
     activeBookings.push(newBooking);
 
     console.log('📌 NUEVA RESERVA EN VIVO:', newBooking);
+
+    // If SMTP_PASS is configured, send email directly via Hostinger SMTP from contact@vegastaskcraft.com
+    if (process.env.SMTP_PASS) {
+      smtpTransporter.sendMail({
+        from: '"Vegas TaskCraft LLC" <contact@vegastaskcraft.com>',
+        to: recipientEmail,
+        subject: `Appointment Confirmation - Vegas TaskCraft [${bookingCode}]`,
+        html: generateHtmlConfirmation(newBooking)
+      }).then(info => console.log('✅ Direct Hostinger SMTP Email sent:', info.messageId))
+        .catch(err => console.error('Hostinger SMTP error:', err));
+    }
 
     // 1. Forward to n8n Webhook
     const n8nUrl = process.env.N8N_WEBHOOK_URL || 'https://n8nautofluxweb.autofluxai26.com/webhook/vegas-taskcraft-lead';
