@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar as CalendarIcon, Clock, MapPin, Phone, User, CheckCircle2, FileText, DollarSign, Wrench, ChevronLeft, ChevronRight, Printer, Download, Sparkles, Mail, Lock, ShieldCheck, Edit3, BarChart3, Layers, AlertCircle } from 'lucide-react';
+import { X, Calendar as CalendarIcon, Clock, MapPin, Phone, User, CheckCircle2, FileText, DollarSign, Wrench, ChevronLeft, ChevronRight, Printer, Download, Sparkles, Mail, Lock, ShieldCheck, Edit3, BarChart3, Layers, Trash2, Plus } from 'lucide-react';
 import { Logo } from './Logo';
 
 interface TechPortalProps {
@@ -108,6 +108,12 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       setLoginError('');
     } else {
       setLoginError('Invalid password. Default password is: taskcraft2026');
+    }
+  };
+
+  const handleDeleteJob = (jobId: string) => {
+    if (window.confirm(`Are you sure you want to delete job ${jobId}?`)) {
+      setJobs(jobs.filter(j => j.id !== jobId));
     }
   };
 
@@ -332,7 +338,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                         <p className="text-gray-300 font-semibold">Client: {job.customer} • Address: {job.address}</p>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 border-t sm:border-t-0 border-gray-800 pt-2 sm:pt-0">
+                      <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 border-t sm:border-t-0 border-gray-800 pt-2 sm:pt-0">
                         <div className="text-right">
                           <span className="text-[10px] text-gray-400 block font-bold">Assigned Tech:</span>
                           <span className="font-bold text-white">{job.assignedTo}</span>
@@ -340,9 +346,17 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                         <button
                           type="button"
                           onClick={() => setSelectedJobForInvoice(job)}
-                          className="px-3 py-1.5 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-bold hover:bg-cyan-500 hover:text-black transition-all"
+                          className="px-3 py-1.5 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-bold hover:bg-cyan-500 hover:text-black transition-all flex items-center gap-1"
                         >
-                          Invoice
+                          <FileText className="w-3.5 h-3.5" /> Invoice
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteJob(job.id)}
+                          className="p-1.5 rounded-lg bg-rose-950/80 border border-rose-500/50 text-rose-400 hover:bg-rose-500 hover:text-white transition-colors"
+                          title="Delete Job"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -505,7 +519,16 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                           className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs transition-all shadow-[0_0_12px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
                         >
                           <FileText className="w-4 h-4" />
-                          <span>Generate Official Invoice</span>
+                          <span>Official Invoice</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteJob(job.id)}
+                          className="p-2.5 rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-400 hover:bg-rose-500 hover:text-white transition-colors"
+                          title="Delete Job"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, CheckCircle, ShieldCheck, MapPin, User, Phone, Sparkles, Layers, DollarSign, Calculator, Lock, Plus, Minus, Wrench, Tv, Frame, Shield, Cpu, Video, Check } from 'lucide-react';
+import { X, Calendar, Clock, CheckCircle, ShieldCheck, MapPin, User, Phone, Sparkles, Layers, DollarSign, Calculator, Lock, Plus, Minus, Wrench, Tv, Frame, Shield, Cpu, Video, Check, Mail } from 'lucide-react';
 import { OnlinePaymentModal } from './OnlinePaymentModal';
 import { Logo } from './Logo';
 
@@ -101,6 +101,25 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
     e.preventDefault();
     const code = 'VTC-' + Math.floor(100000 + Math.random() * 900000);
     setGeneratedBookingCode(code);
+
+    // Send payload to backend / n8n
+    fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        bookingCode: code,
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        address: formData.address,
+        service: activeTab === 'checkout' ? 'Multi-Service Assembly & Mounting' : 'On-Site Estimate Visit ($25)',
+        bookingType: activeTab === 'checkout' ? 'Service Checkout' : 'On-Site Estimate ($25)',
+        date: 'August 2026 28',
+        timeSlot: '02:00 PM - 04:00 PM',
+        totalAmount: grandTotal
+      })
+    }).catch(err => console.error('API submit error:', err));
+
     setIsPaymentModalOpen(true);
   };
 
@@ -109,7 +128,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
       <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
         <div className="relative w-full max-w-4xl bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl shadow-[0_0_50px_rgba(0,240,255,0.3)] overflow-hidden text-white my-2 max-h-[96vh] flex flex-col">
           
-          {/* Header Bar - Clean Responsive Mobile & Desktop Layout */}
+          {/* Header Bar */}
           <div className="px-4 sm:px-6 py-3.5 bg-[#10172A] border-b border-cyan-500/30 flex items-center justify-between gap-3 relative">
             <div className="flex items-center gap-3 min-w-0 pr-8 sm:pr-0">
               <div className="shrink-0">
@@ -451,7 +470,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
                 </div>
 
-                {/* 2. Customer Contact Form */}
+                {/* 2. Customer Contact Form (WITH EMAIL FIELD) */}
                 <div className="space-y-4 pt-2">
                   <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] border border-cyan-400 shrink-0">2</span>
@@ -482,6 +501,17 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       />
                     </div>
                     <div className="sm:col-span-2">
+                      <label className="block font-bold text-cyan-300 mb-1">Email Address (Instant Confirmation Receipt & Invoice):</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="e.g. client@example.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full bg-[#10172A] border border-cyan-500/50 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none font-bold"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
                       <label className="block font-bold text-gray-300 mb-1">Exact Address in Las Vegas Valley / High-Rise Tower:</label>
                       <input
                         type="text"
@@ -502,7 +532,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     <span className="text-2xl text-cyan-400 font-black">${grandTotal.toFixed(2)} USD</span>
                   </div>
                   <p className="text-[11px] text-cyan-300 font-semibold italic text-center">
-                    ✓ Transparent flat-rate pricing with 0% hidden taxes.
+                    ✓ Transparent flat-rate pricing with 0% hidden taxes. Confirmation email sent instantly.
                   </p>
                 </div>
 
@@ -550,6 +580,17 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block font-bold text-cyan-300 mb-1">Email Address (Instant Confirmation Receipt):</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="e.g. client@example.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full bg-[#10172A] border border-cyan-500/50 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none font-bold"
                     />
                   </div>
                   <div className="sm:col-span-2">
