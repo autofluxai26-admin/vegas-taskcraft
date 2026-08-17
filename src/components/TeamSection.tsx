@@ -4,20 +4,20 @@ import { UserCheck, ShieldCheck, Award, Star, Phone, CheckCircle2 } from 'lucide
 export const TeamSection: React.FC = () => {
   const team = [
     {
-      name: 'Carlos Mendoza',
-      role: 'Master Craftsman & Mounting Specialist',
+      name: 'Carlos Chavez',
+      role: 'Master Craftsman & TV Mounting Specialist',
       experience: '9+ Years Experience in Las Vegas',
-      specialty: 'Heavy TV Mounting, High-Rise Condos, Toggl-Bolt Anchors & Cable Concealment',
+      specialty: 'Heavy TV Mounting, High-Rise Condos, Toggle-Bolt Anchors & Cord Concealment',
       status: 'On Duty • Active Unit',
       photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80'
     },
     {
-      name: 'Jonathan Reyes',
+      name: 'Jonathan Rodriguez',
       role: 'Assembly & Smart Home Specialist',
       experience: '7+ Years Experience in Las Vegas',
       specialty: 'IKEA/Wayfair Assembly, Heavy Art & Mirrors, Alexa Smart Automation & Solar Cameras',
       status: 'On Duty • Active Unit',
-      photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'
+      photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80'
     }
   ];
 

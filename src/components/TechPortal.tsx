@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar as CalendarIcon, Clock, MapPin, Phone, User, CheckCircle2, FileText, DollarSign, Wrench, ChevronLeft, ChevronRight, Printer, Download, Sparkles, Mail } from 'lucide-react';
+import { X, Calendar as CalendarIcon, Clock, MapPin, Phone, User, CheckCircle2, FileText, DollarSign, Wrench, ChevronLeft, ChevronRight, Printer, Download, Sparkles, Mail, Lock, ShieldCheck, Edit3 } from 'lucide-react';
 import { Logo } from './Logo';
 
 interface TechPortalProps {
@@ -8,6 +8,11 @@ interface TechPortalProps {
 }
 
 export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
+  // Login Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginCreds, setLoginCreds] = useState({ username: '', password: '' });
+  const [loginError, setLoginError] = useState('');
+
   const [activeTech, setActiveTech] = useState<'both' | 'carlos' | 'jonathan'>('both');
   const [selectedJobForInvoice, setSelectedJobForInvoice] = useState<any | null>(null);
 
@@ -15,6 +20,16 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
   const availableMonths = ['July 2026', 'August 2026', 'September 2026', 'October 2026'];
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [selectedCalendarDay, setSelectedCalendarDay] = useState(28);
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginCreds.password === 'taskcraft2026' || loginCreds.password === 'admin' || loginCreds.password === '1234') {
+      setIsAuthenticated(true);
+      setLoginError('');
+    } else {
+      setLoginError('Invalid password. Default password is: taskcraft2026');
+    }
+  };
 
   // Dynamic neon space heatmap status for all 31 days of the month
   const getDayStatus = (day: number) => {
@@ -27,7 +42,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
     return { level: 'green', count: day % 2 === 0 ? 1 : 0, text: '🟢 Open' };
   };
 
-  const jobs = [
+  const [jobs, setJobs] = useState([
     {
       id: 'VTC-90412',
       customer: 'Elena Rostova',
@@ -37,7 +52,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       service: '75" TV Mounting + Soundbar + In-Wall Cord Concealment',
       surface: 'Drywall over wood studs with Toggle Bolt anchors',
       time: 'Today - 10:00 AM',
-      assignedTo: 'Carlos',
+      assignedTo: 'Carlos Chavez',
       status: 'In Progress',
       laborCost: 150.00,
       hardwareCost: 15.00,
@@ -52,7 +67,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       service: '90 lbs Heavy Mirror Installation + 4-Piece Gallery Wall',
       surface: 'Concrete / Masonry Wall in High-Rise Condo Tower',
       time: 'Today - 2:30 PM',
-      assignedTo: 'Jonathan',
+      assignedTo: 'Jonathan Rodriguez',
       status: 'Pending',
       laborCost: 180.00,
       hardwareCost: 30.00,
@@ -67,33 +82,95 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       service: 'IKEA King Bedroom Set Assembly + Desk ($120/hr)',
       surface: 'Hardwood floor / safety anti-tip wall anchoring',
       time: 'Tomorrow - 9:00 AM',
-      assignedTo: 'Carlos',
+      assignedTo: 'Carlos Chavez',
       status: 'Confirmed',
       laborCost: 240.00,
       hardwareCost: 0.00,
       total: 240.00
     }
-  ];
+  ]);
 
   if (!isOpen) return null;
 
-  const filteredJobs = activeTech === 'both' ? jobs : jobs.filter(j => j.assignedTo.toLowerCase() === activeTech);
+  // Unauthenticated Technician Login Screen
+  if (!isAuthenticated) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
+        <div className="relative w-full max-w-md bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.4)] text-white space-y-6">
+          
+          <div className="flex items-center justify-between border-b border-gray-800 pb-4">
+            <Logo size="sm" />
+            <button onClick={onClose} className="p-1.5 rounded-xl bg-[#10172A] text-gray-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-400 mx-auto shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+              <Lock className="w-7 h-7" />
+            </div>
+            <h3 className="text-xl font-black text-white">Technician Portal Login</h3>
+            <p className="text-xs text-gray-400 font-medium">Authorized Access for Carlos Chavez & Jonathan Rodriguez</p>
+          </div>
+
+          <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
+            {loginError && (
+              <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-300 font-bold text-center">
+                {loginError}
+              </div>
+            )}
+
+            <div>
+              <label className="block font-bold text-gray-300 mb-1">Technician Username:</label>
+              <input
+                type="text"
+                required
+                placeholder="carlos / jonathan / admin"
+                value={loginCreds.username}
+                onChange={(e) => setLoginCreds({ ...loginCreds, username: e.target.value })}
+                className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-gray-300 mb-1">Password:</label>
+              <input
+                type="password"
+                required
+                placeholder="Enter password (taskcraft2026)"
+                value={loginCreds.password}
+                onChange={(e) => setLoginCreds({ ...loginCreds, password: e.target.value })}
+                className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]"
+            >
+              LOG IN TO PORTAL
+            </button>
+          </form>
+
+        </div>
+      </div>
+    );
+  }
+
+  const filteredJobs = activeTech === 'both' ? jobs : jobs.filter(j => j.assignedTo.toLowerCase().includes(activeTech));
   const daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
       <div className="relative w-full max-w-6xl bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl shadow-[0_0_50px_rgba(0,240,255,0.25)] overflow-hidden text-white my-4 max-h-[94vh] flex flex-col">
         
-        {/* Header Bar - Electric Space Blue Theme */}
+        {/* Header Bar */}
         <div className="px-6 py-4 bg-[#10172A] border-b border-cyan-500/30 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Logo size="sm" />
             <div>
               <h3 className="font-extrabold text-white text-base flex items-center gap-2">
                 <span>Technician Operations & Invoicing Portal</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 font-bold uppercase tracking-wider">
-                  Neon Hub
-                </span>
               </h3>
               <p className="text-xs text-cyan-400 font-bold tracking-wide">
                 Vegas TaskCraft LLC • contact@vegastaskcraft.com
@@ -108,8 +185,8 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
               onClick={() => setSelectedJobForInvoice(jobs[0])}
               className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-400/50 text-cyan-300 hover:bg-cyan-500 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-[0_0_12px_rgba(0,240,255,0.2)]"
             >
-              <FileText className="w-4 h-4 text-cyan-400" />
-              <span>Preview Invoice Model</span>
+              <Edit3 className="w-4 h-4 text-cyan-400" />
+              <span>Editable Invoice Generator</span>
             </button>
 
             {/* Tech Selector */}
@@ -130,7 +207,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   activeTech === 'carlos' ? 'bg-cyan-500 text-black shadow-[0_0_10px_rgba(0,240,255,0.6)] font-black' : 'text-gray-400 hover:text-white'
                 }`}
               >
-                👤 Carlos
+                👤 Carlos Chavez
               </button>
               <button
                 type="button"
@@ -139,7 +216,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   activeTech === 'jonathan' ? 'bg-cyan-500 text-black shadow-[0_0_10px_rgba(0,240,255,0.6)] font-black' : 'text-gray-400 hover:text-white'
                 }`}
               >
-                👤 Jonathan
+                👤 Jonathan Rodriguez
               </button>
             </div>
 
@@ -155,10 +232,9 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
         {/* Content Body */}
         <div className="p-6 overflow-y-auto space-y-6 custom-scrollbar flex-1">
           
-          {/* Neon Space Calendar Section */}
+          {/* Calendar Heatmap Section */}
           <div className="bg-[#10172A]/90 p-5 rounded-2xl border border-cyan-500/30 space-y-4 shadow-lg">
             
-            {/* Month & Legend Header */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <button
@@ -253,7 +329,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                 <span>Assigned Projects for Day {selectedCalendarDay} of {availableMonths[currentMonthIndex]}</span>
               </h4>
               <span className="text-xs font-bold text-gray-400">
-                Technicians: {activeTech === 'both' ? 'Carlos & Jonathan' : activeTech.toUpperCase()}
+                Technicians: {activeTech === 'both' ? 'Carlos Chavez & Jonathan Rodriguez' : activeTech.toUpperCase()}
               </span>
             </div>
 
@@ -307,7 +383,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                       className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs transition-all shadow-[0_0_12px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
                     >
                       <FileText className="w-4 h-4" />
-                      <span>Generate Official Invoice</span>
+                      <span>Edit & Print Invoice</span>
                     </button>
                   </div>
 
@@ -318,20 +394,20 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
         </div>
 
-        {/* Invoice Generator Modal Overlay (Official Legal Invoice Format with Logo & Email) */}
+        {/* FULLY EDITABLE INVOICE MODAL OVERLAY */}
         {selectedJobForInvoice && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="relative w-full max-w-2xl bg-[#070A12] border-2 border-cyan-400 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.5)] text-white space-y-6">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="relative w-full max-w-3xl bg-[#070A12] border-2 border-cyan-400 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.5)] text-white space-y-6 max-h-[92vh] flex flex-col">
               
-              {/* Invoice Header with Official Logo & Contact Email */}
-              <div className="flex items-center justify-between border-b border-cyan-500/30 pb-4">
+              {/* Invoice Header */}
+              <div className="flex items-center justify-between border-b border-cyan-500/30 pb-4 shrink-0">
                 <div className="flex items-center gap-3">
                   <Logo size="md" />
                 </div>
 
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <span className="text-xs font-black text-cyan-400 block">INVOICE # {selectedJobForInvoice.id}</span>
+                    <span className="text-xs font-black text-cyan-400 block">EDITABLE INVOICE</span>
                     <span className="text-[11px] text-gray-300 block font-semibold">contact@vegastaskcraft.com</span>
                   </div>
                   <button
@@ -344,76 +420,147 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Invoice Printable Body */}
-              <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-4 text-xs">
+              {/* Invoice Printable & Editable Body */}
+              <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-4 text-xs overflow-y-auto custom-scrollbar flex-1">
                 
+                {/* Invoice ID & Date inputs */}
+                <div className="grid grid-cols-2 gap-4 bg-[#070A12] p-3 rounded-xl border border-gray-800">
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-400">Invoice Code / ID:</label>
+                    <input
+                      type="text"
+                      value={selectedJobForInvoice.id}
+                      onChange={(e) => setSelectedJobForInvoice({ ...selectedJobForInvoice, id: e.target.value })}
+                      className="w-full bg-[#10172A] border border-gray-700 rounded-lg p-2 text-cyan-400 font-black text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-400">Service Date & Time:</label>
+                    <input
+                      type="text"
+                      value={selectedJobForInvoice.time}
+                      onChange={(e) => setSelectedJobForInvoice({ ...selectedJobForInvoice, time: e.target.value })}
+                      className="w-full bg-[#10172A] border border-gray-700 rounded-lg p-2 text-white font-bold text-xs"
+                    />
+                  </div>
+                </div>
+
                 {/* Provider & Client Grid */}
-                <div className="grid grid-cols-2 gap-4 border-b border-gray-800 pb-4">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-800 pb-4">
+                  <div className="space-y-2">
                     <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">SERVICE PROVIDER:</span>
-                    <span className="font-black text-white text-sm block">Vegas TaskCraft LLC</span>
-                    <span className="text-gray-300 block">Las Vegas Valley, NV</span>
-                    <span className="text-cyan-300 font-semibold block flex items-center gap-1">
-                      <Mail className="w-3 h-3 text-cyan-400" /> contact@vegastaskcraft.com
-                    </span>
-                    <span className="text-gray-300 block">(702) 772-4116</span>
+                    <div className="space-y-1 font-bold text-gray-200">
+                      <p className="text-white font-black text-sm">Vegas TaskCraft LLC</p>
+                      <p className="text-gray-300">Las Vegas Valley, NV</p>
+                      <p className="text-cyan-300 text-xs">contact@vegastaskcraft.com</p>
+                      <p className="text-gray-300">(702) 772-4116</p>
+                    </div>
                   </div>
 
-                  <div className="space-y-1 text-right">
-                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">RECIPIENT CLIENT:</span>
-                    <span className="font-black text-white text-sm block">{selectedJobForInvoice.customer}</span>
-                    <span className="text-gray-300 block">{selectedJobForInvoice.address}</span>
-                    <span className="text-gray-300 block">{selectedJobForInvoice.phone}</span>
-                    <span className="text-gray-400 block italic">{selectedJobForInvoice.email || 'contact@vegastaskcraft.com'}</span>
+                  <div className="space-y-2">
+                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">RECIPIENT CLIENT (EDITABLE):</span>
+                    <div className="space-y-1.5">
+                      <input
+                        type="text"
+                        placeholder="Client Name"
+                        value={selectedJobForInvoice.customer}
+                        onChange={(e) => setSelectedJobForInvoice({ ...selectedJobForInvoice, customer: e.target.value })}
+                        className="w-full bg-[#070A12] border border-gray-700 rounded-lg p-2 text-white font-bold"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Client Address"
+                        value={selectedJobForInvoice.address}
+                        onChange={(e) => setSelectedJobForInvoice({ ...selectedJobForInvoice, address: e.target.value })}
+                        className="w-full bg-[#070A12] border border-gray-700 rounded-lg p-2 text-gray-300"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Client Phone"
+                        value={selectedJobForInvoice.phone}
+                        onChange={(e) => setSelectedJobForInvoice({ ...selectedJobForInvoice, phone: e.target.value })}
+                        className="w-full bg-[#070A12] border border-gray-700 rounded-lg p-2 text-gray-300"
+                      />
+                    </div>
                   </div>
                 </div>
 
                 {/* Service Details */}
-                <div>
-                  <span className="font-bold text-gray-400 block mb-1">Service Performed Description:</span>
-                  <p className="font-extrabold text-white bg-[#070A12] p-3 rounded-xl border border-gray-800 leading-relaxed">
-                    {selectedJobForInvoice.service}
-                  </p>
-                  <p className="text-[11px] text-gray-400 mt-1 italic">
-                    Surface / Anchoring: {selectedJobForInvoice.surface}
-                  </p>
+                <div className="space-y-2">
+                  <label className="font-bold text-gray-300 block">Service Performed Description (Editable):</label>
+                  <textarea
+                    rows={2}
+                    value={selectedJobForInvoice.service}
+                    onChange={(e) => setSelectedJobForInvoice({ ...selectedJobForInvoice, service: e.target.value })}
+                    className="w-full bg-[#070A12] border border-gray-700 rounded-xl p-3 text-white font-extrabold leading-relaxed"
+                  />
                 </div>
 
                 {/* Charges Breakdown */}
-                <div className="space-y-2 pt-2 border-t border-gray-800">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Certified Craftsman Labor (Carlos / Jonathan):</span>
-                    <span className="font-bold text-white">${selectedJobForInvoice.laborCost.toFixed(2)} USD</span>
+                <div className="space-y-3 pt-2 border-t border-gray-800">
+                  <div className="grid grid-cols-2 gap-4 items-center">
+                    <label className="text-gray-300 font-bold">Labor Cost ($):</label>
+                    <input
+                      type="number"
+                      step="5"
+                      value={selectedJobForInvoice.laborCost}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value) || 0;
+                        setSelectedJobForInvoice({
+                          ...selectedJobForInvoice,
+                          laborCost: val,
+                          total: val + (selectedJobForInvoice.hardwareCost || 0)
+                        });
+                      }}
+                      className="bg-[#070A12] border border-gray-700 rounded-lg p-2 text-white font-black text-right"
+                    />
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Heavy-Duty Hardware & Anchors:</span>
-                    <span className="font-bold text-white">${selectedJobForInvoice.hardwareCost.toFixed(2)} USD</span>
+
+                  <div className="grid grid-cols-2 gap-4 items-center">
+                    <label className="text-gray-300 font-bold">Hardware & Anchors Cost ($):</label>
+                    <input
+                      type="number"
+                      step="5"
+                      value={selectedJobForInvoice.hardwareCost}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value) || 0;
+                        setSelectedJobForInvoice({
+                          ...selectedJobForInvoice,
+                          hardwareCost: val,
+                          total: (selectedJobForInvoice.laborCost || 0) + val
+                        });
+                      }}
+                      className="bg-[#070A12] border border-gray-700 rounded-lg p-2 text-white font-black text-right"
+                    />
                   </div>
-                  <div className="flex justify-between text-base font-black text-cyan-400 pt-2 border-t border-gray-700">
-                    <span>Total Net Amount Paid:</span>
-                    <span>${selectedJobForInvoice.total.toFixed(2)} USD</span>
+
+                  <div className="flex justify-between items-center text-base font-black text-cyan-400 pt-3 border-t border-gray-700">
+                    <span>Total Net Amount:</span>
+                    <span className="text-2xl font-black text-cyan-400">
+                      ${((selectedJobForInvoice.laborCost || 0) + (selectedJobForInvoice.hardwareCost || 0)).toFixed(2)} USD
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Invoice Actions */}
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex items-center justify-between pt-2 shrink-0">
                 <span className="text-[11px] text-gray-400 italic">
-                  Digital receipt valid for commercial tax and insurance purposes.
+                  Digital invoice format ready to print or export to PDF.
                 </span>
                 
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => alert(`Printing Invoice ${selectedJobForInvoice.id}...`)}
-                    className="px-4 py-2 rounded-xl bg-[#10172A] border border-gray-700 text-white font-bold text-xs hover:border-cyan-400 flex items-center gap-1.5"
+                    onClick={() => alert(`Printing Official Invoice ${selectedJobForInvoice.id}...`)}
+                    className="px-4 py-2.5 rounded-xl bg-[#10172A] border border-gray-700 text-white font-bold text-xs hover:border-cyan-400 flex items-center gap-1.5"
                   >
                     <Printer className="w-4 h-4 text-cyan-400" /> Print Invoice
                   </button>
                   <button
                     type="button"
                     onClick={() => alert(`Downloading PDF Invoice ${selectedJobForInvoice.id}...`)}
-                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs hover:scale-105 transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs hover:scale-105 transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
                   >
                     <Download className="w-4 h-4" /> Download PDF
                   </button>

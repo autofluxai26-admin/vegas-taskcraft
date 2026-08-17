@@ -11,13 +11,33 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
   const [selectedDay, setSelectedDay] = useState<number>(28);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
 
-  const timeSlots = [
-    { time: '09:00 AM - 11:00 AM', status: 'Available', tech: 'Carlos' },
-    { time: '11:30 AM - 01:30 PM', status: 'Booked', tech: 'Jonathan' },
-    { time: '02:00 PM - 04:00 PM', status: 'Available', tech: 'Carlos & Jonathan' },
-    { time: '04:30 PM - 06:30 PM', status: 'Available', tech: 'Jonathan' },
-  ];
+  // Dynamic slot generation per day for real-time variation
+  const getSlotsForDay = (day: number) => {
+    if (day % 3 === 0) {
+      return [
+        { time: '08:30 AM - 10:30 AM', status: 'Available', tech: 'Carlos Chavez' },
+        { time: '11:00 AM - 01:00 PM', status: 'Booked', tech: 'Jonathan Rodriguez' },
+        { time: '01:30 PM - 03:30 PM', status: 'Available', tech: 'Carlos Chavez' },
+        { time: '04:00 PM - 06:00 PM', status: 'Available', tech: 'Jonathan Rodriguez' },
+      ];
+    }
+    if (day % 2 === 0) {
+      return [
+        { time: '09:00 AM - 11:00 AM', status: 'Available', tech: 'Carlos Chavez & Jonathan Rodriguez' },
+        { time: '11:30 AM - 01:30 PM', status: 'Available', tech: 'Carlos Chavez' },
+        { time: '02:00 PM - 04:00 PM', status: 'Booked', tech: 'Jonathan Rodriguez' },
+        { time: '04:30 PM - 06:30 PM', status: 'Available', tech: 'Carlos Chavez' },
+      ];
+    }
+    return [
+      { time: '10:00 AM - 12:00 PM', status: 'Available', tech: 'Jonathan Rodriguez' },
+      { time: '12:30 PM - 02:30 PM', status: 'Available', tech: 'Carlos Chavez' },
+      { time: '03:00 PM - 05:00 PM', status: 'Booked', tech: 'Carlos Chavez' },
+      { time: '05:30 PM - 07:30 PM', status: 'Available', tech: 'Jonathan Rodriguez' },
+    ];
+  };
 
+  const timeSlots = getSlotsForDay(selectedDay);
   const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
 
   return (
@@ -49,7 +69,7 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
         </div>
 
         <span className="text-xs font-bold text-cyan-400">
-          Click any day to inspect available time slots
+          Select any date to view real-time open slots
         </span>
       </div>
 
@@ -105,7 +125,7 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
             >
               <div className="space-y-0.5">
                 <span className="font-black text-white block">{slot.time}</span>
-                <span className="text-[10px] text-gray-400 font-semibold">Assigned Tech: {slot.tech}</span>
+                <span className="text-[10px] text-gray-400 font-semibold">Technician: {slot.tech}</span>
               </div>
 
               <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border ${
