@@ -21,8 +21,15 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
   const [selectedDayModal, setSelectedDayModal] = useState<number | null>(null);
 
   // Month navigation state
-  const availableMonths = ['July 2026', 'August 2026', 'September 2026', 'October 2026'];
-  const [currentMonthIndex, setCurrentMonthIndex] = useState(1);
+  const availableMonths = [
+    'January 2026', 'February 2026', 'March 2026', 'April 2026',
+    'May 2026', 'June 2026', 'July 2026', 'August 2026',
+    'September 2026', 'October 2026', 'November 2026', 'December 2026',
+    'January 2027', 'February 2027', 'March 2027', 'April 2027',
+    'May 2027', 'June 2027', 'July 2027', 'August 2027',
+    'September 2027', 'October 2027', 'November 2027', 'December 2027'
+  ];
+  const [currentMonthIndex, setCurrentMonthIndex] = useState(7); // Default August 2026
   const [selectedCalendarDay, setSelectedCalendarDay] = useState(31);
 
   const [jobs, setJobs] = useState<any[]>([
@@ -101,24 +108,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
         { name: 'IKEA Furniture Assembly Labor', unitPrice: 120.00, qty: 2, subtotal: 240.00 }
       ],
       total: 240.00
-    },
-    {
-      id: 'VTC-90425',
-      customer: 'Sarah Jenkins',
-      phone: '(702) 772-4116',
-      email: 'sarah.j@example.com',
-      address: '9021 Red Rock Canyon Rd, Summerlin, NV 89138',
-      service: 'On-Site Estimate & Measurement Visit ($25)',
-      surface: 'Living room high ceiling wall inspection',
-      date: 'August 30, 2026',
-      time: '04:00 PM - 05:00 PM',
-      assignedTo: 'Jonathan Rodriguez',
-      status: 'Scheduled Visit',
-      bookingType: 'On-Site Estimate ($25)',
-      itemizedLines: [
-        { name: 'On-Site Visit & Dimension Estimate', unitPrice: 25.00, qty: 1, subtotal: 25.00 }
-      ],
-      total: 25.00
     }
   ]);
 
@@ -134,7 +123,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
         try {
           const local = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
           if (Array.isArray(local) && local.length > 0) {
-            // deduplicate by id
             const map = new Map();
             [...local, ...list].forEach(item => {
               if (item && item.id && !map.has(item.id)) map.set(item.id, item);
@@ -159,7 +147,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       });
   };
 
-  // Fetch live bookings from server API & localStorage
   useEffect(() => {
     loadJobsList();
     window.addEventListener('vtc_booking_updated', loadJobsList);
@@ -188,15 +175,22 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
   // Heatmap status for calendar days
   const getDayStatus = (day: number) => {
-    const dayJobs = jobs.filter(j => j.date && (String(j.date).includes(` ${day},`) || String(j.date).includes(` ${day} `) || String(j.date).endsWith(` ${day}`)));
-    if (dayJobs.length >= 3 || day === 12 || day === 18) return { level: 'red', count: dayJobs.length || 4 };
-    if (dayJobs.length > 0 || day === 28 || day === 29 || day === 31) return { level: 'cyan', count: dayJobs.length || 2 };
+    const currentMonthWord = availableMonths[currentMonthIndex].split(' ')[0];
+    const dayJobs = jobs.filter(j => {
+      if (!j.date) return false;
+      const bDate = String(j.date);
+      const matchesMonth = bDate.toLowerCase().includes(currentMonthWord.toLowerCase());
+      const matchesDay = bDate.includes(` ${day},`) || bDate.includes(` ${day} `) || bDate.endsWith(` ${day}`);
+      return matchesMonth && matchesDay;
+    });
+
+    if (dayJobs.length >= 3) return { level: 'red', count: dayJobs.length };
+    if (dayJobs.length > 0) return { level: 'cyan', count: dayJobs.length };
     return { level: 'green', count: 0 };
   };
 
   if (!isOpen) return null;
 
-  // Login Modal Screen
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
@@ -260,14 +254,28 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
   }
 
   const filteredJobs = activeTech === 'both' ? jobs : jobs.filter(j => j.assignedTo && j.assignedTo.toLowerCase().includes(activeTech));
-  const daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
+
+  // ACCURATE DAY-OF-WEEK ALIGNMENT FOR TECH PORTAL
+  const portalMonthNum = (currentMonthIndex % 12);
+  const portalYearNum = 2026 + Math.floor(currentMonthIndex / 12);
+  const portalFirstDayOfWeek = new Date(portalYearNum, portalMonthNum, 1).getDay();
+  const portalPaddingSlots = Array.from({ length: portalFirstDayOfWeek });
+
+  const portalTotalDays = new Date(portalYearNum, portalMonthNum + 1, 0).getDate();
+  const daysArray = Array.from({ length: portalTotalDays }, (_, i) => i + 1);
 
   // Filter jobs for selected modal day
+  const currentMonthWord = availableMonths[currentMonthIndex].split(' ')[0];
   const modalDayJobs = selectedDayModal
-    ? jobs.filter(j => j.date && (String(j.date).includes(` ${selectedDayModal},`) || String(j.date).includes(` ${selectedDayModal} `) || String(j.date).endsWith(` ${selectedDayModal}`)))
+    ? jobs.filter(j => {
+        if (!j.date) return false;
+        const bDate = String(j.date);
+        const matchesMonth = bDate.toLowerCase().includes(currentMonthWord.toLowerCase());
+        const matchesDay = bDate.includes(` ${selectedDayModal},`) || bDate.includes(` ${selectedDayModal} `) || bDate.endsWith(` ${selectedDayModal}`);
+        return matchesMonth && matchesDay;
+      })
     : [];
 
-  // Weekly Stats Calculations
   const weeklyServicesCount = jobs.filter(j => j.bookingType === 'Service Checkout').length;
   const weeklyEstimatesCount = jobs.filter(j => j.bookingType !== 'Service Checkout').length;
   const weeklyTotalRevenue = jobs.reduce((sum, j) => sum + (j.total || 0), 0);
@@ -291,7 +299,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* View Switcher */}
             <div className="flex bg-[#070A12] p-1 rounded-xl border border-cyan-500/30 text-xs font-bold">
               <button
                 type="button"
@@ -313,7 +320,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
               </button>
             </div>
 
-            {/* Tech Filter */}
             <div className="hidden sm:flex bg-[#070A12] p-1 rounded-xl border border-cyan-500/30 text-xs font-bold">
               <button
                 type="button"
@@ -351,7 +357,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
         <div className="p-6 overflow-y-auto space-y-6 custom-scrollbar flex-1">
           
           {activeTab === 'weekly' ? (
-            /* WEEKLY SUMMARY DASHBOARD */
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-1 shadow-lg">
@@ -433,10 +438,8 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
           ) : (
-            /* DAILY CALENDAR HEATMAP & PROJECTS */
             <div className="space-y-6">
               
-              {/* Heatmap Section - Click any day to open Day Details Modal */}
               <div className="bg-[#10172A]/90 p-5 rounded-2xl border border-cyan-500/30 space-y-4 shadow-lg">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
@@ -467,12 +470,17 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   </span>
                 </div>
 
-                {/* Days Grid */}
+                {/* Days Grid with ACCURATE DAY-OF-WEEK ALIGNMENT */}
                 <div className="grid grid-cols-7 gap-2 text-center">
                   {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((dayName) => (
                     <div key={dayName} className="text-[11px] font-black text-cyan-400 tracking-wider py-1 uppercase">
                       {dayName}
                     </div>
+                  ))}
+
+                  {/* Empty padding slots for day of week alignment */}
+                  {portalPaddingSlots.map((_, i) => (
+                    <div key={`pad-${i}`} className="p-2 opacity-0 pointer-events-none"></div>
                   ))}
 
                   {daysArray.map((day) => {
@@ -540,7 +548,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                           </span>
                           <h5 className="font-black text-white text-base">{job.customer}</h5>
                           
-                          {/* FULL DATE & TIME BADGE */}
                           <span className="text-xs text-cyan-300 font-bold flex items-center gap-1 bg-[#070A12] px-3 py-1 rounded-full border border-cyan-500/30">
                             <Clock className="w-3.5 h-3.5 text-cyan-400" />
                             <span>📅 {job.date || `August ${selectedCalendarDay}, 2026`} ({job.time})</span>
@@ -551,7 +558,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                           </span>
                         </div>
 
-                        {/* DETAILED SERVICE BREAKDOWN */}
                         <p className="text-xs font-extrabold text-cyan-300 leading-relaxed bg-[#070A12] p-2.5 rounded-xl border border-gray-800">
                           {job.service}
                         </p>
@@ -570,7 +576,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                         </p>
                       </div>
 
-                      {/* Actions & Price */}
                       <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-gray-800">
                         <div className="text-right">
                           <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Net:</span>
@@ -606,7 +611,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
         </div>
 
-        {/* DAY DETAILS MODAL (VENTANA DE TRABAJOS DEL DÍA) */}
+        {/* DAY DETAILS MODAL */}
         {selectedDayModal !== null && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
             <div className="relative w-full max-w-3xl bg-[#070A12] border-2 border-cyan-400 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.5)] text-white space-y-5 max-h-[92vh] flex flex-col">
@@ -714,7 +719,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   </div>
                 </div>
 
-                {/* Provider & Client */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-800 pb-4">
                   <div className="space-y-2">
                     <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">SERVICE PROVIDER:</span>
@@ -754,7 +758,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   </div>
                 </div>
 
-                {/* ITEMIZED BREAKDOWN TABLE (CON VALORES UNITARIOS Y SUBTOTALES) */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="font-extrabold text-cyan-400 text-xs uppercase tracking-wider">

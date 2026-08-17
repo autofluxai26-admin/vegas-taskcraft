@@ -67,7 +67,6 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
     const dayBookings = liveBookings.filter(b => {
       if (!b.date) return false;
       const bDate = String(b.date);
-      // Check if booking date includes both month name (e.g. August) AND day number
       const matchesMonth = bDate.toLowerCase().includes(currentMonthWord.toLowerCase());
       const matchesDay = bDate.includes(` ${day},`) || bDate.includes(` ${day} `) || bDate.endsWith(` ${day}`);
       return matchesMonth && matchesDay;
@@ -89,10 +88,15 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
 
   const timeSlots = getSlotsForDay(selectedDay);
 
-  // Dynamic calculation of days count in current month
-  const monthNumber = (currentMonthIdx % 12) + 1;
+  // ACCURATE DAY-OF-WEEK ALIGNMENT COMPUTATION
+  const monthNumber = (currentMonthIdx % 12); // 0-indexed (0 = Jan, 7 = Aug)
   const yearNumber = 2026 + Math.floor(currentMonthIdx / 12);
-  const totalDaysInMonth = new Date(yearNumber, monthNumber, 0).getDate();
+  
+  // Day of week of 1st day of month (0 = Sun, 1 = Mon, ..., 6 = Sat)
+  const firstDayOfWeek = new Date(yearNumber, monthNumber, 1).getDay();
+  const paddingSlots = Array.from({ length: firstDayOfWeek });
+
+  const totalDaysInMonth = new Date(yearNumber, monthNumber + 1, 0).getDate();
   const daysInMonthArray = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
 
   return (
@@ -128,10 +132,15 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
         </span>
       </div>
 
-      {/* Calendar Days Grid */}
+      {/* Calendar Days Grid with ACCURATE Day-of-Week Column Alignment */}
       <div className="grid grid-cols-7 gap-2 text-center text-xs">
         {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((d) => (
           <span key={d} className="font-black text-cyan-400 tracking-wider py-1 uppercase">{d}</span>
+        ))}
+
+        {/* Empty padding slots to align Day 1 under its exact day of the week */}
+        {paddingSlots.map((_, i) => (
+          <div key={`pad-${i}`} className="p-2.5 opacity-0 pointer-events-none"></div>
         ))}
 
         {daysInMonthArray.map((day) => {
