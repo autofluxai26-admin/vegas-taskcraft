@@ -1,183 +1,205 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Calculator, ArrowRight, Sparkles, MapPin } from 'lucide-react';
-import { Logo } from './Logo';
+import { Calendar, ShieldCheck, Star, MapPin, Award, ArrowRight, Phone, Sparkles, CheckCircle2, Zap } from 'lucide-react';
 import { IMAGES } from '../assets/imagesData';
+import { Logo } from './Logo';
 
 interface HeroProps {
   onOpenDualBooking: (serviceName?: string) => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({ onOpenDualBooking }) => {
-  const [selectedService, setSelectedService] = useState('tv');
-  const [itemsCount, setItemsCount] = useState(1);
+  const [selectedService, setSelectedService] = useState<'tv' | 'furniture' | 'art' | 'repairs' | 'smarthome'>('tv');
+  const [tvSize, setTvSize] = useState<'small' | 'medium' | 'large'>('medium');
+  const [hoursCount, setHoursCount] = useState<number>(2);
 
-  const servicePrices: Record<string, { name: string; base: number; perItem: number }> = {
-    tv: { name: 'Montaje de TV & Home Theater', base: 100, perItem: 50 },
-    furniture: { name: 'Ensamblaje Muebles ($120/hr)', base: 120, perItem: 120 },
-    art: { name: 'Repisas & Espejos ($60/hr)', base: 60, perItem: 50 },
-    repairs: { name: 'Cortinas, Lámparas & Pintura', base: 100, perItem: 50 },
-    smarthome: { name: 'Smart Home & Seguridad', base: 180, perItem: 70 },
+  // Instant Price Calculation
+  const calculatePrice = () => {
+    if (selectedService === 'tv') {
+      if (tvSize === 'small') return '$100 USD';
+      if (tvSize === 'medium') return '$150 USD';
+      return '$200 USD';
+    }
+    if (selectedService === 'furniture') {
+      return `$${hoursCount * 120} USD (${hoursCount}h @ $120/hr)`;
+    }
+    if (selectedService === 'art') {
+      return '$60/hr Shelves • $50/$90 Mirrors';
+    }
+    if (selectedService === 'repairs') {
+      return '$50 Curtains • $150/hr Painting & Lamps';
+    }
+    if (selectedService === 'smarthome') {
+      return '$180 Alexa • $250 Outdoor Solar Cameras';
+    }
+    return '$100 USD';
   };
 
-  const estimatedBasePrice = servicePrices[selectedService].base + (itemsCount - 1) * servicePrices[selectedService].perItem;
-
   return (
-    <section id="inicio" className="relative pt-28 pb-20 md:pt-36 md:pb-28 bg-[#070A12] border-b border-space-cardBorder overflow-hidden bg-cosmic-grid">
+    <section id="inicio" className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden bg-[#070A12] border-b border-space-cardBorder">
       
-      {/* Glow Backgrounds */}
+      {/* Background Neon Grid Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
-      <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
-        
-        {/* Top Header Floating Pill */}
-        <div className="flex items-center justify-center">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#10172A] border border-cyan-400/40 text-cyan-300 text-xs font-extrabold uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.25)]">
-            <Sparkles className="w-4 h-4 text-cyan-400 animate-spin" />
-            <span>SERVICIO RESIDENCIAL PREMIUM #1 EN LAS VEGAS VALLEY</span>
-          </div>
-        </div>
-
-        {/* Hero Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          {/* Left Column: Visual Showcase Frame */}
-          <div className="lg:col-span-7 relative rounded-3xl overflow-hidden border-2 border-cyan-500/40 shadow-[0_0_35px_rgba(0,240,255,0.2)] group bg-[#10172A]">
-            <img
-              src={IMAGES.hero_handyman}
-              alt="Técnico realizando instalación en Las Vegas"
-              className="w-full h-[460px] sm:h-[520px] object-cover group-hover:scale-105 transition-transform duration-700"
-            />
-
-            {/* Dark Vignette Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#070A12] via-[#070A12]/30 to-transparent"></div>
-
-            {/* Official Logo Integration Overlay Component (Transparent PNG) */}
-            <div className="absolute top-6 left-6 bg-[#070A12]/90 backdrop-blur-md px-5 py-3 rounded-2xl border border-cyan-500/40 shadow-2xl">
-              <Logo size="md" />
+          {/* Left Column: Headlines & Instant Calculator */}
+          <div className="lg:col-span-7 space-y-6">
+            
+            {/* Top Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/40 text-cyan-300 text-xs font-bold uppercase tracking-wider shadow-[0_0_12px_rgba(0,240,255,0.2)]">
+              <Sparkles className="w-4 h-4 text-cyan-400" />
+              <span>#1 Premium Residential Craftsmen in Las Vegas Valley</span>
             </div>
 
-            {/* Bottom Callout & Action Buttons */}
-            <div className="absolute bottom-6 left-6 right-6 space-y-4">
-              <div className="text-white">
-                <span className="inline-block px-3.5 py-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider rounded-full mb-2 shadow-md">
-                  Las Vegas Valley • Summerlin • Henderson • High-Rises
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight">
+              Your Home <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Assembled & Decorated</span> to Perfection
+            </h1>
+
+            {/* Subheadline */}
+            <p className="text-gray-300 text-base sm:text-lg max-w-2xl font-normal leading-relaxed">
+              Professional TV mounting, heavy mirror hanging, IKEA/Wayfair furniture assembly, and smart home security systems by certified craftsmen Carlos & Jonathan.
+            </p>
+
+            {/* Key Trust Highlights */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-bold pt-1">
+              <div className="flex items-center gap-2 bg-[#10172A] p-2.5 rounded-xl border border-gray-800 text-gray-200">
+                <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span>Licensed & Insured</span>
+              </div>
+              <div className="flex items-center gap-2 bg-[#10172A] p-2.5 rounded-xl border border-gray-800 text-gray-200">
+                <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span>Laser Level Guarantee</span>
+              </div>
+              <div className="flex items-center gap-2 bg-[#10172A] p-2.5 rounded-xl border border-gray-800 text-gray-200 col-span-2 sm:col-span-1">
+                <Zap className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span>Same-Day Availability</span>
+              </div>
+            </div>
+
+            {/* Instant Estimator Widget */}
+            <div className="bg-[#10172A] p-5 rounded-3xl border border-cyan-500/30 space-y-4 shadow-xl">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Zap className="w-4 h-4 text-cyan-400" />
+                  <span>Instant Price Estimator (0% Hidden Taxes)</span>
                 </span>
-                <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                  Tu Hogar Armado y Decorado con <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Perfección</span>
-                </h1>
+                <span className="text-xs text-gray-400 font-semibold">Summerlin • Henderson • LV</span>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center gap-3">
+              {/* Service Select Buttons */}
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-bold">
                 <button
-                  onClick={() => onOpenDualBooking()}
-                  className="w-full sm:w-auto px-7 py-4 rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.5)] hover:scale-105 transition-all flex items-center justify-center gap-2"
+                  type="button"
+                  onClick={() => setSelectedService('tv')}
+                  className={`py-2 px-2 rounded-xl border transition-all ${selectedService === 'tv' ? 'bg-cyan-500 text-black font-black border-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.6)]' : 'bg-[#070A12] text-gray-400 border-gray-800'}`}
                 >
-                  <span>BOOK YOUR TASK / CHECKOUT MULTI-SERVICIO</span>
-                  <ArrowRight className="w-4 h-4" />
+                  TV Mounting
                 </button>
-
                 <button
-                  onClick={() => onOpenDualBooking()}
-                  className="w-full sm:w-auto px-6 py-4 rounded-full bg-[#10172A] border border-cyan-500/40 text-cyan-400 font-extrabold text-xs uppercase tracking-wider hover:bg-cyan-500/10 transition-colors flex items-center justify-center gap-2"
+                  type="button"
+                  onClick={() => setSelectedService('furniture')}
+                  className={`py-2 px-2 rounded-xl border transition-all ${selectedService === 'furniture' ? 'bg-cyan-500 text-black font-black border-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.6)]' : 'bg-[#070A12] text-gray-400 border-gray-800'}`}
                 >
-                  <MapPin className="w-4 h-4" />
-                  <span>Solicitar Visita Física ($25)</span>
+                  Furniture
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedService('art')}
+                  className={`py-2 px-2 rounded-xl border transition-all ${selectedService === 'art' ? 'bg-cyan-500 text-black font-black border-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.6)]' : 'bg-[#070A12] text-gray-400 border-gray-800'}`}
+                >
+                  Art & Mirrors
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedService('repairs')}
+                  className={`py-2 px-2 rounded-xl border transition-all ${selectedService === 'repairs' ? 'bg-cyan-500 text-black font-black border-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.6)]' : 'bg-[#070A12] text-gray-400 border-gray-800'}`}
+                >
+                  Curtains/Paint
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedService('smarthome')}
+                  className={`py-2 px-2 rounded-xl border transition-all ${selectedService === 'smarthome' ? 'bg-cyan-500 text-black font-black border-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.6)]' : 'bg-[#070A12] text-gray-400 border-gray-800'}`}
+                >
+                  Smart Home
                 </button>
               </div>
+
+              {/* Sub-options */}
+              {selectedService === 'tv' && (
+                <div className="flex gap-2 text-xs">
+                  <button type="button" onClick={() => setTvSize('small')} className={`flex-1 p-2 rounded-lg border font-bold ${tvSize === 'small' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400' : 'bg-[#070A12] border-gray-800 text-gray-400'}`}>Up to 42" ($100)</button>
+                  <button type="button" onClick={() => setTvSize('medium')} className={`flex-1 p-2 rounded-lg border font-bold ${tvSize === 'medium' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400' : 'bg-[#070A12] border-gray-800 text-gray-400'}`}>Up to 65" ($150)</button>
+                  <button type="button" onClick={() => setTvSize('large')} className={`flex-1 p-2 rounded-lg border font-bold ${tvSize === 'large' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400' : 'bg-[#070A12] border-gray-800 text-gray-400'}`}>65"+ ($200)</button>
+                </div>
+              )}
+
+              {/* Result Bar */}
+              <div className="flex items-center justify-between bg-[#070A12] p-3 rounded-2xl border border-gray-800">
+                <span className="text-xs text-gray-300 font-bold">Estimated Total:</span>
+                <span className="text-xl font-black text-cyan-400">{calculatePrice()}</span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <button
+                onClick={() => onOpenDualBooking()}
+                className="px-8 py-4 rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(0,240,255,0.6)] hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 group"
+              >
+                <span>BOOK YOUR TASK / MULTI-CHECKOUT</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                onClick={() => onOpenDualBooking('Visita Presencial')}
+                className="px-6 py-4 rounded-full bg-[#10172A] hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 hover:text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md"
+              >
+                <MapPin className="w-4 h-4 text-cyan-400" />
+                <span>REQUEST ON-SITE ESTIMATE ($25)</span>
+              </button>
+            </div>
+
+            {/* Direct Phone Bar */}
+            <div className="pt-2 flex items-center gap-2 text-xs text-gray-400">
+              <Phone className="w-4 h-4 text-cyan-400" />
+              <span>Direct Phone Assistance: <a href="tel:7027724116" className="font-extrabold text-white hover:text-cyan-400 underline">(702) 772-4116</a></span>
             </div>
 
           </div>
 
-          {/* Right Column: Interactive Instant Calculator Box */}
-          <div className="lg:col-span-5 space-y-4">
-            
-            <div className="space-panel rounded-3xl p-6 border border-cyan-500/40 shadow-2xl relative bg-[#10172A]/90">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-800">
-                <div className="flex items-center gap-2 text-white font-bold text-sm">
-                  <Calculator className="w-5 h-5 text-cyan-400" />
-                  <span>Cotizador Instantáneo</span>
-                </div>
-                <span className="text-xs text-cyan-300 font-bold px-2.5 py-1 bg-cyan-950/80 rounded-full border border-cyan-500/40">
-                  Sin Impuestos Ocultos
-                </span>
+          {/* Right Column: Hero Image Frame with Transparent Logo */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative rounded-3xl overflow-hidden border-2 border-cyan-500/40 shadow-[0_0_40px_rgba(0,240,255,0.25)] bg-[#10172A] aspect-[4/3] sm:aspect-[16/11]">
+              <img
+                src={IMAGES.hero_handyman}
+                alt="Vegas TaskCraft Master Technician"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#070A12] via-transparent to-transparent opacity-90"></div>
+
+              {/* Official Logo Overlay in Header Card */}
+              <div className="absolute top-4 left-4 bg-[#070A12]/90 backdrop-blur-md p-3 rounded-2xl border border-cyan-400/40 shadow-xl">
+                <Logo size="sm" />
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-300 uppercase mb-1.5">
-                    Selecciona el Servicio:
-                  </label>
-                  <select
-                    value={selectedService}
-                    onChange={(e) => setSelectedService(e.target.value)}
-                    className="w-full bg-[#070A12] border border-gray-700 text-white text-xs rounded-xl p-3 focus:border-cyan-400 cursor-pointer"
-                  >
-                    <option value="tv">📺 Montaje de TV & Home Theater (Desde $100)</option>
-                    <option value="furniture">🛋️ Ensamblaje Muebles ($120/Hora)</option>
-                    <option value="art">🖼️ Repisas & Espejos ($60/Hora)</option>
-                    <option value="repairs">🔧 Cortinas, Lámparas & Pintura</option>
-                    <option value="smarthome">🤖 Smart Home & Seguridad (NUEVO)</option>
-                  </select>
+              {/* Bottom Card Overlay */}
+              <div className="absolute bottom-4 left-4 right-4 bg-[#070A12]/90 backdrop-blur-md p-4 rounded-2xl border border-cyan-500/40 space-y-1 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-black text-white text-sm">100% Satisfaction Guaranteed</span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">✓ Active in LV</span>
                 </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-300 uppercase mb-1.5">
-                    {selectedService === 'furniture' || selectedService === 'art' ? 'Horas de Servicio:' : 'Cantidad de Artículos:'}
-                  </label>
-                  <div className="flex items-center bg-[#070A12] border border-gray-700 rounded-xl p-1">
-                    <button
-                      type="button"
-                      onClick={() => setItemsCount(Math.max(1, itemsCount - 1))}
-                      className="w-8 h-8 rounded-lg bg-[#10172A] text-cyan-400 font-bold hover:bg-cyan-500 hover:text-black transition-colors"
-                    >
-                      -
-                    </button>
-                    <span className="flex-1 text-center font-bold text-white text-xs">
-                      {itemsCount} {selectedService === 'furniture' || selectedService === 'art' ? (itemsCount === 1 ? 'Hora' : 'Horas') : (itemsCount === 1 ? 'Artículo' : 'Artículos')}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setItemsCount(itemsCount + 1)}
-                      className="w-8 h-8 rounded-lg bg-[#10172A] text-cyan-400 font-bold hover:bg-cyan-500 hover:text-black transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                {/* Base Estimate */}
-                <div className="bg-[#070A12] p-4 rounded-2xl border border-gray-800 space-y-1 text-center">
-                  <span className="text-xs text-gray-400 font-semibold block">Estimado Aproximado Neto:</span>
-                  <span className="text-3xl font-black text-cyan-400">${estimatedBasePrice.toFixed(2)} USD</span>
-                  <span className="text-[10px] text-cyan-300 block pt-1 italic">
-                    *Precios transparentes exactos sin cargos ocultos.
-                  </span>
-                </div>
-
-                <button
-                  onClick={() => onOpenDualBooking(servicePrices[selectedService].name)}
-                  className="w-full py-4 rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all"
-                >
-                  RESERVAR / IR AL CHECKOUT
-                </button>
+                <p className="text-gray-400 text-[11px]">
+                  Precision craftsman service in Summerlin, Henderson & High-Rise Condos.
+                </p>
               </div>
 
             </div>
-
-            {/* Local Trust Card */}
-            <div className="bg-[#10172A] rounded-2xl p-4 border border-space-cardBorder flex items-center gap-3">
-              <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" />
-              <div>
-                <p className="text-xs font-bold text-white">Garantía de Satisfacción 100% en Las Vegas</p>
-                <p className="text-[11px] text-gray-400">Atención personalizada por Carlos y Jonathan</p>
-              </div>
-            </div>
-
           </div>
 
         </div>
-
       </div>
     </section>
   );

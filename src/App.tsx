@@ -9,7 +9,6 @@ import { TeamSection } from './components/TeamSection';
 import { InteractiveCalendarSlots } from './components/InteractiveCalendarSlots';
 import { DualBookingModal } from './components/DualBookingModal';
 import { TechPortal } from './components/TechPortal';
-import { TaskCraftAIChat } from './components/TaskCraftAIChat';
 import { Footer } from './components/Footer';
 
 export function App() {
@@ -30,6 +29,18 @@ export function App() {
     document.documentElement.style.fontSize = rootFontSize;
   }, [fontScale]);
 
+  // Hidden Dedicated Route listener for Technicians (#techportal or #tech)
+  useEffect(() => {
+    const checkHash = () => {
+      if (window.location.hash === '#techportal' || window.location.hash === '#tech' || window.location.hash === '#admin') {
+        setIsTechPortalOpen(true);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
+
   const handleOpenDualBooking = (serviceName?: string) => {
     setSelectedBookingService(serviceName);
     setIsDualBookingOpen(true);
@@ -46,7 +57,6 @@ export function App() {
       {/* Space Dark Navbar with Accessibility Font Size Control */}
       <Navbar
         onOpenBooking={() => handleOpenDualBooking()}
-        onOpenTechPortal={() => setIsTechPortalOpen(true)}
         fontScale={fontScale}
         onChangeFontScale={setFontScale}
       />
@@ -72,10 +82,10 @@ export function App() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-black text-white tracking-tight">
-                Reserva a Futuro • <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Calendario Mensual</span>
+                Advance Booking • <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Monthly Calendar</span>
               </h2>
               <p className="text-gray-400 text-sm">
-                Selecciona cualquier día del mes para ver las franjas horarias libres y asegurar la atención de Carlos o Jonathan.
+                Select any date of the month to view open time slots and secure direct appointment with Carlos or Jonathan.
               </p>
             </div>
 
@@ -92,14 +102,14 @@ export function App() {
       {/* Footer */}
       <Footer />
 
-      {/* 1. Modal de Checkout Interactivo Multi-Servicio & Visita Presencial */}
+      {/* 1. Interactive Dual Booking Modal (Multi-Service & On-Site Estimate) */}
       <DualBookingModal
         isOpen={isDualBookingOpen}
         onClose={() => setIsDualBookingOpen(false)}
         initialService={selectedBookingService}
       />
 
-      {/* 2. Modal de Procedimientos & Superficies Técnicas */}
+      {/* 2. Technical Procedures & Surfaces Modal */}
       <ServiceDetailModal
         service={selectedServiceDetail}
         isOpen={isDetailModalOpen}
@@ -107,14 +117,11 @@ export function App() {
         onSelectForCheckout={() => handleOpenDualBooking(selectedServiceDetail?.spanishTitle)}
       />
 
-      {/* 3. Portal Web para Técnicos (Carlos & Jonathan) */}
+      {/* 3. Dedicated Technician Portal (Hidden Route #techportal for Carlos & Jonathan) */}
       <TechPortal
         isOpen={isTechPortalOpen}
         onClose={() => setIsTechPortalOpen(false)}
       />
-
-      {/* 4. Floating AI Sales Assistant Chat */}
-      <TaskCraftAIChat onOpenBooking={handleOpenDualBooking} />
 
     </div>
   );

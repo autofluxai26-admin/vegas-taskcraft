@@ -53,7 +53,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
           {/* Title Overlay */}
           <div className="absolute bottom-4 left-6 right-6">
             <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 text-[10px] font-extrabold uppercase tracking-wider mb-1 inline-block">
-              Ficha Técnica de Trabajo Residencial
+              Residential Craftsman Spec Sheet
             </span>
             <h3 className="text-xl sm:text-3xl font-black text-white">{service.spanishTitle}</h3>
           </div>
@@ -71,7 +71,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
           <div className="space-y-3">
             <h4 className="font-extrabold text-cyan-400 uppercase text-xs tracking-wider flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-cyan-400" />
-              <span>Procedimiento Paso a Paso:</span>
+              <span>Step-by-Step Procedure:</span>
             </h4>
 
             <div className="space-y-2">
@@ -90,7 +90,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
           <div className="space-y-3">
             <h4 className="font-extrabold text-cyan-400 uppercase text-xs tracking-wider flex items-center gap-2">
               <Layers className="w-4 h-4 text-cyan-400" />
-              <span>Superficies Compatibles & Tipo de Fijación:</span>
+              <span>Compatible Surfaces & Anchor Types:</span>
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -112,7 +112,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
           <div className="space-y-3">
             <h4 className="font-extrabold text-cyan-400 uppercase text-xs tracking-wider flex items-center gap-2">
               <Wrench className="w-4 h-4 text-cyan-400" />
-              <span>Herramientas Profesionales Aplicadas:</span>
+              <span>Professional Tools Applied:</span>
             </h4>
 
             <div className="flex flex-wrap gap-2">
@@ -129,7 +129,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
         {/* Footer Action Bar */}
         <div className="p-4 bg-[#10172A] border-t border-cyan-500/30 flex items-center justify-between gap-4">
           <div>
-            <span className="text-[10px] text-gray-400 block font-bold uppercase">Guía de Precio:</span>
+            <span className="text-[10px] text-gray-400 block font-bold uppercase">Price Guide:</span>
             <span className="text-base sm:text-lg font-black text-cyan-400">{service.priceGuide}</span>
           </div>
 
@@ -140,7 +140,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
             }}
             className="px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider hover:scale-105 transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)] flex items-center gap-2"
           >
-            <span>Reservar Este Servicio</span>
+            <span>Book This Service</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

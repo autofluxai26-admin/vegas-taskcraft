@@ -1,26 +1,23 @@
 import React from 'react';
-import { Award, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
-import { IMAGES } from '../assets/imagesData';
+import { UserCheck, ShieldCheck, Award, Star, Phone, CheckCircle2 } from 'lucide-react';
 
 export const TeamSection: React.FC = () => {
   const team = [
     {
-      id: 'carlos',
-      name: 'Carlos',
-      role: 'Master Craftsman & Lead Installer',
-      bio: 'Especialista principal en montajes pesados de TV, instalación de galerías de arte y soluciones residenciales en Las Vegas. Más de 9 años de experiencia en Summerlin, Henderson y condominios de alta gama.',
-      photo: IMAGES.hero_handyman,
-      specialties: ['Montajes TV 85"+', 'Drywall & Concreto', 'Instalación Arte & Espejos', 'Cerraduras Smart'],
-      rating: '5.0 ⭐ (180+ Trabajos)'
+      name: 'Carlos Mendoza',
+      role: 'Master Craftsman & Mounting Specialist',
+      experience: '9+ Years Experience in Las Vegas',
+      specialty: 'Heavy TV Mounting, High-Rise Condos, Toggl-Bolt Anchors & Cable Concealment',
+      status: 'On Duty • Active Unit',
+      photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80'
     },
     {
-      id: 'jonathan',
-      name: 'Jonathan',
-      role: 'Assembly & High-Rise Specialist',
-      bio: 'Experto certificado en ensamblaje de muebles de paquete (IKEA, Wayfair, West Elm) y fijaciones de seguridad anti-vuelco. Especializado en acceso a condominios High-Rise en The Strip cumpliendo normativas HOA.',
-      photo: IMAGES.furniture_assembly,
-      specialties: ['Muebles IKEA & Wayfair', 'Montaje en Mampostería', 'Sistemas Home Theater', 'Atención en The Strip'],
-      rating: '5.0 ⭐ (150+ Trabajos)'
+      name: 'Jonathan Reyes',
+      role: 'Assembly & Smart Home Specialist',
+      experience: '7+ Years Experience in Las Vegas',
+      specialty: 'IKEA/Wayfair Assembly, Heavy Art & Mirrors, Alexa Smart Automation & Solar Cameras',
+      status: 'On Duty • Active Unit',
+      photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'
     }
   ];
 
@@ -28,83 +25,71 @@ export const TeamSection: React.FC = () => {
     <section id="nosotros" className="py-20 bg-[#070A12] border-b border-space-cardBorder relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-extrabold uppercase tracking-wider shadow-[0_0_12px_rgba(0,240,255,0.2)]">
-            <Award className="w-4 h-4 text-cyan-400" />
-            <span>Técnicos Locales Certificados</span>
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/40 text-cyan-300 text-xs font-bold uppercase tracking-wider">
+            <UserCheck className="w-4 h-4 text-cyan-400" />
+            <span>Certified Master Craftsmen</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight uppercase">
-            CONOCE A NUESTRO <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">EQUIPO</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+            Meet Your Expert <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Technicians</span>
           </h2>
 
-          <p className="text-gray-400 text-base sm:text-lg">
-            Especialistas dedicados a brindarte un servicio profesional, limpio, puntual y con garantía total en Las Vegas Valley.
+          <p className="text-gray-400 text-base">
+            Dedicated craftsmen assigned directly to your home. No random unverified subcontractors.
           </p>
         </div>
 
-        {/* White-Glove Guarantee Callout Banner */}
-        <div className="bg-[#10172A] p-6 rounded-3xl border border-cyan-500/40 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center text-cyan-400 shrink-0 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
-              <Sparkles className="w-8 h-8" />
-            </div>
-            <div>
-              <h3 className="text-lg font-black text-white flex items-center gap-2">
-                <span>Servicio de Guante Blanco (White-Glove Service)</span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-500/30 font-bold">
-                  100% Protegido
-                </span>
-              </h3>
-              <p className="text-xs text-gray-300 mt-1 leading-relaxed">
-                Utilizamos coberturas especiales de piso, mantas protectoras para tus muebles, cubre-calzados higiénicos y realizamos la limpieza total y retiro de empaques al finalizar. Contamos con todos los seguros comerciales y permisos para condominios High-Rise en Las Vegas.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* 2-Member Presentation Cards (Carlos & Jonathan) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {team.map((member) => (
+        {/* 2-Card Technician Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {team.map((tech, idx) => (
             <div
-              key={member.id}
-              className="space-card p-6 md:p-8 rounded-3xl border border-gray-800 hover:border-cyan-400/50 transition-all duration-300 flex flex-col sm:flex-row gap-6 items-start shadow-xl bg-[#10172A]"
+              key={idx}
+              className="bg-[#10172A] rounded-3xl border border-cyan-500/30 p-6 space-y-5 shadow-xl hover:border-cyan-400 transition-all group"
             >
-              {/* Photo */}
-              <div className="relative shrink-0 mx-auto sm:mx-0">
-                <img
-                  src={member.photo}
-                  alt={member.name}
-                  className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border-2 border-cyan-400/50 shadow-[0_0_15px_rgba(0,240,255,0.3)] bg-[#070A12]"
-                />
-                <span className="absolute -bottom-2 -right-2 px-2.5 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/30 rounded-md text-[10px] font-bold">
-                  ● Técnico Activo
-                </span>
+              <div className="flex items-center gap-5">
+                <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-cyan-400 shrink-0 shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+                  <img
+                    src={tech.photo}
+                    alt={tech.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#070A12] shadow-sm"></span>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider inline-block">
+                    ✓ {tech.status}
+                  </span>
+                  <h3 className="text-xl font-black text-white group-hover:text-cyan-400 transition-colors">
+                    {tech.name}
+                  </h3>
+                  <p className="text-xs text-cyan-300 font-bold">{tech.role}</p>
+                </div>
               </div>
 
-              {/* Details */}
-              <div className="space-y-3 flex-1 text-center sm:text-left">
-                <div>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                    <h3 className="text-2xl font-black text-white">{member.name}</h3>
-                    <span className="text-xs font-bold text-cyan-400">{member.rating}</span>
-                  </div>
-                  <p className="text-xs font-bold text-cyan-300 mt-0.5">{member.role}</p>
-                </div>
-
-                <p className="text-xs text-gray-300 leading-relaxed">
-                  {member.bio}
+              <div className="space-y-2 text-xs text-gray-300 bg-[#070A12] p-4 rounded-2xl border border-gray-800">
+                <p className="font-bold text-white flex items-center gap-1.5">
+                  <Award className="w-4 h-4 text-cyan-400" />
+                  <span>{tech.experience}</span>
                 </p>
+                <p className="text-gray-400 text-[11px] leading-relaxed pt-1">
+                  <span className="font-bold text-gray-200">Specialization:</span> {tech.specialty}
+                </p>
+              </div>
 
-                {/* Specialties Badges */}
-                <div className="pt-2 flex flex-wrap gap-1.5 justify-center sm:justify-start">
-                  {member.specialties.map((spec, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-[#070A12] border border-cyan-500/30 text-gray-300 text-[11px] font-semibold rounded-full">
-                      ✓ {spec}
-                    </span>
-                  ))}
-                </div>
+              <div className="flex items-center justify-between pt-2 border-t border-gray-800 text-xs font-bold">
+                <span className="text-gray-400 flex items-center gap-1">
+                  <ShieldCheck className="w-4 h-4 text-cyan-400" /> 100% Background Checked
+                </span>
+
+                <a
+                  href="tel:7027724116"
+                  className="text-cyan-400 hover:underline flex items-center gap-1"
+                >
+                  <Phone className="w-3.5 h-3.5" /> (702) 772-4116
+                </a>
               </div>
 
             </div>

@@ -13,102 +13,102 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onOpenDetailModal, o
     {
       id: 'tv-mounting',
       title: 'TV MOUNTING & HOME THEATER',
-      spanishTitle: 'Montaje de TV & Home Theater',
+      spanishTitle: 'TV Mounting & Home Theater',
       image: IMAGES.tv_mounting,
-      priceGuide: 'Desde $100 USD (Según Tamaño)',
+      priceGuide: 'From $100 USD (By TV Size)',
       basePrice: 100,
-      description: 'Montaje profesional de televisores por tamaño ($100 hasta 42", $150 hasta 65", $200 de 65"+) con detección de vigas, anclajes pesados y ocultación de cables.',
+      description: 'Professional TV mounting by screen size ($100 up to 42", $150 up to 65", $200 for 65"+) featuring magnetic stud detection, heavy-duty anchors, and cord concealment.',
       procedures: [
-        'Detección magnética y digital de vigas de madera/metal',
-        'Perforación con sistema de aspiración antipolvo',
-        'Colocación de taquetes de mariposa Toggle Bolts para 150 lbs',
-        'Alineación y nivelado láser en 3 ejes',
-        'Organización y ocultación estética de cables en canaleta'
+        'Digital & magnetic stud detection (wood/metal studs)',
+        'Dust-free vacuum drilling process',
+        'Toggle Bolt installation for up to 150 lbs load capacity',
+        'Laser level 3-axis precision alignment',
+        'Clean in-wall or surface raceway cord concealment'
       ],
       surfaces: [
-        { name: 'Pared Seca (Drywall / Sheetrock)', status: '100% Compatible', note: 'Anclajes para vigas o taquetes pesados' },
-        { name: 'Concreto & Bloque', status: '100% Compatible', note: 'Perforación con broca de diamante' },
-        { name: 'Ladrillo & Mampostería', status: '100% Compatible', note: 'Fijación de expansión estructural' }
+        { name: 'Drywall & Sheetrock', status: '100% Compatible', note: 'Stud mounts or heavy-duty anchors' },
+        { name: 'Concrete & Block', status: '100% Compatible', note: 'Diamond bit masonry drilling' },
+        { name: 'Brick & Masonry', status: '100% Compatible', note: 'Expansion masonry anchors' }
       ],
-      tools: ['Nivel Láser Bosch 3D', 'Brocas de Diamante', 'Toggle Bolts Heavy Duty', 'Detector de Vigas Fluke']
+      tools: ['Bosch 3D Laser Level', 'Diamond Drill Bits', 'Heavy Duty Toggle Bolts', 'Fluke Stud Scanner']
     },
     {
       id: 'art-mirror',
       title: 'ART & MIRROR INSTALLATION',
-      spanishTitle: 'Repisas, Espejos & Cuadros',
+      spanishTitle: 'Art, Shelves & Heavy Mirrors',
       image: IMAGES.art_mirror,
-      priceGuide: '$60/hr Repisas • $50/$90 Espejos',
+      priceGuide: '$60/hr Shelves • $50/$90 Mirrors',
       basePrice: 60,
-      description: 'Repisas y artes pequeños a $60 la hora. Espejos y artes grandes por $50 adicional (en obra) o $90 por contrato independiente.',
+      description: 'Small art & shelf installation at $60 per hour. Heavy mirrors and large artwork at $50 add-on (during active job) or $90 standalone contract.',
       procedures: [
-        'Medición y marcado de altura visual óptima con láser',
-        'Instalación de ganchos J-Hooks y rieles de alta resistencia',
-        'Verificación de nivel de precisión con láser 3D',
-        'Prueba de carga y estabilidad física'
+        'Laser level height & sightline measurement',
+        'Heavy-duty J-Hooks & French cleat mounting',
+        '3D laser level precision verification',
+        'Physical load & stability testing'
       ],
       surfaces: [
-        { name: 'Drywall & Yeso', status: '100% Compatible', note: 'Soportes de carga distribuida' },
-        { name: 'Concreto & Mampostería', status: '100% Compatible', note: 'Chazos mecánicos' }
+        { name: 'Drywall & Plaster', status: '100% Compatible', note: 'Distributed load wall anchors' },
+        { name: 'Concrete & Masonry', status: '100% Compatible', note: 'Mechanical expansion anchors' }
       ],
-      tools: ['Nivel Láser', 'Ganchos J-Hooks 100lbs', 'Cinta Métrica Digital']
+      tools: ['Laser Level', '100lbs J-Hooks', 'Digital Distance Measurer']
     },
     {
       id: 'furniture-assembly',
       title: 'FURNITURE ASSEMBLY & DECOR',
-      spanishTitle: 'Ensamblaje de Muebles',
+      spanishTitle: 'Furniture Assembly',
       image: IMAGES.furniture_assembly,
-      priceGuide: '$120 / Hora (Cobro Justo)',
+      priceGuide: '$120 / Hour (Fair Hourly Rate)',
       basePrice: 120,
-      description: 'Armado rápido y profesional de muebles IKEA, Wayfair, West Elm o Amazon por $120 la hora con kit de herramientas de torque preciso.',
+      description: 'Fast and flawless assembly of IKEA, Wayfair, West Elm, or Amazon furniture at $120/hr with torque-controlled power tools to prevent wood damage.',
       procedures: [
-        'Desempaque e inventario de herrajes y piezas',
-        'Armado con atornillador de torque regulado para no dañar la madera',
-        'Nivelación de patas y ajuste fino de bisagras y rieles',
-        'Fijación obligatoria de seguridad anti-vuelco a la pared',
-        'Limpieza total del área y retiro de cajas de cartón'
+        'Unpacking and hardware inventory check',
+        'Assembly using torque-limited precision screwdrivers',
+        'Leg leveling and hinge/drawer slide micro-adjustments',
+        'Mandatory anti-tip safety wall anchoring',
+        'Worksite cleanup and cardboard box disposal'
       ],
       surfaces: [
-        { name: 'Todo Tipo de Habitación', status: '100% Compatible', note: 'Ajuste en suelos planos o alfombras' }
+        { name: 'All Room Flooring Types', status: '100% Compatible', note: 'Adjustments on hard floors or carpets' }
       ],
-      tools: ['Atornillador Torque Dewalt', 'Llaves Hex hexagonales', 'Anclajes Anti-Vuelco']
+      tools: ['DeWalt Torque Screwdriver', 'Hex Key Sets', 'Anti-Tip Wall Anchors']
     },
     {
       id: 'repairs-smarthome',
-      title: 'SMALL REPAIRS & FINISHES',
-      spanishTitle: 'Cortinas, Pintura & Acabados',
+      title: 'CURTAINS, PAINTING & FINISHES',
+      spanishTitle: 'Curtains, Paint & Finishes',
       image: IMAGES.curtains_painting || IMAGES.repairs_smarthome,
-      priceGuide: 'Cortinas $50 • Lámparas/Pintura $150/hr',
+      priceGuide: 'Curtains $50 • Paint/Lamps $150/hr',
       basePrice: 50,
-      description: 'Cortinas a $50 por ventana, parches en pared desde $100, paneles desde $150, lámparas/ventiladores/pintura a $150/hr y setup de dispositivos por $40.',
+      description: 'Window curtains & blinds at $50/window, drywall patch repair from $100, accent panels from $150, lamps/ceiling fans/painting at $150/hr, and device setup for $40.',
       procedures: [
-        'Instalación de cortinas y persianas por ventana ($50/cuba)',
-        'Montaje de lámparas y ventiladores de techo ($150/hr)',
-        'Trabajos de pintura limpia y acabados ($150/hr)',
-        'Parches en pared drywall (desde $100) y paneles (desde $150)'
+        'Window curtain rod & blind installation ($50/window)',
+        'Ceiling fan & light fixture installation ($150/hr)',
+        'Clean accent wall painting & touchups ($150/hr)',
+        'Drywall patching (from $100) & accent wall panel installation (from $150)'
       ],
       surfaces: [
-        { name: 'Puertas de Madera y Metal', status: '100% Compatible', note: 'Instalación de accesorios' },
-        { name: 'Techos & Paredes', status: '100% Compatible', note: 'Lámparas y persianas' }
+        { name: 'Wood & Metal Frames', status: '100% Compatible', note: 'Fixture mounting' },
+        { name: 'Ceilings & Walls', status: '100% Compatible', note: 'Light fixtures & window rods' }
       ],
-      tools: ['Multímetro Digital', 'Herramientas de Carpintería', 'Pistola de Calafateo']
+      tools: ['Digital Multimeter', 'Craftsman Tools', 'Caulking Gun']
     },
     {
       id: 'smart-security',
       title: 'SMART HOME & OUTDOOR SECURITY',
-      spanishTitle: 'Smart Home & Seguridad (NUEVO)',
+      spanishTitle: 'Smart Home & Security (NEW)',
       image: IMAGES.smarthome_security || IMAGES.vegas_map_carpet,
-      priceGuide: 'Automatización & Cámaras Solar WiFi',
+      priceGuide: '3-Point Alexa • Solar WiFi Cameras',
       basePrice: 180,
-      description: 'Automatización de 3 puntos (TV, comedor, cocina con Alexa) y sistemas de vigilancia outdoor con cámaras WiFi y paneles solares.',
+      description: '3-Point smart automation (TV, dining, kitchen with Alexa integration) and outdoor security camera systems with solar panels for 24/7 peace of mind.',
       procedures: [
-        'Configuración de 3 puntos clave (TV, comedor, cocina) con comandos Alexa',
-        'Instalación de cámaras de seguridad exteriores con paneles de energía solar',
-        'Vincular aplicación móvil en smartphone para visualización 24/7'
+        '3-Point smart setup (TV, dining, kitchen) with Alexa voice commands',
+        'Outdoor security camera mounting with solar panel power units',
+        'Smartphone app pairing for 24/7 live video monitoring'
       ],
       surfaces: [
-        { name: 'Exteriores Residenciales', status: '100% Compatible', note: 'Anclaje solar y red WiFi' }
+        { name: 'Residential Exteriors', status: '100% Compatible', note: 'Solar mounting & WiFi setup' }
       ],
-      tools: ['Kit de Diagnóstico WiFi', 'Probador de Carga Solar', 'Herramientas de Montaje']
+      tools: ['WiFi Network Diagnostic Kit', 'Solar Charge Tester', 'Outdoor Mounting Tools']
     }
   ];
 
@@ -120,15 +120,15 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onOpenDetailModal, o
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold uppercase tracking-wider shadow-[0_0_12px_rgba(0,240,255,0.2)]">
             <Eye className="w-4 h-4 text-cyan-400" />
-            <span>Haz clic para ver procedimientos y superficies</span>
+            <span>Click any card to inspect procedures & surfaces</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-            Servicios Residenciales en <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Las Vegas</span>
+            Residential Craftsman Services in <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">Las Vegas</span>
           </h2>
 
           <p className="text-gray-400 text-base sm:text-lg">
-            Haz clic en cualquier tarjeta para ver la ventana interactiva con los procedimientos paso a paso y herramientas aplicadas.
+            Click on any card to open the interactive spec sheet with step-by-step procedures and applied tools.
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onOpenDetailModal, o
                 <div className="absolute inset-0 bg-gradient-to-t from-[#070A12] via-transparent to-transparent opacity-80"></div>
                 
                 <span className="absolute top-3 right-3 bg-[#070A12]/90 border border-cyan-400/50 text-cyan-300 text-[10px] font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md">
-                  <Eye className="w-3 h-3 text-cyan-400" /> Ver Detalle
+                  <Eye className="w-3 h-3 text-cyan-400" /> View Specs
                 </span>
               </div>
 
@@ -181,7 +181,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({ onOpenDetailModal, o
                     }}
                     className="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1 shadow-[0_0_10px_rgba(0,240,255,0.3)]"
                   >
-                    <span>Procedimientos</span>
+                    <span>Procedures</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

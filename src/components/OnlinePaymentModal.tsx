@@ -50,7 +50,7 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
               <Lock className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-extrabold text-white text-base">Pasarela de Pago Segura</h4>
+              <h4 className="font-extrabold text-white text-base">Secure Payment Gateway</h4>
               <p className="text-xs text-cyan-400 font-bold">Vegas TaskCraft LLC • 256-bit SSL Encrypted</p>
             </div>
           </div>
@@ -74,21 +74,21 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
               </div>
 
               <div>
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest block">¡Reserva Confirmada Exitosamente!</span>
-                <h3 className="text-2xl font-black text-white mt-1">Pago Procesado con Éxito</h3>
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest block">Booking Confirmed Successfully!</span>
+                <h3 className="text-2xl font-black text-white mt-1">Payment Processed Successfully</h3>
               </div>
 
               <div className="bg-[#10172A] p-4 rounded-2xl border border-gray-800 space-y-2 text-xs text-left">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Código de Reserva:</span>
+                  <span className="text-gray-400">Booking Code:</span>
                   <span className="font-black text-cyan-400">{bookingCode}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Cliente:</span>
-                  <span className="font-bold text-white">{customerName || 'Cliente Estimado'}</span>
+                  <span className="text-gray-400">Customer:</span>
+                  <span className="font-bold text-white">{customerName || 'Valued Customer'}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-gray-800 text-sm">
-                  <span className="font-bold text-white">Monto Pagado:</span>
+                  <span className="font-bold text-white">Amount Paid:</span>
                   <span className="font-black text-cyan-400">${totalAmount.toFixed(2)} USD</span>
                 </div>
               </div>
@@ -97,7 +97,7 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
                 onClick={onClose}
                 className="w-full py-3.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]"
               >
-                Cerrar & Volver a Inicio
+                Close & Return Home
               </button>
             </div>
           ) : (
@@ -107,11 +107,11 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
               {/* Order Summary Box */}
               <div className="bg-[#10172A] p-4 rounded-2xl border border-cyan-500/30 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Reserva {bookingCode}</span>
-                  <span className="text-xs text-gray-200 font-semibold">{customerName || 'Cliente Vegas TaskCraft'}</span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Booking {bookingCode}</span>
+                  <span className="text-xs text-gray-200 font-semibold">{customerName || 'Vegas TaskCraft Client'}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-cyan-400 font-bold uppercase block">Total Neto:</span>
+                  <span className="text-[10px] text-cyan-400 font-bold uppercase block">Total Amount:</span>
                   <span className="text-xl font-black text-cyan-400">${totalAmount.toFixed(2)} USD</span>
                 </div>
               </div>
@@ -126,7 +126,7 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
                   }`}
                 >
                   <CreditCard className="w-5 h-5" />
-                  <span>Tarjeta</span>
+                  <span>Card</span>
                 </button>
 
                 <button
@@ -156,7 +156,7 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
               {paymentMethod === 'card' ? (
                 <div className="space-y-3 text-xs">
                   <div>
-                    <label className="block font-bold text-gray-300 mb-1">Número de Tarjeta:</label>
+                    <label className="block font-bold text-gray-300 mb-1">Card Number:</label>
                     <input
                       type="text"
                       required
@@ -169,7 +169,7 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
 
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="block font-bold text-gray-300 mb-1">Expiración:</label>
+                      <label className="block font-bold text-gray-300 mb-1">Expiration:</label>
                       <input
                         type="text"
                         required
@@ -206,7 +206,7 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
               ) : (
                 <div className="p-6 bg-[#10172A] rounded-2xl border border-gray-800 text-center space-y-2">
                   <p className="text-xs font-extrabold text-cyan-300">
-                    Se abrirá la ventana emergente de {paymentMethod === 'apple' ? 'Apple Pay' : 'Google Pay'} para autorizar la transacción de ${totalAmount.toFixed(2)} USD.
+                    A popup window for {paymentMethod === 'apple' ? 'Apple Pay' : 'Google Pay'} will open to authorize the transaction of ${totalAmount.toFixed(2)} USD.
                   </p>
                 </div>
               )}
@@ -219,12 +219,12 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
                 {isProcessing ? (
                   <>
                     <Sparkles className="w-4 h-4 animate-spin" />
-                    <span>Procesando Encriptación Stripe...</span>
+                    <span>Processing Stripe Encryption...</span>
                   </>
                 ) : (
                   <>
                     <ShieldCheck className="w-4 h-4" />
-                    <span>PAGAR CON SEGURIDAD (${totalAmount.toFixed(2)} USD)</span>
+                    <span>PAY SECURELY (${totalAmount.toFixed(2)} USD)</span>
                   </>
                 )}
               </button>

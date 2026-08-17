@@ -1,123 +1,121 @@
 import React, { useState } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, CheckCircle2, User, Sparkles } from 'lucide-react';
 
 interface InteractiveCalendarSlotsProps {
-  onSelectSlot: (date: string, time: string) => void;
+  onSelectSlot: (date: string, time: string, tech: string) => void;
 }
 
 export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> = ({ onSelectSlot }) => {
-  const months = ['Julio 2026', 'Agosto 2026', 'Septiembre 2026', 'Octubre 2026'];
-  const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
+  const months = ['July 2026', 'August 2026', 'September 2026', 'October 2026'];
+  const [currentMonthIdx, setCurrentMonthIdx] = useState(0);
   const [selectedDay, setSelectedDay] = useState<number>(28);
-  const [selectedTime, setSelectedTime] = useState<string>('10:00 AM');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
 
-  const daysInMonth = 31;
-  const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-
-  const availableTimesForDay = [
-    { time: '9:00 AM', status: 'Disponible' },
-    { time: '11:30 AM', status: 'Disponible' },
-    { time: '2:00 PM', status: 'Disponible' },
-    { time: '4:30 PM', status: 'Disponible' },
-    { time: '7:00 PM', status: 'Casi Lleno' },
+  const timeSlots = [
+    { time: '09:00 AM - 11:00 AM', status: 'Available', tech: 'Carlos' },
+    { time: '11:30 AM - 01:30 PM', status: 'Booked', tech: 'Jonathan' },
+    { time: '02:00 PM - 04:00 PM', status: 'Available', tech: 'Carlos & Jonathan' },
+    { time: '04:30 PM - 06:30 PM', status: 'Available', tech: 'Jonathan' },
   ];
 
-  return (
-    <div className="bg-[#141C2E] border border-amber-500/30 rounded-3xl p-6 shadow-space-glass space-y-6 text-white">
-      
-      {/* Month Navigation Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-space-cardBorder">
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="w-5 h-5 text-amber-400" />
-          <h3 className="font-extrabold text-sm uppercase tracking-wider">
-            Programar Servicio Futuro • Calendario Interactivo
-          </h3>
-        </div>
+  const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
 
+  return (
+    <div className="bg-[#10172A] p-6 rounded-3xl border border-cyan-500/30 space-y-6 shadow-xl">
+      
+      {/* Month Navigation */}
+      <div className="flex items-center justify-between border-b border-gray-800 pb-4">
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setCurrentMonthIndex((prev) => Math.max(0, prev - 1))}
-            className="p-1.5 rounded-lg bg-[#090D18] border border-gray-700 hover:border-amber-400 text-gray-300"
+            onClick={() => setCurrentMonthIdx((prev) => (prev > 0 ? prev - 1 : months.length - 1))}
+            className="p-2 rounded-xl bg-[#070A12] border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-black transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           
-          <span className="font-black text-amber-400 text-sm font-mono px-3 py-1 bg-[#090D18] rounded-xl border border-amber-500/30">
-            {months[currentMonthIndex]}
-          </span>
+          <h3 className="text-lg font-black text-white flex items-center gap-2">
+            <CalendarIcon className="w-5 h-5 text-cyan-400" />
+            <span>{months[currentMonthIdx]}</span>
+          </h3>
 
           <button
             type="button"
-            onClick={() => setCurrentMonthIndex((prev) => Math.min(months.length - 1, prev + 1))}
-            className="p-1.5 rounded-lg bg-[#090D18] border border-gray-700 hover:border-amber-400 text-gray-300"
+            onClick={() => setCurrentMonthIdx((prev) => (prev < months.length - 1 ? prev + 1 : 0))}
+            className="p-2 rounded-xl bg-[#070A12] border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-black transition-all"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
+
+        <span className="text-xs font-bold text-cyan-400">
+          Click any day to inspect available time slots
+        </span>
       </div>
 
       {/* Calendar Grid */}
-      <div className="space-y-2">
-        <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-          <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
-        </div>
+      <div className="grid grid-cols-7 gap-2 text-center text-xs">
+        {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((d) => (
+          <span key={d} className="font-black text-cyan-400 tracking-wider py-1 uppercase">{d}</span>
+        ))}
 
-        <div className="grid grid-cols-7 gap-1.5">
-          {daysArray.map((day) => {
-            const isSelected = selectedDay === day;
-            const isAvailable = day >= 28 || currentMonthIndex > 0;
-            return (
-              <button
-                key={day}
-                type="button"
-                onClick={() => isAvailable && setSelectedDay(day)}
-                className={`h-10 rounded-xl font-bold text-xs transition-all flex flex-col items-center justify-center relative ${
-                  isSelected
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-gold-cosmic scale-105 font-black'
-                    : isAvailable
-                    ? 'bg-[#090D18] hover:bg-space-cardBorder text-gray-200 border border-gray-800'
-                    : 'bg-[#090D18]/40 text-gray-600 cursor-not-allowed'
-                }`}
-              >
-                <span>{day}</span>
-                {isAvailable && !isSelected && (
-                  <span className="w-1 h-1 rounded-full bg-emerald-400 mt-0.5"></span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Available Time Slots Selector for Selected Day */}
-      <div className="pt-4 border-t border-space-cardBorder space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-gray-300 flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-cyan-400" />
-            Horarios Disponibles para el <span className="text-amber-400 font-extrabold">{selectedDay} de {months[currentMonthIndex]}</span>:
-          </span>
-          <span className="text-[10px] text-emerald-400 font-bold">● Confirmación al Instante para Carlos o Jonathan</span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-          {availableTimesForDay.map((slot, idx) => (
+        {daysInMonth.map((day) => {
+          const isSelected = selectedDay === day;
+          return (
             <button
-              key={idx}
+              key={day}
               type="button"
-              onClick={() => {
-                setSelectedTime(slot.time);
-                onSelectSlot(`${selectedDay} de ${months[currentMonthIndex]}`, slot.time);
-              }}
-              className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-center ${
-                selectedTime === slot.time
-                  ? 'bg-amber-500 text-black border-amber-400 shadow-gold-cosmic'
-                  : 'bg-[#090D18] border-gray-800 text-gray-300 hover:border-amber-400/50'
+              onClick={() => setSelectedDay(day)}
+              className={`p-2.5 rounded-xl border font-bold transition-all text-xs flex flex-col items-center justify-center ${
+                isSelected
+                  ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.6)] font-black scale-105'
+                  : 'bg-[#070A12] border-gray-800 text-gray-300 hover:border-cyan-500/50'
               }`}
             >
-              <div className="font-extrabold">{slot.time}</div>
-              <div className="text-[9px] opacity-80 mt-0.5">{slot.status}</div>
+              <span>{day}</span>
             </button>
+          );
+        })}
+      </div>
+
+      {/* Time Slots for Selected Day */}
+      <div className="pt-4 border-t border-gray-800 space-y-4">
+        <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+          <Clock className="w-4 h-4 text-cyan-400" />
+          <span>Available Slots for Day {selectedDay} of {months[currentMonthIdx]}:</span>
+        </h4>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          {timeSlots.map((slot, idx) => (
+            <div
+              key={idx}
+              onClick={() => {
+                if (slot.status === 'Available') {
+                  setSelectedTimeSlot(slot.time);
+                  onSelectSlot(`${months[currentMonthIdx]} ${selectedDay}`, slot.time, slot.tech);
+                }
+              }}
+              className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
+                slot.status === 'Booked'
+                  ? 'bg-[#070A12]/50 border-gray-800 opacity-40 cursor-not-allowed'
+                  : selectedTimeSlot === slot.time
+                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_12px_rgba(0,240,255,0.3)]'
+                  : 'bg-[#070A12] border-gray-800 text-gray-200 hover:border-cyan-500/50'
+              }`}
+            >
+              <div className="space-y-0.5">
+                <span className="font-black text-white block">{slot.time}</span>
+                <span className="text-[10px] text-gray-400 font-semibold">Assigned Tech: {slot.tech}</span>
+              </div>
+
+              <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border ${
+                slot.status === 'Available'
+                  ? 'bg-emerald-950 text-emerald-400 border-emerald-500/40'
+                  : 'bg-rose-950 text-rose-400 border-rose-500/40'
+              }`}>
+                {slot.status === 'Available' ? '✓ Book Slot' : 'Full'}
+              </span>
+            </div>
           ))}
         </div>
       </div>

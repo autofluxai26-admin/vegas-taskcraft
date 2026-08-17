@@ -12,33 +12,33 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
   const [selectedJobForInvoice, setSelectedJobForInvoice] = useState<any | null>(null);
 
   // Month navigation state
-  const availableMonths = ['Julio 2026', 'Agosto 2026', 'Septiembre 2026', 'Octubre 2026'];
+  const availableMonths = ['July 2026', 'August 2026', 'September 2026', 'October 2026'];
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
   const [selectedCalendarDay, setSelectedCalendarDay] = useState(28);
 
   // Dynamic neon space heatmap status for all 31 days of the month
   const getDayStatus = (day: number) => {
     if (day === 12 || day === 18 || day === 27 || day === 29) {
-      return { level: 'red', count: 4, text: '🔴 Ocupado (4)' };
+      return { level: 'red', count: 4, text: '🔴 Full (4)' };
     }
     if (day === 5 || day === 10 || day === 15 || day === 22 || day === 26 || day === 28) {
-      return { level: 'cyan', count: 2, text: '⚡ Carga Media (2)' };
+      return { level: 'cyan', count: 2, text: '⚡ Moderate (2)' };
     }
-    return { level: 'green', count: day % 2 === 0 ? 1 : 0, text: '🟢 Libre' };
+    return { level: 'green', count: day % 2 === 0 ? 1 : 0, text: '🟢 Open' };
   };
 
   const jobs = [
     {
       id: 'VTC-90412',
       customer: 'Elena Rostova',
-      phone: '(702) 891-2390',
+      phone: '(702) 772-4116',
       email: 'elena.r@example.com',
       address: '10432 Summerlin Centre Dr, Las Vegas, NV 89135',
-      service: 'Montaje de TV 75" + Soundbar + Ocultador de Cableado',
-      surface: 'Drywall sobre vigas de madera con anclajes Toggle Bolt',
-      time: 'Hoy - 10:00 AM',
+      service: '75" TV Mounting + Soundbar + In-Wall Cord Concealment',
+      surface: 'Drywall over wood studs with Toggle Bolt anchors',
+      time: 'Today - 10:00 AM',
       assignedTo: 'Carlos',
-      status: 'En Proceso',
+      status: 'In Progress',
       laborCost: 150.00,
       hardwareCost: 15.00,
       total: 165.00
@@ -46,14 +46,14 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
     {
       id: 'VTC-90415',
       customer: 'Marcus Vance',
-      phone: '(702) 412-8831',
+      phone: '(702) 772-4116',
       email: 'marcus.vance@example.com',
       address: 'Veer Towers - 3722 S Las Vegas Blvd #1804',
-      service: 'Instalación Espejo 90 lbs + Galería de Arte 4 Piezas',
-      surface: 'Pared de Concreto / Mampostería en Condominio High-Rise',
-      time: 'Hoy - 2:30 PM',
+      service: '90 lbs Heavy Mirror Installation + 4-Piece Gallery Wall',
+      surface: 'Concrete / Masonry Wall in High-Rise Condo Tower',
+      time: 'Today - 2:30 PM',
       assignedTo: 'Jonathan',
-      status: 'Pendiente',
+      status: 'Pending',
       laborCost: 180.00,
       hardwareCost: 30.00,
       total: 210.00
@@ -61,14 +61,14 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
     {
       id: 'VTC-90420',
       customer: 'Robert Vance',
-      phone: '(702) 998-1124',
+      phone: '(702) 772-4116',
       email: 'robert.vance@example.com',
       address: '2214 Green Valley Pkwy, Henderson, NV 89014',
-      service: 'Ensamblaje Juego de Habitación King IKEA + Escritorio ($120/hr)',
-      surface: 'Superficie de madera / anclaje anti-vuelco a la pared',
-      time: 'Mañana - 9:00 AM',
+      service: 'IKEA King Bedroom Set Assembly + Desk ($120/hr)',
+      surface: 'Hardwood floor / safety anti-tip wall anchoring',
+      time: 'Tomorrow - 9:00 AM',
       assignedTo: 'Carlos',
-      status: 'Confirmado',
+      status: 'Confirmed',
       laborCost: 240.00,
       hardwareCost: 0.00,
       total: 240.00
@@ -90,7 +90,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
             <Logo size="sm" />
             <div>
               <h3 className="font-extrabold text-white text-base flex items-center gap-2">
-                <span>Portal de Operaciones & Facturación de Técnicos</span>
+                <span>Technician Operations & Invoicing Portal</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 font-bold uppercase tracking-wider">
                   Neon Hub
                 </span>
@@ -109,7 +109,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
               className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-400/50 text-cyan-300 hover:bg-cyan-500 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-[0_0_12px_rgba(0,240,255,0.2)]"
             >
               <FileText className="w-4 h-4 text-cyan-400" />
-              <span>Ver Formato Factura</span>
+              <span>Preview Invoice Model</span>
             </button>
 
             {/* Tech Selector */}
@@ -121,7 +121,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   activeTech === 'both' ? 'bg-cyan-500 text-black shadow-[0_0_10px_rgba(0,240,255,0.6)] font-black' : 'text-gray-400 hover:text-white'
                 }`}
               >
-                👥 Vista Compartida
+                👥 Shared View
               </button>
               <button
                 type="button"
@@ -187,22 +187,22 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
               <div className="flex items-center gap-4 text-xs font-bold">
                 <span className="flex items-center gap-1.5 text-emerald-400">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
-                  <span>Disponible (0-1)</span>
+                  <span>Open (0-1)</span>
                 </span>
                 <span className="flex items-center gap-1.5 text-cyan-300">
                   <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(0,240,255,0.9)]"></span>
-                  <span>Carga Media (2)</span>
+                  <span>Moderate (2)</span>
                 </span>
                 <span className="flex items-center gap-1.5 text-rose-400">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span>
-                  <span>Ocupado (3+)</span>
+                  <span>Full (3+)</span>
                 </span>
               </div>
             </div>
 
             {/* Dynamic Days Grid */}
             <div className="grid grid-cols-7 gap-2 text-center">
-              {['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'].map((dayName) => (
+              {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((dayName) => (
                 <div key={dayName} className="text-[11px] font-black text-cyan-400 tracking-wider py-1 uppercase">
                   {dayName}
                 </div>
@@ -236,7 +236,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   >
                     <span className="text-xs font-extrabold">{day}</span>
                     <div className="flex items-center justify-between text-[10px]">
-                      <span className="font-bold">{status.count} Trabajos</span>
+                      <span className="font-bold">{status.count} Jobs</span>
                       <span className={`w-2 h-2 rounded-full ${badgeDot}`}></span>
                     </div>
                   </button>
@@ -250,10 +250,10 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
             <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
               <h4 className="text-sm font-black uppercase text-cyan-400 tracking-wider flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span>Proyectos Asignados para el Día {selectedCalendarDay} de {availableMonths[currentMonthIndex]}</span>
+                <span>Assigned Projects for Day {selectedCalendarDay} of {availableMonths[currentMonthIndex]}</span>
               </h4>
               <span className="text-xs font-bold text-gray-400">
-                Técnicos: {activeTech === 'both' ? 'Carlos & Jonathan' : activeTech.toUpperCase()}
+                Technicians: {activeTech === 'both' ? 'Carlos & Jonathan' : activeTech.toUpperCase()}
               </span>
             </div>
 
@@ -274,7 +274,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                         {job.time}
                       </span>
                       <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[11px] font-extrabold">
-                        Asignado a: {job.assignedTo}
+                        Assigned to: {job.assignedTo}
                       </span>
                     </div>
 
@@ -290,14 +290,14 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                     </div>
 
                     <p className="text-[11px] text-gray-400 italic">
-                       Superficie: {job.surface}
+                      Surface: {job.surface}
                     </p>
                   </div>
 
                   {/* Actions & Price */}
                   <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-gray-800">
                     <div className="text-right">
-                      <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Neto:</span>
+                      <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Net:</span>
                       <span className="text-xl font-black text-cyan-400">${job.total.toFixed(2)} USD</span>
                     </div>
 
@@ -307,7 +307,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                       className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs transition-all shadow-[0_0_12px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
                     >
                       <FileText className="w-4 h-4" />
-                      <span>Generar Factura Legal</span>
+                      <span>Generate Official Invoice</span>
                     </button>
                   </div>
 
@@ -331,7 +331,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <span className="text-xs font-black text-cyan-400 block">FACTURA # {selectedJobForInvoice.id}</span>
+                    <span className="text-xs font-black text-cyan-400 block">INVOICE # {selectedJobForInvoice.id}</span>
                     <span className="text-[11px] text-gray-300 block font-semibold">contact@vegastaskcraft.com</span>
                   </div>
                   <button
@@ -350,17 +350,17 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                 {/* Provider & Client Grid */}
                 <div className="grid grid-cols-2 gap-4 border-b border-gray-800 pb-4">
                   <div className="space-y-1">
-                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">PROVEEDOR DEL SERVICIO:</span>
+                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">SERVICE PROVIDER:</span>
                     <span className="font-black text-white text-sm block">Vegas TaskCraft LLC</span>
                     <span className="text-gray-300 block">Las Vegas Valley, NV</span>
                     <span className="text-cyan-300 font-semibold block flex items-center gap-1">
                       <Mail className="w-3 h-3 text-cyan-400" /> contact@vegastaskcraft.com
                     </span>
-                    <span className="text-gray-300 block">(702) 555-TASK</span>
+                    <span className="text-gray-300 block">(702) 772-4116</span>
                   </div>
 
                   <div className="space-y-1 text-right">
-                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">CLIENTE RECEPTOR:</span>
+                    <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">RECIPIENT CLIENT:</span>
                     <span className="font-black text-white text-sm block">{selectedJobForInvoice.customer}</span>
                     <span className="text-gray-300 block">{selectedJobForInvoice.address}</span>
                     <span className="text-gray-300 block">{selectedJobForInvoice.phone}</span>
@@ -370,27 +370,27 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
                 {/* Service Details */}
                 <div>
-                  <span className="font-bold text-gray-400 block mb-1">Descripción del Servicio Realizado:</span>
+                  <span className="font-bold text-gray-400 block mb-1">Service Performed Description:</span>
                   <p className="font-extrabold text-white bg-[#070A12] p-3 rounded-xl border border-gray-800 leading-relaxed">
                     {selectedJobForInvoice.service}
                   </p>
                   <p className="text-[11px] text-gray-400 mt-1 italic">
-                    Superficie / Fijación: {selectedJobForInvoice.surface}
+                    Surface / Anchoring: {selectedJobForInvoice.surface}
                   </p>
                 </div>
 
                 {/* Charges Breakdown */}
                 <div className="space-y-2 pt-2 border-t border-gray-800">
                   <div className="flex justify-between">
-                    <span className="text-gray-300">Mano de Obra Certificada (Carlos / Jonathan):</span>
+                    <span className="text-gray-300">Certified Craftsman Labor (Carlos / Jonathan):</span>
                     <span className="font-bold text-white">${selectedJobForInvoice.laborCost.toFixed(2)} USD</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-300">Herrajes & Anclajes Heavy Duty:</span>
+                    <span className="text-gray-300">Heavy-Duty Hardware & Anchors:</span>
                     <span className="font-bold text-white">${selectedJobForInvoice.hardwareCost.toFixed(2)} USD</span>
                   </div>
                   <div className="flex justify-between text-base font-black text-cyan-400 pt-2 border-t border-gray-700">
-                    <span>Monto Total Neto Pagado:</span>
+                    <span>Total Net Amount Paid:</span>
                     <span>${selectedJobForInvoice.total.toFixed(2)} USD</span>
                   </div>
                 </div>
@@ -399,23 +399,23 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
               {/* Invoice Actions */}
               <div className="flex items-center justify-between pt-2">
                 <span className="text-[11px] text-gray-400 italic">
-                  Documento digital válido para propósitos de seguro e impuestos comerciales.
+                  Digital receipt valid for commercial tax and insurance purposes.
                 </span>
                 
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => alert(`Imprimiendo Factura ${selectedJobForInvoice.id}...`)}
+                    onClick={() => alert(`Printing Invoice ${selectedJobForInvoice.id}...`)}
                     className="px-4 py-2 rounded-xl bg-[#10172A] border border-gray-700 text-white font-bold text-xs hover:border-cyan-400 flex items-center gap-1.5"
                   >
-                    <Printer className="w-4 h-4 text-cyan-400" /> Imprimir Factura
+                    <Printer className="w-4 h-4 text-cyan-400" /> Print Invoice
                   </button>
                   <button
                     type="button"
-                    onClick={() => alert(`Descargando PDF Factura ${selectedJobForInvoice.id}...`)}
+                    onClick={() => alert(`Downloading PDF Invoice ${selectedJobForInvoice.id}...`)}
                     className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs hover:scale-105 transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
                   >
-                    <Download className="w-4 h-4" /> Descargar PDF
+                    <Download className="w-4 h-4" /> Download PDF
                   </button>
                 </div>
               </div>

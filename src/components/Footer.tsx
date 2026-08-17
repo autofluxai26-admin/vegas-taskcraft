@@ -17,9 +17,9 @@ export const Footer: React.FC = () => {
             <Logo size="md" />
 
             <div className="space-y-2 pt-2 text-xs">
-              <a href="tel:7025558275" className="flex items-center gap-2 text-cyan-400 font-extrabold text-base hover:underline">
+              <a href="tel:7027724116" className="flex items-center gap-2 text-cyan-400 font-extrabold text-base hover:underline">
                 <Phone className="w-5 h-5 text-cyan-400" />
-                <span>(702) 555-TASK</span>
+                <span>(702) 772-4116</span>
               </a>
               <a href="mailto:contact@vegastaskcraft.com" className="flex items-center gap-2 text-cyan-300 font-bold hover:underline">
                 <Mail className="w-4 h-4 text-cyan-400" />
@@ -36,29 +36,29 @@ export const Footer: React.FC = () => {
           {/* Middle Column: Quick Links */}
           <div className="lg:col-span-3 grid grid-cols-2 gap-4 text-xs font-semibold">
             <div>
-              <h4 className="font-bold text-cyan-400 uppercase tracking-wider mb-3 text-xs">Navegación</h4>
+              <h4 className="font-bold text-cyan-400 uppercase tracking-wider mb-3 text-xs">Navigation</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><a href="#inicio" className="hover:text-cyan-400">Inicio</a></li>
-                <li><a href="#servicios" className="hover:text-cyan-400">Servicios</a></li>
-                <li><a href="#nosotros" className="hover:text-cyan-400">Equipo</a></li>
-                <li><a href="#cobertura" className="hover:text-cyan-400">Cobertura</a></li>
+                <li><a href="#inicio" className="hover:text-cyan-400">Home</a></li>
+                <li><a href="#servicios" className="hover:text-cyan-400">Services</a></li>
+                <li><a href="#nosotros" className="hover:text-cyan-400">Our Team</a></li>
+                <li><a href="#cobertura" className="hover:text-cyan-400">Coverage</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-cyan-400 uppercase tracking-wider mb-3 text-xs">Garantía</h4>
+              <h4 className="font-bold text-cyan-400 uppercase tracking-wider mb-3 text-xs">Guarantee</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><span>Licenciados</span></li>
-                <li><span>Asegurados</span></li>
-                <li><span>Mismo Día</span></li>
-                <li><span>100% Precisión</span></li>
+                <li><span>Licensed</span></li>
+                <li><span>Insured</span></li>
+                <li><span>Same-Day</span></li>
+                <li><span>100% Precision</span></li>
               </ul>
             </div>
           </div>
 
           {/* Right Column: Quick Contact Form */}
           <div className="lg:col-span-5 bg-[#10172A] p-5 rounded-3xl border border-cyan-500/30 space-y-3 shadow-lg">
-            <h4 className="font-bold text-white text-xs uppercase tracking-wider">Contacto Rápido Directo</h4>
+            <h4 className="font-bold text-white text-xs uppercase tracking-wider">Direct Quick Contact</h4>
 
             {!formSent ? (
               <form onSubmit={(e) => { e.preventDefault(); setFormSent(true); }} className="space-y-2.5">
@@ -66,13 +66,13 @@ export const Footer: React.FC = () => {
                   <input
                     type="text"
                     required
-                    placeholder="Nombre"
+                    placeholder="Full Name"
                     className="w-full bg-[#070A12] border border-gray-700 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-cyan-400"
                   />
                   <input
                     type="text"
                     required
-                    placeholder="Dirección"
+                    placeholder="Address"
                     className="w-full bg-[#070A12] border border-gray-700 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-cyan-400"
                   />
                 </div>
@@ -80,7 +80,7 @@ export const Footer: React.FC = () => {
                 <input
                   type="email"
                   required
-                  placeholder="Email (contact@vegastaskcraft.com)"
+                  placeholder="Email Address"
                   className="w-full bg-[#070A12] border border-gray-700 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-cyan-400"
                 />
 
@@ -88,12 +88,12 @@ export const Footer: React.FC = () => {
                   type="submit"
                   className="w-full py-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]"
                 >
-                  SEND / ENVIAR MENSAJE
+                  SEND MESSAGE
                 </button>
               </form>
             ) : (
               <div className="text-center py-4 text-emerald-400 text-xs font-bold">
-                ✓ ¡Mensaje enviado con éxito! Nos comunicaremos a tu email en breve.
+                ✓ Message sent successfully! Our team will reply shortly.
               </div>
             )}
           </div>
