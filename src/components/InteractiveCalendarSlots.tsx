@@ -6,8 +6,17 @@ interface InteractiveCalendarSlotsProps {
 }
 
 export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> = ({ onSelectSlot }) => {
-  const months = ['July 2026', 'August 2026', 'September 2026', 'October 2026'];
-  const [currentMonthIdx, setCurrentMonthIdx] = useState(1);
+  const months = [
+    'January 2026', 'February 2026', 'March 2026', 'April 2026',
+    'May 2026', 'June 2026', 'July 2026', 'August 2026',
+    'September 2026', 'October 2026', 'November 2026', 'December 2026',
+    'January 2027', 'February 2027', 'March 2027', 'April 2027',
+    'May 2027', 'June 2027', 'July 2027', 'August 2027',
+    'September 2027', 'October 2027', 'November 2027', 'December 2027'
+  ];
+
+  // Default to August 2026 (index 7)
+  const [currentMonthIdx, setCurrentMonthIdx] = useState(7);
   const [selectedDay, setSelectedDay] = useState<number>(31);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [liveBookings, setLiveBookings] = useState<any[]>([]);
@@ -20,14 +29,12 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
         if (data.success && Array.isArray(data.bookings)) {
           list = data.bookings;
         }
-        // Merge local storage bookings
         try {
           const local = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
           if (Array.isArray(local)) {
             list = [...local, ...list];
           }
         } catch (e) {}
-
         setLiveBookings(list);
       })
       .catch(() => {
@@ -38,14 +45,16 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
       });
   };
 
-  // Fetch real-time active bookings from API & localStorage
   useEffect(() => {
     fetchBookings();
     window.addEventListener('vtc_booking_updated', fetchBookings);
     return () => window.removeEventListener('vtc_booking_updated', fetchBookings);
   }, []);
 
-  // Dynamic slot calculation per day
+  const currentMonthName = months[currentMonthIdx]; // e.g. "August 2026"
+  const currentMonthWord = currentMonthName.split(' ')[0]; // e.g. "August"
+
+  // Dynamic slot calculation for selected month & day
   const getSlotsForDay = (day: number) => {
     const baseSlots = [
       { time: '09:00 AM - 11:00 AM', status: 'Available', tech: 'Carlos Chavez' },
@@ -54,11 +63,14 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
       { time: '04:30 PM - 06:30 PM', status: 'Available', tech: 'Jonathan Rodriguez' },
     ];
 
-    // Check if any live booking exists for this day
+    // Filter bookings strictly by MONTH and DAY
     const dayBookings = liveBookings.filter(b => {
       if (!b.date) return false;
-      const dateStr = String(b.date);
-      return dateStr.includes(` ${day},`) || dateStr.includes(` ${day} `) || dateStr.endsWith(` ${day}`);
+      const bDate = String(b.date);
+      // Check if booking date includes both month name (e.g. August) AND day number
+      const matchesMonth = bDate.toLowerCase().includes(currentMonthWord.toLowerCase());
+      const matchesDay = bDate.includes(` ${day},`) || bDate.includes(` ${day} `) || bDate.endsWith(` ${day}`);
+      return matchesMonth && matchesDay;
     });
 
     return baseSlots.map(slot => {
@@ -66,7 +78,7 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
         const slotTimeStr = slot.time.toLowerCase();
         const bTime = (b.time || b.timeSlot || '').toLowerCase();
         return bTime === slotTimeStr || bTime.includes(slotTimeStr.substring(0, 5));
-      }) || (day === 28 && slot.time.includes('02:00 PM'));
+      }) || (currentMonthWord === 'August' && day === 28 && slot.time.includes('02:00 PM'));
 
       return {
         ...slot,
@@ -76,7 +88,12 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
   };
 
   const timeSlots = getSlotsForDay(selectedDay);
-  const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
+
+  // Dynamic calculation of days count in current month
+  const monthNumber = (currentMonthIdx % 12) + 1;
+  const yearNumber = 2026 + Math.floor(currentMonthIdx / 12);
+  const totalDaysInMonth = new Date(yearNumber, monthNumber, 0).getDate();
+  const daysInMonthArray = Array.from({ length: totalDaysInMonth }, (_, i) => i + 1);
 
   return (
     <div className="bg-[#10172A] p-6 rounded-3xl border border-cyan-500/30 space-y-6 shadow-xl">
@@ -94,7 +111,7 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
           
           <h3 className="text-lg font-black text-white flex items-center gap-2">
             <CalendarIcon className="w-5 h-5 text-cyan-400" />
-            <span>{months[currentMonthIdx]}</span>
+            <span>{currentMonthName}</span>
           </h3>
 
           <button
@@ -111,13 +128,13 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
         </span>
       </div>
 
-      {/* Calendar Grid */}
+      {/* Calendar Days Grid */}
       <div className="grid grid-cols-7 gap-2 text-center text-xs">
         {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((d) => (
           <span key={d} className="font-black text-cyan-400 tracking-wider py-1 uppercase">{d}</span>
         ))}
 
-        {daysInMonth.map((day) => {
+        {daysInMonthArray.map((day) => {
           const isSelected = selectedDay === day;
           const hasBookings = getSlotsForDay(day).some(s => s.status === 'Booked');
 
@@ -125,7 +142,10 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
             <button
               key={day}
               type="button"
-              onClick={() => setSelectedDay(day)}
+              onClick={() => {
+                setSelectedDay(day);
+                setSelectedTimeSlot(null);
+              }}
               className={`p-2.5 rounded-xl border font-bold transition-all text-xs flex flex-col items-center justify-center ${
                 isSelected
                   ? 'bg-cyan-500 text-black border-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.6)] font-black scale-105'
@@ -144,7 +164,7 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
       <div className="pt-4 border-t border-gray-800 space-y-4">
         <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
           <Clock className="w-4 h-4 text-cyan-400" />
-          <span>Available Slots for Day {selectedDay} of {months[currentMonthIdx]}:</span>
+          <span>Available Slots for Day {selectedDay} of {currentMonthName}:</span>
         </h4>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -154,7 +174,7 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
               onClick={() => {
                 if (slot.status === 'Available') {
                   setSelectedTimeSlot(slot.time);
-                  onSelectSlot(`${months[currentMonthIdx]} ${selectedDay}`, slot.time, slot.tech);
+                  onSelectSlot(`${currentMonthName} ${selectedDay}`, slot.time, slot.tech);
                 }
               }}
               className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between ${
