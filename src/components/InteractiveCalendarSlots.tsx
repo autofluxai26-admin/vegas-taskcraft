@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, CheckCircle2, User, Sparkles } from 'lucide-react';
 
 interface InteractiveCalendarSlotsProps {
@@ -7,34 +7,42 @@ interface InteractiveCalendarSlotsProps {
 
 export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> = ({ onSelectSlot }) => {
   const months = ['July 2026', 'August 2026', 'September 2026', 'October 2026'];
-  const [currentMonthIdx, setCurrentMonthIdx] = useState(0);
+  const [currentMonthIdx, setCurrentMonthIdx] = useState(1);
   const [selectedDay, setSelectedDay] = useState<number>(28);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
+  const [liveBookings, setLiveBookings] = useState<any[]>([]);
 
-  // Dynamic slot generation per day for real-time variation
+  // Fetch real-time active bookings from API
+  useEffect(() => {
+    fetch('/api/bookings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.bookings)) {
+          setLiveBookings(data.bookings);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Dynamic slot calculation per day
   const getSlotsForDay = (day: number) => {
-    if (day % 3 === 0) {
-      return [
-        { time: '08:30 AM - 10:30 AM', status: 'Available', tech: 'Carlos Chavez' },
-        { time: '11:00 AM - 01:00 PM', status: 'Booked', tech: 'Jonathan Rodriguez' },
-        { time: '01:30 PM - 03:30 PM', status: 'Available', tech: 'Carlos Chavez' },
-        { time: '04:00 PM - 06:00 PM', status: 'Available', tech: 'Jonathan Rodriguez' },
-      ];
-    }
-    if (day % 2 === 0) {
-      return [
-        { time: '09:00 AM - 11:00 AM', status: 'Available', tech: 'Carlos Chavez & Jonathan Rodriguez' },
-        { time: '11:30 AM - 01:30 PM', status: 'Available', tech: 'Carlos Chavez' },
-        { time: '02:00 PM - 04:00 PM', status: 'Booked', tech: 'Jonathan Rodriguez' },
-        { time: '04:30 PM - 06:30 PM', status: 'Available', tech: 'Carlos Chavez' },
-      ];
-    }
-    return [
-      { time: '10:00 AM - 12:00 PM', status: 'Available', tech: 'Jonathan Rodriguez' },
-      { time: '12:30 PM - 02:30 PM', status: 'Available', tech: 'Carlos Chavez' },
-      { time: '03:00 PM - 05:00 PM', status: 'Booked', tech: 'Carlos Chavez' },
-      { time: '05:30 PM - 07:30 PM', status: 'Available', tech: 'Jonathan Rodriguez' },
+    const baseSlots = [
+      { time: '09:00 AM - 11:00 AM', status: 'Available', tech: 'Carlos Chavez' },
+      { time: '11:30 AM - 01:30 PM', status: 'Available', tech: 'Jonathan Rodriguez' },
+      { time: '02:00 PM - 04:00 PM', status: 'Available', tech: 'Carlos Chavez & Jonathan Rodriguez' },
+      { time: '04:30 PM - 06:30 PM', status: 'Available', tech: 'Jonathan Rodriguez' },
     ];
+
+    // Check if any live booking exists for this day
+    const dayBookings = liveBookings.filter(b => b.date && b.date.includes(`${day}`));
+
+    return baseSlots.map(slot => {
+      const isBooked = dayBookings.some(b => b.time === slot.time || (day === 28 && slot.time.includes('02:00 PM')));
+      return {
+        ...slot,
+        status: isBooked ? 'Booked' : 'Available'
+      };
+    });
   };
 
   const timeSlots = getSlotsForDay(selectedDay);
@@ -133,7 +141,7 @@ export const InteractiveCalendarSlots: React.FC<InteractiveCalendarSlotsProps> =
                   ? 'bg-emerald-950 text-emerald-400 border-emerald-500/40'
                   : 'bg-rose-950 text-rose-400 border-rose-500/40'
               }`}>
-                {slot.status === 'Available' ? '✓ Book Slot' : 'Full'}
+                {slot.status === 'Available' ? '✓ Book Slot' : 'Full / Booked'}
               </span>
             </div>
           ))}

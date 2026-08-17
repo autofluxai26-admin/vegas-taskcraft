@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Calendar as CalendarIcon, Clock, MapPin, Phone, User, CheckCircle2, FileText, DollarSign, Wrench, ChevronLeft, ChevronRight, Printer, Download, Sparkles, Mail, Lock, ShieldCheck, Edit3 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Calendar as CalendarIcon, Clock, MapPin, Phone, User, CheckCircle2, FileText, DollarSign, Wrench, ChevronLeft, ChevronRight, Printer, Download, Sparkles, Mail, Lock, ShieldCheck, Edit3, BarChart3, Layers, AlertCircle } from 'lucide-react';
 import { Logo } from './Logo';
 
 interface TechPortalProps {
@@ -13,36 +13,16 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
   const [loginCreds, setLoginCreds] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
+  const [activeTab, setActiveTab] = useState<'daily' | 'weekly'>('daily');
   const [activeTech, setActiveTech] = useState<'both' | 'carlos' | 'jonathan'>('both');
   const [selectedJobForInvoice, setSelectedJobForInvoice] = useState<any | null>(null);
 
   // Month navigation state
   const availableMonths = ['July 2026', 'August 2026', 'September 2026', 'October 2026'];
-  const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
+  const [currentMonthIndex, setCurrentMonthIndex] = useState(1);
   const [selectedCalendarDay, setSelectedCalendarDay] = useState(28);
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loginCreds.password === 'taskcraft2026' || loginCreds.password === 'admin' || loginCreds.password === '1234') {
-      setIsAuthenticated(true);
-      setLoginError('');
-    } else {
-      setLoginError('Invalid password. Default password is: taskcraft2026');
-    }
-  };
-
-  // Dynamic neon space heatmap status for all 31 days of the month
-  const getDayStatus = (day: number) => {
-    if (day === 12 || day === 18 || day === 27 || day === 29) {
-      return { level: 'red', count: 4, text: '🔴 Full (4)' };
-    }
-    if (day === 5 || day === 10 || day === 15 || day === 22 || day === 26 || day === 28) {
-      return { level: 'cyan', count: 2, text: '⚡ Moderate (2)' };
-    }
-    return { level: 'green', count: day % 2 === 0 ? 1 : 0, text: '🟢 Open' };
-  };
-
-  const [jobs, setJobs] = useState([
+  const [jobs, setJobs] = useState<any[]>([
     {
       id: 'VTC-90412',
       customer: 'Elena Rostova',
@@ -51,9 +31,10 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       address: '10432 Summerlin Centre Dr, Las Vegas, NV 89135',
       service: '75" TV Mounting + Soundbar + In-Wall Cord Concealment',
       surface: 'Drywall over wood studs with Toggle Bolt anchors',
-      time: 'Today - 10:00 AM',
+      time: '10:00 AM - 12:00 PM',
       assignedTo: 'Carlos Chavez',
       status: 'In Progress',
+      bookingType: 'Service Checkout',
       laborCost: 150.00,
       hardwareCost: 15.00,
       total: 165.00
@@ -66,9 +47,10 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       address: 'Veer Towers - 3722 S Las Vegas Blvd #1804',
       service: '90 lbs Heavy Mirror Installation + 4-Piece Gallery Wall',
       surface: 'Concrete / Masonry Wall in High-Rise Condo Tower',
-      time: 'Today - 2:30 PM',
+      time: '02:00 PM - 04:00 PM',
       assignedTo: 'Jonathan Rodriguez',
       status: 'Pending',
+      bookingType: 'Service Checkout',
       laborCost: 180.00,
       hardwareCost: 30.00,
       total: 210.00
@@ -81,23 +63,72 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
       address: '2214 Green Valley Pkwy, Henderson, NV 89014',
       service: 'IKEA King Bedroom Set Assembly + Desk ($120/hr)',
       surface: 'Hardwood floor / safety anti-tip wall anchoring',
-      time: 'Tomorrow - 9:00 AM',
+      time: '09:00 AM - 11:00 AM',
       assignedTo: 'Carlos Chavez',
       status: 'Confirmed',
+      bookingType: 'Service Checkout',
       laborCost: 240.00,
       hardwareCost: 0.00,
       total: 240.00
+    },
+    {
+      id: 'VTC-90425',
+      customer: 'Sarah Jenkins',
+      phone: '(702) 772-4116',
+      email: 'sarah.j@example.com',
+      address: '9021 Red Rock Canyon Rd, Summerlin, NV 89138',
+      service: 'On-Site Estimate & Measurement Visit ($25)',
+      surface: 'Living room high ceiling wall inspection',
+      time: '04:00 PM - 05:00 PM',
+      assignedTo: 'Jonathan Rodriguez',
+      status: 'Scheduled Visit',
+      bookingType: 'On-Site Estimate ($25)',
+      laborCost: 25.00,
+      hardwareCost: 0.00,
+      total: 25.00
     }
   ]);
 
+  // Fetch live bookings from server API
+  useEffect(() => {
+    fetch('/api/bookings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.bookings)) {
+          setJobs(data.bookings);
+        }
+      })
+      .catch(() => {});
+  }, [isOpen]);
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginCreds.password === 'taskcraft2026' || loginCreds.password === 'admin' || loginCreds.password === '1234') {
+      setIsAuthenticated(true);
+      setLoginError('');
+    } else {
+      setLoginError('Invalid password. Default password is: taskcraft2026');
+    }
+  };
+
+  // Heatmap status for calendar days
+  const getDayStatus = (day: number) => {
+    if (day === 12 || day === 18 || day === 27 || day === 29) {
+      return { level: 'red', count: 4, text: '🔴 Full (4)' };
+    }
+    if (day === 5 || day === 10 || day === 15 || day === 22 || day === 26 || day === 28) {
+      return { level: 'cyan', count: 2, text: '⚡ Moderate (2)' };
+    }
+    return { level: 'green', count: day % 2 === 0 ? 1 : 0, text: '🟢 Open' };
+  };
+
   if (!isOpen) return null;
 
-  // Unauthenticated Technician Login Screen
+  // Login Modal Screen
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
         <div className="relative w-full max-w-md bg-[#070A12] border-2 border-cyan-500/50 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.4)] text-white space-y-6">
-          
           <div className="flex items-center justify-between border-b border-gray-800 pb-4">
             <Logo size="sm" />
             <button onClick={onClose} className="p-1.5 rounded-xl bg-[#10172A] text-gray-400 hover:text-white">
@@ -151,7 +182,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
               LOG IN TO PORTAL
             </button>
           </form>
-
         </div>
       </div>
     );
@@ -159,6 +189,11 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
 
   const filteredJobs = activeTech === 'both' ? jobs : jobs.filter(j => j.assignedTo.toLowerCase().includes(activeTech));
   const daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
+
+  // Weekly Stats Calculations
+  const weeklyServicesCount = jobs.filter(j => j.bookingType === 'Service Checkout').length;
+  const weeklyEstimatesCount = jobs.filter(j => j.bookingType !== 'Service Checkout').length;
+  const weeklyTotalRevenue = jobs.reduce((sum, j) => sum + (j.total || 0), 0);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
@@ -179,44 +214,50 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Quick Invoice Model Preview Button */}
-            <button
-              type="button"
-              onClick={() => setSelectedJobForInvoice(jobs[0])}
-              className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-400/50 text-cyan-300 hover:bg-cyan-500 hover:text-black font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-[0_0_12px_rgba(0,240,255,0.2)]"
-            >
-              <FileText className="w-4 h-4 text-cyan-400" />
-              <span>Invoice Generator</span>
-            </button>
-
-            {/* Tech Selector */}
+            {/* View Switcher: Daily Calendar vs Weekly Activity Summary */}
             <div className="flex bg-[#070A12] p-1 rounded-xl border border-cyan-500/30 text-xs font-bold">
               <button
                 type="button"
-                onClick={() => setActiveTech('both')}
+                onClick={() => setActiveTab('daily')}
                 className={`px-3 py-1.5 rounded-lg transition-all ${
-                  activeTech === 'both' ? 'bg-cyan-500 text-black shadow-[0_0_10px_rgba(0,240,255,0.6)] font-black' : 'text-gray-400 hover:text-white'
+                  activeTab === 'daily' ? 'bg-cyan-500 text-black font-black shadow-[0_0_10px_rgba(0,240,255,0.6)]' : 'text-gray-400 hover:text-white'
                 }`}
               >
-                👥 Shared View
+                📅 Daily View
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('weekly')}
+                className={`px-3 py-1.5 rounded-lg transition-all ${
+                  activeTab === 'weekly' ? 'bg-cyan-500 text-black font-black shadow-[0_0_10px_rgba(0,240,255,0.6)]' : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                📊 Weekly Summary
+              </button>
+            </div>
+
+            {/* Tech Filter */}
+            <div className="hidden sm:flex bg-[#070A12] p-1 rounded-xl border border-cyan-500/30 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setActiveTech('both')}
+                className={`px-2.5 py-1 rounded-lg transition-all ${activeTech === 'both' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400' : 'text-gray-400'}`}
+              >
+                All
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTech('carlos')}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  activeTech === 'carlos' ? 'bg-cyan-500 text-black shadow-[0_0_10px_rgba(0,240,255,0.6)] font-black' : 'text-gray-400 hover:text-white'
-                }`}
+                className={`px-2.5 py-1 rounded-lg transition-all ${activeTech === 'carlos' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400' : 'text-gray-400'}`}
               >
-                👤 Carlos Chavez
+                Carlos
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTech('jonathan')}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  activeTech === 'jonathan' ? 'bg-cyan-500 text-black shadow-[0_0_10px_rgba(0,240,255,0.6)] font-black' : 'text-gray-400 hover:text-white'
-                }`}
+                className={`px-2.5 py-1 rounded-lg transition-all ${activeTech === 'jonathan' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400' : 'text-gray-400'}`}
               >
-                👤 Jonathan Rodriguez
+                Jonathan
               </button>
             </div>
 
@@ -229,168 +270,252 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Content Body */}
+        {/* Body Content */}
         <div className="p-6 overflow-y-auto space-y-6 custom-scrollbar flex-1">
           
-          {/* Calendar Heatmap Section */}
-          <div className="bg-[#10172A]/90 p-5 rounded-2xl border border-cyan-500/30 space-y-4 shadow-lg">
-            
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setCurrentMonthIndex((prev) => (prev > 0 ? prev - 1 : availableMonths.length - 1))}
-                  className="p-2 rounded-lg bg-[#070A12] border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500 hover:text-black transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                
-                <h4 className="text-lg font-black text-white flex items-center gap-2">
-                  <CalendarIcon className="w-5 h-5 text-cyan-400" />
-                  <span>{availableMonths[currentMonthIndex]}</span>
-                </h4>
-
-                <button
-                  type="button"
-                  onClick={() => setCurrentMonthIndex((prev) => (prev < availableMonths.length - 1 ? prev + 1 : 0))}
-                  className="p-2 rounded-lg bg-[#070A12] border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500 hover:text-black transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Status Legend */}
-              <div className="flex items-center gap-4 text-xs font-bold">
-                <span className="flex items-center gap-1.5 text-emerald-400">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
-                  <span>Open (0-1)</span>
-                </span>
-                <span className="flex items-center gap-1.5 text-cyan-300">
-                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(0,240,255,0.9)]"></span>
-                  <span>Moderate (2)</span>
-                </span>
-                <span className="flex items-center gap-1.5 text-rose-400">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span>
-                  <span>Full (3+)</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Dynamic Days Grid */}
-            <div className="grid grid-cols-7 gap-2 text-center">
-              {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((dayName) => (
-                <div key={dayName} className="text-[11px] font-black text-cyan-400 tracking-wider py-1 uppercase">
-                  {dayName}
-                </div>
-              ))}
-
-              {daysArray.map((day) => {
-                const status = getDayStatus(day);
-                const isSelected = selectedCalendarDay === day;
-
-                let borderClass = 'border-gray-800 bg-[#070A12] text-gray-300';
-                let badgeDot = 'bg-emerald-400';
-
-                if (status.level === 'cyan') {
-                  borderClass = 'border-cyan-500/40 bg-cyan-950/40 text-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.2)]';
-                  badgeDot = 'bg-cyan-400 shadow-[0_0_6px_rgba(0,240,255,0.9)]';
-                } else if (status.level === 'red') {
-                  borderClass = 'border-rose-500/40 bg-rose-950/30 text-rose-300';
-                  badgeDot = 'bg-rose-500';
-                }
-
-                if (isSelected) {
-                  borderClass = 'border-cyan-400 bg-cyan-500/20 text-white ring-2 ring-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.5)] font-black';
-                }
-
-                return (
-                  <button
-                    key={day}
-                    type="button"
-                    onClick={() => setSelectedCalendarDay(day)}
-                    className={`p-2 rounded-xl border text-left transition-all hover:scale-105 flex flex-col justify-between h-16 ${borderClass}`}
-                  >
-                    <span className="text-xs font-extrabold">{day}</span>
-                    <div className="flex items-center justify-between text-[10px]">
-                      <span className="font-bold">{status.count} Jobs</span>
-                      <span className={`w-2 h-2 rounded-full ${badgeDot}`}></span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Jobs Assigned for Selected Day */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
-              <h4 className="text-sm font-black uppercase text-cyan-400 tracking-wider flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span>Assigned Projects for Day {selectedCalendarDay} of {availableMonths[currentMonthIndex]}</span>
-              </h4>
-              <span className="text-xs font-bold text-gray-400">
-                Technicians: {activeTech === 'both' ? 'Carlos Chavez & Jonathan Rodriguez' : activeTech.toUpperCase()}
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {filteredJobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 hover:border-cyan-400 transition-all shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-4"
-                >
-                  <div className="space-y-2 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-md bg-cyan-950 text-cyan-400 border border-cyan-500/40 text-xs font-black">
-                        {job.id}
-                      </span>
-                      <h5 className="font-black text-white text-base">{job.customer}</h5>
-                      <span className="text-xs text-cyan-300 font-bold flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-cyan-400" />
-                        {job.time}
-                      </span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[11px] font-extrabold">
-                        Assigned to: {job.assignedTo}
-                      </span>
-                    </div>
-
-                    <p className="text-xs font-extrabold text-cyan-300">{job.service}</p>
-
-                    <div className="flex flex-wrap gap-4 text-xs text-gray-300 pt-1">
-                      <span className="flex items-center gap-1">
-                        <Phone className="w-3.5 h-3.5 text-cyan-400" /> {job.phone}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-cyan-400" /> {job.address}
-                      </span>
-                    </div>
-
-                    <p className="text-[11px] text-gray-400 italic">
-                      Surface: {job.surface}
-                    </p>
+          {activeTab === 'weekly' ? (
+            /* WEEKLY ACTIVITY SUMMARY DASHBOARD */
+            <div className="space-y-6 animate-in fade-in duration-200">
+              
+              {/* Summary Metrics Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-1 shadow-lg">
+                  <div className="flex justify-between items-center text-xs font-bold text-gray-400">
+                    <span>Weekly Active Jobs:</span>
+                    <Wrench className="w-4 h-4 text-cyan-400" />
                   </div>
+                  <span className="text-3xl font-black text-white">{jobs.length} Scheduled</span>
+                  <p className="text-[11px] text-cyan-400 font-semibold">{weeklyServicesCount} Installations • {weeklyEstimatesCount} On-Site Estimates</p>
+                </div>
 
-                  {/* Actions & Price */}
-                  <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-gray-800">
-                    <div className="text-right">
-                      <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Net:</span>
-                      <span className="text-xl font-black text-cyan-400">${job.total.toFixed(2)} USD</span>
+                <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-1 shadow-lg">
+                  <div className="flex justify-between items-center text-xs font-bold text-gray-400">
+                    <span>Weekly Projected Total:</span>
+                    <DollarSign className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <span className="text-3xl font-black text-cyan-400">${weeklyTotalRevenue.toFixed(2)} USD</span>
+                  <p className="text-[11px] text-gray-400 font-semibold">Flat rates with 0% hidden taxes</p>
+                </div>
+
+                <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-1 shadow-lg">
+                  <div className="flex justify-between items-center text-xs font-bold text-gray-400">
+                    <span>Technician Units Status:</span>
+                    <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                  </div>
+                  <span className="text-3xl font-black text-emerald-400">100% Active</span>
+                  <p className="text-[11px] text-gray-300 font-semibold">Carlos Chavez & Jonathan Rodriguez</p>
+                </div>
+              </div>
+
+              {/* Weekly Activity Detailed Itinerary */}
+              <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-4">
+                <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+                  <h4 className="text-sm font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-cyan-400" />
+                    <span>Weekly Activity Breakdown (Estimates vs Service Jobs)</span>
+                  </h4>
+                  <span className="text-xs text-gray-400 font-bold">Week of August 24 - 30, 2026</span>
+                </div>
+
+                <div className="space-y-3">
+                  {filteredJobs.map((job) => (
+                    <div key={job.id} className="bg-[#070A12] p-4 rounded-xl border border-gray-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded-full font-extrabold text-[10px] ${job.bookingType === 'Service Checkout' ? 'bg-cyan-950 text-cyan-300 border border-cyan-500/40' : 'bg-amber-950 text-amber-300 border border-amber-500/40'}`}>
+                            {job.bookingType || 'Service Job'}
+                          </span>
+                          <span className="font-black text-white">{job.id}</span>
+                          <span className="text-gray-400 font-semibold">• {job.date} ({job.time})</span>
+                        </div>
+                        <p className="font-extrabold text-cyan-300 text-sm">{job.service}</p>
+                        <p className="text-gray-300 font-semibold">Client: {job.customer} • Address: {job.address}</p>
+                      </div>
+
+                      <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 border-t sm:border-t-0 border-gray-800 pt-2 sm:pt-0">
+                        <div className="text-right">
+                          <span className="text-[10px] text-gray-400 block font-bold">Assigned Tech:</span>
+                          <span className="font-bold text-white">{job.assignedTo}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedJobForInvoice(job)}
+                          className="px-3 py-1.5 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-bold hover:bg-cyan-500 hover:text-black transition-all"
+                        >
+                          Invoice
+                        </button>
+                      </div>
                     </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          ) : (
+            /* DAILY CALENDAR HEATMAP & PROJECTS */
+            <div className="space-y-6">
+              
+              {/* Heatmap Section */}
+              <div className="bg-[#10172A]/90 p-5 rounded-2xl border border-cyan-500/30 space-y-4 shadow-lg">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentMonthIndex((prev) => (prev > 0 ? prev - 1 : availableMonths.length - 1))}
+                      className="p-2 rounded-lg bg-[#070A12] border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500 hover:text-black transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    
+                    <h4 className="text-lg font-black text-white flex items-center gap-2">
+                      <CalendarIcon className="w-5 h-5 text-cyan-400" />
+                      <span>{availableMonths[currentMonthIndex]}</span>
+                    </h4>
 
                     <button
                       type="button"
-                      onClick={() => setSelectedJobForInvoice(job)}
-                      className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs transition-all shadow-[0_0_12px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
+                      onClick={() => setCurrentMonthIndex((prev) => (prev < availableMonths.length - 1 ? prev + 1 : 0))}
+                      className="p-2 rounded-lg bg-[#070A12] border border-cyan-500/40 text-cyan-400 hover:bg-cyan-500 hover:text-black transition-colors"
                     >
-                      <FileText className="w-4 h-4" />
-                      <span>Generate Official Invoice</span>
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
 
+                  {/* Status Legend */}
+                  <div className="flex items-center gap-4 text-xs font-bold">
+                    <span className="flex items-center gap-1.5 text-emerald-400">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+                      <span>Open (0-1)</span>
+                    </span>
+                    <span className="flex items-center gap-1.5 text-cyan-300">
+                      <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(0,240,255,0.9)]"></span>
+                      <span>Moderate (2)</span>
+                    </span>
+                    <span className="flex items-center gap-1.5 text-rose-400">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></span>
+                      <span>Full (3+)</span>
+                    </span>
+                  </div>
                 </div>
-              ))}
+
+                {/* Days Grid */}
+                <div className="grid grid-cols-7 gap-2 text-center">
+                  {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((dayName) => (
+                    <div key={dayName} className="text-[11px] font-black text-cyan-400 tracking-wider py-1 uppercase">
+                      {dayName}
+                    </div>
+                  ))}
+
+                  {daysArray.map((day) => {
+                    const status = getDayStatus(day);
+                    const isSelected = selectedCalendarDay === day;
+
+                    let borderClass = 'border-gray-800 bg-[#070A12] text-gray-300';
+                    let badgeDot = 'bg-emerald-400';
+
+                    if (status.level === 'cyan') {
+                      borderClass = 'border-cyan-500/40 bg-cyan-950/40 text-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.2)]';
+                      badgeDot = 'bg-cyan-400 shadow-[0_0_6px_rgba(0,240,255,0.9)]';
+                    } else if (status.level === 'red') {
+                      borderClass = 'border-rose-500/40 bg-rose-950/30 text-rose-300';
+                      badgeDot = 'bg-rose-500';
+                    }
+
+                    if (isSelected) {
+                      borderClass = 'border-cyan-400 bg-cyan-500/20 text-white ring-2 ring-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.5)] font-black';
+                    }
+
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => setSelectedCalendarDay(day)}
+                        className={`p-2 rounded-xl border text-left transition-all hover:scale-105 flex flex-col justify-between h-16 ${borderClass}`}
+                      >
+                        <span className="text-xs font-extrabold">{day}</span>
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="font-bold">{status.count} Jobs</span>
+                          <span className={`w-2 h-2 rounded-full ${badgeDot}`}></span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Jobs Assigned for Selected Day */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+                  <h4 className="text-sm font-black uppercase text-cyan-400 tracking-wider flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                    <span>Assigned Projects for Day {selectedCalendarDay} of {availableMonths[currentMonthIndex]}</span>
+                  </h4>
+                  <span className="text-xs font-bold text-gray-400">
+                    Technicians: {activeTech === 'both' ? 'Carlos Chavez & Jonathan Rodriguez' : activeTech.toUpperCase()}
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {filteredJobs.map((job) => (
+                    <div
+                      key={job.id}
+                      className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 hover:border-cyan-400 transition-all shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+                    >
+                      <div className="space-y-2 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="px-2.5 py-1 rounded-md bg-cyan-950 text-cyan-400 border border-cyan-500/40 text-xs font-black">
+                            {job.id}
+                          </span>
+                          <h5 className="font-black text-white text-base">{job.customer}</h5>
+                          <span className="text-xs text-cyan-300 font-bold flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                            {job.time}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[11px] font-extrabold">
+                            Assigned to: {job.assignedTo}
+                          </span>
+                        </div>
+
+                        <p className="text-xs font-extrabold text-cyan-300">{job.service}</p>
+
+                        <div className="flex flex-wrap gap-4 text-xs text-gray-300 pt-1">
+                          <span className="flex items-center gap-1">
+                            <Phone className="w-3.5 h-3.5 text-cyan-400" /> {job.phone}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5 text-cyan-400" /> {job.address}
+                          </span>
+                        </div>
+
+                        <p className="text-[11px] text-gray-400 italic">
+                          Surface: {job.surface}
+                        </p>
+                      </div>
+
+                      {/* Actions & Price */}
+                      <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-gray-800">
+                        <div className="text-right">
+                          <span className="text-[10px] text-gray-400 block uppercase font-bold">Total Net:</span>
+                          <span className="text-xl font-black text-cyan-400">${job.total.toFixed(2)} USD</span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setSelectedJobForInvoice(job)}
+                          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black text-xs transition-all shadow-[0_0_12px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
+                        >
+                          <FileText className="w-4 h-4" />
+                          <span>Generate Official Invoice</span>
+                        </button>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              </div>
+
             </div>
-          </div>
+          )}
 
         </div>
 
@@ -399,7 +524,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
             <div className="relative w-full max-w-3xl bg-[#070A12] border-2 border-cyan-400 rounded-3xl p-6 shadow-[0_0_50px_rgba(0,240,255,0.5)] text-white space-y-6 max-h-[92vh] flex flex-col">
               
-              {/* Invoice Header */}
               <div className="flex items-center justify-between border-b border-cyan-500/30 pb-4 shrink-0">
                 <div className="flex items-center gap-3">
                   <Logo size="md" />
@@ -420,10 +544,8 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Invoice Printable Body */}
+              {/* Invoice Body */}
               <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/30 space-y-4 text-xs overflow-y-auto custom-scrollbar flex-1">
-                
-                {/* Invoice ID & Date inputs */}
                 <div className="grid grid-cols-2 gap-4 bg-[#070A12] p-3 rounded-xl border border-gray-800">
                   <div>
                     <label className="block text-[10px] font-bold text-gray-400">Invoice Code / ID:</label>
@@ -445,7 +567,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   </div>
                 </div>
 
-                {/* Provider & Client Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-800 pb-4">
                   <div className="space-y-2">
                     <span className="font-extrabold text-cyan-400 block text-xs uppercase tracking-wider">SERVICE PROVIDER:</span>
@@ -485,7 +606,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   </div>
                 </div>
 
-                {/* Service Details */}
                 <div className="space-y-2">
                   <label className="font-bold text-gray-300 block">Service Performed Description:</label>
                   <textarea
@@ -496,7 +616,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                   />
                 </div>
 
-                {/* Charges Breakdown */}
                 <div className="space-y-3 pt-2 border-t border-gray-800">
                   <div className="grid grid-cols-2 gap-4 items-center">
                     <label className="text-gray-300 font-bold">Labor Cost ($):</label>
@@ -543,7 +662,6 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Invoice Actions */}
               <div className="flex items-center justify-between pt-2 shrink-0">
                 <span className="text-[11px] text-gray-400 italic">
                   Digital invoice format ready to print or export to PDF.
