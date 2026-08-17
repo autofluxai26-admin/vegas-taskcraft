@@ -9,6 +9,41 @@ interface DualBookingModalProps {
   initialService?: string;
 }
 
+// Live Phone Number Formatter: formats raw input to (000) 000-0000 format
+export const formatPhoneNumber = (value: string) => {
+  if (!value) return '';
+  const digits = value.replace(/\D/g, ''); // keep only numbers
+  if (digits.length === 0) return '';
+  if (digits.length <= 3) return `(${digits}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+};
+
+// Generate upcoming 14 business days (2 weeks rolling window)
+export const getUpcomingBusinessDays = () => {
+  const dates: { value: string; label: string }[] = [];
+  const baseDate = new Date();
+  
+  // If baseDate is in August 2026 context, start from Aug 31, 2026 or current date
+  let current = new Date(baseDate.getFullYear() < 2026 ? '2026-08-31T09:00:00' : baseDate);
+
+  let added = 0;
+  while (added < 14) {
+    const dayOfWeek = current.getDay();
+    // Exclude Sundays (0) if Sunday is non-working, or include all days
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
+    const formattedVal = `${monthNames[current.getMonth()]} ${current.getDate()}, ${current.getFullYear()}`;
+    const label = `${formattedVal} (${dayNames[dayOfWeek]})`;
+    
+    dates.push({ value: formattedVal, label });
+    added++;
+    current.setDate(current.getDate() + 1);
+  }
+  return dates;
+};
+
 export const DualBookingModal: React.FC<DualBookingModalProps> = ({
   isOpen,
   onClose,
@@ -47,14 +82,16 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
     outdoorSurveillance: false,
   });
 
+  const upcomingDays = getUpcomingBusinessDays();
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     email: '',
     address: '',
     notes: '',
-    date: 'August 31, 2026',
-    timeSlot: '11:30 AM - 01:30 PM',
+    date: upcomingDays[0]?.value || 'August 31, 2026',
+    timeSlot: '09:00 AM - 11:00 AM',
   });
 
   const [existingBookings, setExistingBookings] = useState<any[]>([]);
@@ -169,12 +206,25 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
     });
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setFormData({ ...formData, phone: formatted });
+  };
+
   const handleStartPayment = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Check if slot is occupied
     if (isSlotOccupied(formData.date, formData.timeSlot)) {
-      alert(`⚠️ The selected time slot (${formData.timeSlot} on ${formData.date}) is already booked. Please choose an open slot.`);
-      return;
+      // Find first available slot on this date
+      const available = timeSlotOptions.find(s => !isSlotOccupied(formData.date, s));
+      if (available) {
+        setFormData({ ...formData, timeSlot: available });
+        alert(`⚠️ Selected time slot was occupied. We automatically assigned the first available slot: ${available}`);
+      } else {
+        alert(`⚠️ All slots on ${formData.date} are booked. Please select another date.`);
+        return;
+      }
     }
 
     const code = 'VTC-' + Math.floor(100000 + Math.random() * 900000);
@@ -194,9 +244,9 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
       address: formData.address,
       service: detailedServiceText,
       bookingType: activeTab === 'checkout' ? 'Service Checkout' : 'On-Site Estimate ($25)',
-      date: formData.date || 'August 31, 2026',
-      time: formData.timeSlot || '11:30 AM - 01:30 PM',
-      timeSlot: formData.timeSlot || '11:30 AM - 01:30 PM',
+      date: formData.date || upcomingDays[0]?.value || 'August 31, 2026',
+      time: formData.timeSlot || '09:00 AM - 11:00 AM',
+      timeSlot: formData.timeSlot || '09:00 AM - 11:00 AM',
       assignedTo: 'Jonathan Rodriguez',
       assignedTech: 'Jonathan Rodriguez',
       total: grandTotal,
@@ -590,17 +640,19 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                         className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
                       />
                     </div>
+
                     <div>
-                      <label className="block font-bold text-gray-300 mb-1">Mobile Phone (Las Vegas):</label>
+                      <label className="block font-bold text-gray-300 mb-1">Mobile Phone (Format: (000) 000-0000):</label>
                       <input
                         type="tel"
                         required
                         placeholder="(702) 772-4116"
                         value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
+                        onChange={handlePhoneChange}
+                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-cyan-400 font-bold focus:border-cyan-400 focus:outline-none"
                       />
                     </div>
+
                     <div className="sm:col-span-2">
                       <label className="block font-bold text-cyan-300 mb-1">Email Address (Instant Confirmation Receipt & Invoice):</label>
                       <input
@@ -612,16 +664,23 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                         className="w-full bg-[#10172A] border border-cyan-500/50 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none font-bold"
                       />
                     </div>
+
+                    {/* DYNAMIC 2-WEEK UPCOMING BUSINESS DAYS DROPDOWN */}
                     <div>
-                      <label className="block font-bold text-gray-300 mb-1">Selected Date:</label>
-                      <input
-                        type="text"
-                        required
+                      <label className="block font-bold text-cyan-400 mb-1">📅 Selected Service Date:</label>
+                      <select
                         value={formData.date}
                         onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                        className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white font-bold"
-                      />
+                        className="w-full bg-[#10172A] border border-cyan-500/60 rounded-xl p-3 text-white font-bold focus:border-cyan-400 focus:outline-none"
+                      >
+                        {upcomingDays.map(day => (
+                          <option key={day.value} value={day.value} className="text-white bg-[#10172A]">
+                            {day.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
+
                     <div>
                       <label className="block font-bold text-gray-300 mb-1">Selected Time Slot:</label>
                       <select
@@ -639,6 +698,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                         })}
                       </select>
                     </div>
+
                     <div className="sm:col-span-2">
                       <label className="block font-bold text-gray-300 mb-1">Exact Address in Las Vegas Valley / High-Rise Tower:</label>
                       <input
@@ -673,7 +733,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
               </form>
             ) : (
-              /* VISIT TAB ($25 On-Site Estimate Fee) WITH DATE & TIME SLOT SELECTION & CONFLICT CHECKING */
+              /* VISIT TAB ($25 On-Site Estimate Fee) WITH DYNAMIC 2-WEEK BUSINESS DAYS & LIVE PHONE FORMATTING */
               <form onSubmit={handleStartPayment} className="space-y-6">
                 <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/40 space-y-3">
                   <div className="flex items-center gap-3">
@@ -699,17 +759,19 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
                     />
                   </div>
+
                   <div>
-                    <label className="block font-bold text-gray-300 mb-1">Mobile Phone:</label>
+                    <label className="block font-bold text-gray-300 mb-1">Mobile Phone (Format: (000) 000-0000):</label>
                     <input
                       type="tel"
                       required
                       placeholder="(702) 772-4116"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
+                      onChange={handlePhoneChange}
+                      className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-cyan-400 font-bold focus:border-cyan-400 focus:outline-none"
                     />
                   </div>
+
                   <div className="sm:col-span-2">
                     <label className="block font-bold text-cyan-300 mb-1">Email Address (Instant Confirmation Receipt):</label>
                     <input
@@ -722,17 +784,20 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     />
                   </div>
 
-                  {/* DATE SELECTION FOR ON-SITE VISIT */}
+                  {/* DYNAMIC 2-WEEK UPCOMING BUSINESS DAYS DROPDOWN FOR VISIT */}
                   <div>
-                    <label className="block font-bold text-cyan-400 mb-1">📅 Desired Visit Date:</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. August 31, 2026"
+                    <label className="block font-bold text-cyan-400 mb-1">📅 Desired Visit Date (2-Week Rolling Schedule):</label>
+                    <select
                       value={formData.date}
                       onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                       className="w-full bg-[#10172A] border border-cyan-500/60 rounded-xl p-3 text-white font-bold focus:border-cyan-400 focus:outline-none"
-                    />
+                    >
+                      {upcomingDays.map(day => (
+                        <option key={day.value} value={day.value} className="text-white bg-[#10172A]">
+                          {day.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   {/* TIME SLOT SELECTION WITH CONFLICT VALIDATION */}
@@ -755,11 +820,11 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block font-bold text-gray-300 mb-1">Visit Address:</label>
+                    <label className="block font-bold text-gray-300 mb-1">Visit Address in Las Vegas / Summerlin / Henderson:</label>
                     <input
                       type="text"
                       required
-                      placeholder="Full address in Las Vegas / Summerlin / Henderson"
+                      placeholder="e.g. 6500 W Charleston Blvd, Las Vegas, NV 89146"
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"

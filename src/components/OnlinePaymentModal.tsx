@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, CreditCard, ShieldCheck, CheckCircle2, Lock, Smartphone, DollarSign, Sparkles } from 'lucide-react';
+import { formatPhoneNumber } from './DualBookingModal';
 
 interface OnlinePaymentModalProps {
   isOpen: boolean;
@@ -35,8 +36,12 @@ export const OnlinePaymentModal: React.FC<OnlinePaymentModalProps> = ({
     e.preventDefault();
     setIsProcessing(true);
 
-    // Save and send lead payload
+    // Ensure phone in payload is formatted correctly
     if (bookingPayload) {
+      if (bookingPayload.phone) {
+        bookingPayload.phone = formatPhoneNumber(bookingPayload.phone);
+      }
+
       try {
         const existing = JSON.parse(localStorage.getItem('vtc_bookings') || '[]');
         existing.unshift(bookingPayload);
