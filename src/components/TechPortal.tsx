@@ -874,14 +874,237 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => alert(`Printing Official Itemized Invoice ${selectedJobForInvoice.id}...`)}
+                    onClick={() => {
+                      const printWin = window.open('', '_blank');
+                      if (!printWin) {
+                        alert('Please allow popups to view the printable invoice document.');
+                        return;
+                      }
+                      const lines = selectedJobForInvoice.itemizedLines || [
+                        { name: selectedJobForInvoice.service || 'Craftsman Assembly & Installation', unitPrice: selectedJobForInvoice.total || 150, qty: 1, subtotal: selectedJobForInvoice.total || 150 }
+                      ];
+                      const linesRows = lines.map((l: any) => `
+                        <tr>
+                          <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-weight: 600;">${l.name}</td>
+                          <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: right;">$${Number(l.unitPrice || 0).toFixed(2)}</td>
+                          <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: center;">${l.qty || 1}</td>
+                          <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: 800; color: #0284C7;">$${Number(l.subtotal || (l.unitPrice * l.qty) || 0).toFixed(2)}</td>
+                        </tr>
+                      `).join('');
+
+                      const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Official Invoice - ${selectedJobForInvoice.id} - Vegas TaskCraft LLC</title>
+  <style>
+    @page { size: letter; margin: 15mm; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; color: #0F172A; background-color: #FFFFFF; margin: 0; padding: 25px; }
+    .invoice-card { max-width: 800px; margin: 0 auto; background: #FFFFFF; border: 2px solid #0284C7; border-radius: 16px; padding: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E8F0; padding-bottom: 20px; margin-bottom: 25px; }
+    .company-name { font-size: 26px; font-weight: 900; color: #0F172A; margin: 0; }
+    .company-sub { font-size: 12px; color: #0284C7; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .inv-details { text-align: right; }
+    .inv-title { font-size: 22px; font-weight: 900; color: #0284C7; margin: 0; }
+    .inv-meta { font-size: 13px; color: #64748B; margin-top: 4px; font-weight: 600; }
+    .grid-info { display: flex; justify-content: space-between; background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 12px; padding: 18px; margin-bottom: 25px; font-size: 13px; }
+    .info-col p { margin: 3px 0; }
+    .info-title { font-size: 11px; font-weight: 800; color: #0284C7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13px; }
+    th { background: #F1F5F9; color: #334155; text-align: left; padding: 12px; font-weight: 800; border-bottom: 2px solid #CBD5E1; text-transform: uppercase; font-size: 11px; }
+    .total-box { display: flex; justify-content: space-between; align-items: center; background: #F0F9FF; border: 1.5px solid #0284C7; padding: 15px 20px; border-radius: 12px; margin-top: 20px; font-size: 18px; font-weight: 900; color: #0F172A; }
+    .total-amount { font-size: 24px; color: #0284C7; }
+    .footer { text-align: center; margin-top: 35px; border-top: 1px solid #E2E8F0; padding-top: 20px; font-size: 12px; color: #64748B; }
+  </style>
+</head>
+<body>
+  <div class="invoice-card">
+    <div class="header">
+      <div>
+        <h1 class="company-name">Vegas TaskCraft LLC</h1>
+        <div class="company-sub">Residential Decor & Assembly Solutions</div>
+      </div>
+      <div class="inv-details">
+        <h2 class="inv-title">OFFICIAL INVOICE</h2>
+        <div class="inv-meta">Invoice ID: <strong>${selectedJobForInvoice.id}</strong></div>
+        <div class="inv-meta">Date: ${selectedJobForInvoice.date || 'August 31, 2026'} (${selectedJobForInvoice.time})</div>
+      </div>
+    </div>
+
+    <div class="grid-info">
+      <div class="info-col">
+        <div class="info-title">Service Provider</div>
+        <p><strong>Vegas TaskCraft LLC</strong></p>
+        <p>Las Vegas Valley, NV</p>
+        <p>📞 (702) 772-4116</p>
+        <p>✉️ contact@vegastaskcraft.com</p>
+      </div>
+      <div class="info-col" style="text-align: right;">
+        <div class="info-title">Billed To Client</div>
+        <p><strong>${selectedJobForInvoice.customer || 'Valued Client'}</strong></p>
+        <p>${selectedJobForInvoice.address || 'Las Vegas, NV'}</p>
+        <p>📞 ${selectedJobForInvoice.phone || '(702) 555-0199'}</p>
+        <p>✉️ ${selectedJobForInvoice.email || 'client@example.com'}</p>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item / Service Description</th>
+          <th style="text-align: right;">Unit Price ($)</th>
+          <th style="text-align: center;">Qty/Hrs</th>
+          <th style="text-align: right;">Subtotal ($)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${linesRows}
+      </tbody>
+    </table>
+
+    <div class="total-box">
+      <span>Grand Total Net Amount:</span>
+      <span class="total-amount">$${Number(selectedJobForInvoice.total || 0).toFixed(2)} USD</span>
+    </div>
+
+    <div class="footer">
+      <p>Thank you for choosing Vegas TaskCraft LLC! Precision Craftsman Guarantee • 0% Hidden Taxes</p>
+      <p style="font-size:10px; color:#94A3B8;">Vegas TaskCraft LLC • 7420 Las Vegas Blvd S, Las Vegas, NV</p>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 300);
+    };
+  </script>
+</body>
+</html>
+                      `;
+                      printWin.document.write(html);
+                      printWin.document.close();
+                    }}
                     className="px-4 py-2.5 rounded-xl bg-[#10172A] border border-gray-700 text-white font-bold text-xs hover:border-cyan-400 flex items-center gap-1.5"
                   >
                     <Printer className="w-4 h-4 text-cyan-400" /> Print Invoice
                   </button>
+
                   <button
                     type="button"
-                    onClick={() => alert(`Downloading PDF Itemized Invoice ${selectedJobForInvoice.id}...`)}
+                    onClick={() => {
+                      const printWin = window.open('', '_blank');
+                      if (!printWin) {
+                        alert('Please allow popups to download the PDF invoice.');
+                        return;
+                      }
+                      const lines = selectedJobForInvoice.itemizedLines || [
+                        { name: selectedJobForInvoice.service || 'Craftsman Assembly & Installation', unitPrice: selectedJobForInvoice.total || 150, qty: 1, subtotal: selectedJobForInvoice.total || 150 }
+                      ];
+                      const linesRows = lines.map((l: any) => `
+                        <tr>
+                          <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-weight: 600;">${l.name}</td>
+                          <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: right;">$${Number(l.unitPrice || 0).toFixed(2)}</td>
+                          <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: center;">${l.qty || 1}</td>
+                          <td style="padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: 800; color: #0284C7;">$${Number(l.subtotal || (l.unitPrice * l.qty) || 0).toFixed(2)}</td>
+                        </tr>
+                      `).join('');
+
+                      const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PDF Invoice - ${selectedJobForInvoice.id} - Vegas TaskCraft LLC</title>
+  <style>
+    @page { size: letter; margin: 15mm; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; color: #0F172A; background-color: #FFFFFF; margin: 0; padding: 25px; }
+    .invoice-card { max-width: 800px; margin: 0 auto; background: #FFFFFF; border: 2px solid #0284C7; border-radius: 16px; padding: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2E8F0; padding-bottom: 20px; margin-bottom: 25px; }
+    .company-name { font-size: 26px; font-weight: 900; color: #0F172A; margin: 0; }
+    .company-sub { font-size: 12px; color: #0284C7; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .inv-details { text-align: right; }
+    .inv-title { font-size: 22px; font-weight: 900; color: #0284C7; margin: 0; }
+    .inv-meta { font-size: 13px; color: #64748B; margin-top: 4px; font-weight: 600; }
+    .grid-info { display: flex; justify-content: space-between; background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 12px; padding: 18px; margin-bottom: 25px; font-size: 13px; }
+    .info-col p { margin: 3px 0; }
+    .info-title { font-size: 11px; font-weight: 800; color: #0284C7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13px; }
+    th { background: #F1F5F9; color: #334155; text-align: left; padding: 12px; font-weight: 800; border-bottom: 2px solid #CBD5E1; text-transform: uppercase; font-size: 11px; }
+    .total-box { display: flex; justify-content: space-between; align-items: center; background: #F0F9FF; border: 1.5px solid #0284C7; padding: 15px 20px; border-radius: 12px; margin-top: 20px; font-size: 18px; font-weight: 900; color: #0F172A; }
+    .total-amount { font-size: 24px; color: #0284C7; }
+    .footer { text-align: center; margin-top: 35px; border-top: 1px solid #E2E8F0; padding-top: 20px; font-size: 12px; color: #64748B; }
+  </style>
+</head>
+<body>
+  <div class="invoice-card">
+    <div class="header">
+      <div>
+        <h1 class="company-name">Vegas TaskCraft LLC</h1>
+        <div class="company-sub">Residential Decor & Assembly Solutions</div>
+      </div>
+      <div class="inv-details">
+        <h2 class="inv-title">OFFICIAL INVOICE</h2>
+        <div class="inv-meta">Invoice ID: <strong>${selectedJobForInvoice.id}</strong></div>
+        <div class="inv-meta">Date: ${selectedJobForInvoice.date || 'August 31, 2026'} (${selectedJobForInvoice.time})</div>
+      </div>
+    </div>
+
+    <div class="grid-info">
+      <div class="info-col">
+        <div class="info-title">Service Provider</div>
+        <p><strong>Vegas TaskCraft LLC</strong></p>
+        <p>Las Vegas Valley, NV</p>
+        <p>📞 (702) 772-4116</p>
+        <p>✉️ contact@vegastaskcraft.com</p>
+      </div>
+      <div class="info-col" style="text-align: right;">
+        <div class="info-title">Billed To Client</div>
+        <p><strong>${selectedJobForInvoice.customer || 'Valued Client'}</strong></p>
+        <p>${selectedJobForInvoice.address || 'Las Vegas, NV'}</p>
+        <p>📞 ${selectedJobForInvoice.phone || '(702) 555-0199'}</p>
+        <p>✉️ ${selectedJobForInvoice.email || 'client@example.com'}</p>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item / Service Description</th>
+          <th style="text-align: right;">Unit Price ($)</th>
+          <th style="text-align: center;">Qty/Hrs</th>
+          <th style="text-align: right;">Subtotal ($)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${linesRows}
+      </tbody>
+    </table>
+
+    <div class="total-box">
+      <span>Grand Total Net Amount:</span>
+      <span class="total-amount">$${Number(selectedJobForInvoice.total || 0).toFixed(2)} USD</span>
+    </div>
+
+    <div class="footer">
+      <p>Thank you for choosing Vegas TaskCraft LLC! Precision Craftsman Guarantee • 0% Hidden Taxes</p>
+      <p style="font-size:10px; color:#94A3B8;">Vegas TaskCraft LLC • 7420 Las Vegas Blvd S, Las Vegas, NV</p>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 300);
+    };
+  </script>
+</body>
+</html>
+                      `;
+                      printWin.document.write(html);
+                      printWin.document.close();
+                    }}
                     className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs hover:scale-105 transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)] flex items-center gap-1.5"
                   >
                     <Download className="w-4 h-4" /> Download PDF

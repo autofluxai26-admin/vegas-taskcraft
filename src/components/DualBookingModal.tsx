@@ -61,13 +61,20 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
   // Hourly states
   const [furnitureHours, setFurnitureHours] = useState<number>(2);
   const [artHours, setArtHours] = useState<number>(1);
-  const [lampHours, setLampHours] = useState<number>(1);
-  const [paintHours, setPaintHours] = useState<number>(2);
-  const [curtainWindows, setCurtainWindows] = useState<number>(2);
 
   // Sub-option selections
   const [tvSizeOption, setTvSizeOption] = useState<'small' | 'medium' | 'large'>('medium');
   const [artOption, setArtOption] = useState<'addon' | 'standalone'>('addon');
+
+  // Curtains & Painting individual toggle states - ALL OFF BY DEFAULT
+  const [curtainEnabled, setCurtainEnabled] = useState<boolean>(false);
+  const [curtainWindows, setCurtainWindows] = useState<number>(2);
+
+  const [lampEnabled, setLampEnabled] = useState<boolean>(false);
+  const [lampHours, setLampHours] = useState<number>(1);
+
+  const [paintEnabled, setPaintEnabled] = useState<boolean>(false);
+  const [paintHours, setPaintHours] = useState<number>(2);
 
   // Sub-items ALL OFF BY DEFAULT
   const [repairItems, setRepairItems] = useState({
@@ -149,15 +156,15 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
   }
 
   if (selectedServices.repairs) {
-    if (curtainWindows > 0) {
+    if (curtainEnabled && curtainWindows > 0) {
       serviceSummaryParts.push(`Window Curtains (${curtainWindows} windows)`);
       itemizedLines.push({ name: 'Window Curtains & Blinds', unitPrice: 50, qty: curtainWindows, subtotal: curtainWindows * 50 });
     }
-    if (lampHours > 0) {
+    if (lampEnabled && lampHours > 0) {
       serviceSummaryParts.push(`Light Fixtures / Ceiling Fans (${lampHours} hrs)`);
       itemizedLines.push({ name: 'Light Fixture Installation', unitPrice: 150, qty: lampHours, subtotal: lampHours * 150 });
     }
-    if (paintHours > 0) {
+    if (paintEnabled && paintHours > 0) {
       serviceSummaryParts.push(`Accent Painting (${paintHours} hrs)`);
       itemizedLines.push({ name: 'Accent Wall Painting', unitPrice: 150, qty: paintHours, subtotal: paintHours * 150 });
     }
@@ -222,7 +229,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
     e.preventDefault();
 
     if (activeTab === 'checkout' && grandTotal === 0) {
-      alert('⚠️ Please select at least one service before proceeding with checkout.');
+      alert('⚠️ Please select at least one service option before proceeding with checkout.');
       return;
     }
 
@@ -499,7 +506,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     )}
                   </div>
 
-                  {/* Service 4: Curtains, Painting & Finishes (OFF BY DEFAULT) */}
+                  {/* Service 4: Curtains, Painting, Lamps & Patches - INDIVIDUAL ON/OFF TOGGLES FOR EACH SUB-SERVICE */}
                   <div className={`p-4 rounded-2xl border transition-all ${selectedServices.repairs ? 'bg-[#10172A] border-cyan-500 shadow-[0_0_15px_rgba(0,240,255,0.15)]' : 'bg-[#0A101F] border-gray-800 opacity-60'}`}>
                     <div className="flex items-center justify-between cursor-pointer" onClick={() => setSelectedServices({ ...selectedServices, repairs: !selectedServices.repairs })}>
                       <label className="flex items-center gap-3 cursor-pointer">
@@ -520,35 +527,76 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
                     {selectedServices.repairs && (
                       <div className="mt-3 pt-3 border-t border-gray-800 space-y-3 text-xs">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-300 font-bold">Window Curtains ($50 / window):</span>
-                          <div className="flex items-center gap-2 bg-[#070A12] p-1 rounded-xl border border-gray-800">
-                            <button type="button" onClick={() => setCurtainWindows(Math.max(1, curtainWindows - 1))} className="w-6 h-6 rounded bg-[#10172A] text-cyan-400">-</button>
-                            <span className="font-black text-white px-2">{curtainWindows} Windows</span>
-                            <button type="button" onClick={() => setCurtainWindows(curtainWindows + 1)} className="w-6 h-6 rounded bg-[#10172A] text-cyan-400">+</button>
+                        
+                        {/* Sub-item 1: Window Curtains (OFF BY DEFAULT) */}
+                        <div className="p-3 rounded-xl bg-[#070A12] border border-gray-800 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="flex items-center gap-2 font-bold text-white cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={curtainEnabled}
+                                onChange={(e) => setCurtainEnabled(e.target.checked)}
+                                className="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400"
+                              />
+                              <span>Window Curtains ($50 / window)</span>
+                            </label>
+                            {curtainEnabled && (
+                              <div className="flex items-center gap-2 bg-[#10172A] p-1 rounded-lg border border-gray-700">
+                                <button type="button" onClick={() => setCurtainWindows(Math.max(1, curtainWindows - 1))} className="w-6 h-6 rounded bg-[#070A12] text-cyan-400 font-bold">-</button>
+                                <span className="font-black text-white px-1">{curtainWindows} Windows</span>
+                                <button type="button" onClick={() => setCurtainWindows(curtainWindows + 1)} className="w-6 h-6 rounded bg-[#070A12] text-cyan-400 font-bold">+</button>
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-300 font-bold">Light Fixtures & Ceiling Fans ($150 / hr):</span>
-                          <div className="flex items-center gap-2 bg-[#070A12] p-1 rounded-xl border border-gray-800">
-                            <button type="button" onClick={() => setLampHours(Math.max(1, lampHours - 1))} className="w-6 h-6 rounded bg-[#10172A] text-cyan-400">-</button>
-                            <span className="font-black text-white px-2">{lampHours}h</span>
-                            <button type="button" onClick={() => setLampHours(lampHours + 1)} className="w-6 h-6 rounded bg-[#10172A] text-cyan-400">+</button>
+                        {/* Sub-item 2: Light Fixtures & Ceiling Fans (OFF BY DEFAULT) */}
+                        <div className="p-3 rounded-xl bg-[#070A12] border border-gray-800 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="flex items-center gap-2 font-bold text-white cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={lampEnabled}
+                                onChange={(e) => setLampEnabled(e.target.checked)}
+                                className="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400"
+                              />
+                              <span>Light Fixtures & Ceiling Fans ($150 / hr)</span>
+                            </label>
+                            {lampEnabled && (
+                              <div className="flex items-center gap-2 bg-[#10172A] p-1 rounded-lg border border-gray-700">
+                                <button type="button" onClick={() => setLampHours(Math.max(1, lampHours - 1))} className="w-6 h-6 rounded bg-[#070A12] text-cyan-400 font-bold">-</button>
+                                <span className="font-black text-white px-1">{lampHours}h</span>
+                                <button type="button" onClick={() => setLampHours(lampHours + 1)} className="w-6 h-6 rounded bg-[#070A12] text-cyan-400 font-bold">+</button>
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-300 font-bold">Accent Painting Jobs ($150 / hr):</span>
-                          <div className="flex items-center gap-2 bg-[#070A12] p-1 rounded-xl border border-gray-800">
-                            <button type="button" onClick={() => setPaintHours(Math.max(0, paintHours - 1))} className="w-6 h-6 rounded bg-[#10172A] text-cyan-400">-</button>
-                            <span className="font-black text-white px-2">{paintHours}h</span>
-                            <button type="button" onClick={() => setPaintHours(paintHours + 1)} className="w-6 h-6 rounded bg-[#10172A] text-cyan-400">+</button>
+                        {/* Sub-item 3: Accent Painting Jobs (OFF BY DEFAULT) */}
+                        <div className="p-3 rounded-xl bg-[#070A12] border border-gray-800 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="flex items-center gap-2 font-bold text-white cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={paintEnabled}
+                                onChange={(e) => setPaintEnabled(e.target.checked)}
+                                className="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400"
+                              />
+                              <span>Accent Painting Jobs ($150 / hr)</span>
+                            </label>
+                            {paintEnabled && (
+                              <div className="flex items-center gap-2 bg-[#10172A] p-1 rounded-lg border border-gray-700">
+                                <button type="button" onClick={() => setPaintHours(Math.max(1, paintHours - 1))} className="w-6 h-6 rounded bg-[#070A12] text-cyan-400 font-bold">-</button>
+                                <span className="font-black text-white px-1">{paintHours}h</span>
+                                <button type="button" onClick={() => setPaintHours(paintHours + 1)} className="w-6 h-6 rounded bg-[#070A12] text-cyan-400 font-bold">+</button>
+                              </div>
+                            )}
                           </div>
                         </div>
 
+                        {/* Additional Quick Toggles */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-gray-800/80">
-                          <label className="flex items-center gap-2 p-2 rounded-xl bg-[#070A12] border border-gray-800 cursor-pointer">
+                          <label className="flex items-center gap-2 p-2.5 rounded-xl bg-[#070A12] border border-gray-800 cursor-pointer font-semibold text-gray-300">
                             <input
                               type="checkbox"
                               checked={repairItems.wallPatch}
@@ -557,7 +605,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                             />
                             <span>Wall Patches ($100)</span>
                           </label>
-                          <label className="flex items-center gap-2 p-2 rounded-xl bg-[#070A12] border border-gray-800 cursor-pointer">
+                          <label className="flex items-center gap-2 p-2.5 rounded-xl bg-[#070A12] border border-gray-800 cursor-pointer font-semibold text-gray-300">
                             <input
                               type="checkbox"
                               checked={repairItems.panelInstall}
@@ -566,7 +614,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                             />
                             <span>Accent Panels ($150)</span>
                           </label>
-                          <label className="flex items-center gap-2 p-2 rounded-xl bg-[#070A12] border border-gray-800 cursor-pointer">
+                          <label className="flex items-center gap-2 p-2.5 rounded-xl bg-[#070A12] border border-gray-800 cursor-pointer font-semibold text-gray-300">
                             <input
                               type="checkbox"
                               checked={repairItems.electronicsSetup}
