@@ -922,6 +922,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
   <div class="invoice-card">
     <div class="header">
       <div>
+        <img src="https://vegastaskcraft.com/images/logo.png" alt="Vegas TaskCraft LLC" style="height: 55px; width: auto; margin-bottom: 8px; display: block;" />
         <h1 class="company-name">Vegas TaskCraft LLC</h1>
         <div class="company-sub">Residential Decor & Assembly Solutions</div>
       </div>
@@ -1041,6 +1042,7 @@ export const TechPortal: React.FC<TechPortalProps> = ({ isOpen, onClose }) => {
   <div class="invoice-card">
     <div class="header">
       <div>
+        <img src="https://vegastaskcraft.com/images/logo.png" alt="Vegas TaskCraft LLC" style="height: 55px; width: auto; margin-bottom: 8px; display: block;" />
         <h1 class="company-name">Vegas TaskCraft LLC</h1>
         <div class="company-sub">Residential Decor & Assembly Solutions</div>
       </div>
