@@ -24,13 +24,11 @@ export const getUpcomingBusinessDays = () => {
   const dates: { value: string; label: string }[] = [];
   const baseDate = new Date();
   
-  // If baseDate is in August 2026 context, start from Aug 31, 2026 or current date
   let current = new Date(baseDate.getFullYear() < 2026 ? '2026-08-31T09:00:00' : baseDate);
 
   let added = 0;
   while (added < 14) {
     const dayOfWeek = current.getDay();
-    // Exclude Sundays (0) if Sunday is non-working, or include all days
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     
@@ -51,9 +49,9 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'checkout' | 'visit'>('checkout');
 
-  // Multi-service selection toggles
+  // Multi-service selection toggles - ALL OFF BY DEFAULT
   const [selectedServices, setSelectedServices] = useState<{ [key: string]: boolean }>({
-    tv: true,
+    tv: false,
     furniture: false,
     art: false,
     repairs: false,
@@ -71,19 +69,21 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
   const [tvSizeOption, setTvSizeOption] = useState<'small' | 'medium' | 'large'>('medium');
   const [artOption, setArtOption] = useState<'addon' | 'standalone'>('addon');
 
+  // Sub-items ALL OFF BY DEFAULT
   const [repairItems, setRepairItems] = useState({
-    wallPatch: true,
+    wallPatch: false,
     panelInstall: false,
     electronicsSetup: false,
   });
 
   const [smartHomeItems, setSmartHomeItems] = useState({
-    automation3point: true,
+    automation3point: false,
     outdoorSurveillance: false,
   });
 
   const upcomingDays = getUpcomingBusinessDays();
 
+  // FICTITIOUS NEUTRAL PLACEHOLDERS & INITIAL STATE
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -165,6 +165,14 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
       serviceSummaryParts.push('Drywall Wall Patches');
       itemizedLines.push({ name: 'Drywall Patch Repair', unitPrice: 100, qty: 1, subtotal: 100 });
     }
+    if (repairItems.panelInstall) {
+      serviceSummaryParts.push('Accent Wall Panels');
+      itemizedLines.push({ name: 'Accent Wall Panel Install', unitPrice: 150, qty: 1, subtotal: 150 });
+    }
+    if (repairItems.electronicsSetup) {
+      serviceSummaryParts.push('Electronics Setup');
+      itemizedLines.push({ name: 'Electronics Device Setup', unitPrice: 40, qty: 1, subtotal: 40 });
+    }
   }
 
   if (selectedServices.smarthome) {
@@ -178,9 +186,8 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
     }
   }
 
-  // Dynamic Real-time Pricing Calculation
+  // Dynamic Real-time Pricing Calculation - STARTS AT $0.00 IF NO SERVICE SELECTED
   let grandTotal = itemizedLines.reduce((sum, item) => sum + item.subtotal, 0);
-  if (grandTotal === 0 && selectedServices.tv) grandTotal = 150.0;
 
   if (activeTab === 'visit') {
     grandTotal = 25.0;
@@ -214,9 +221,13 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
   const handleStartPayment = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (activeTab === 'checkout' && grandTotal === 0) {
+      alert('⚠️ Please select at least one service before proceeding with checkout.');
+      return;
+    }
+
     // Check if slot is occupied
     if (isSlotOccupied(formData.date, formData.timeSlot)) {
-      // Find first available slot on this date
       const available = timeSlotOptions.find(s => !isSlotOccupied(formData.date, s));
       if (available) {
         setFormData({ ...formData, timeSlot: available });
@@ -247,8 +258,8 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
       date: formData.date || upcomingDays[0]?.value || 'August 31, 2026',
       time: formData.timeSlot || '09:00 AM - 11:00 AM',
       timeSlot: formData.timeSlot || '09:00 AM - 11:00 AM',
-      assignedTo: 'Jonathan Rodriguez',
-      assignedTech: 'Jonathan Rodriguez',
+      assignedTo: 'Carlos Chavez',
+      assignedTech: 'Carlos Chavez',
       total: grandTotal,
       totalAmount: grandTotal,
       itemizedLines: activeTab === 'checkout' ? itemizedLines : [{ name: 'On-Site Estimate Visit Fee', unitPrice: 25, qty: 1, subtotal: 25 }]
@@ -290,7 +301,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                   Interactive Booking & Checkout
                 </span>
                 <span className="text-[9px] sm:text-[10px] text-cyan-400 font-bold tracking-wider uppercase block mt-0.5 truncate">
-                  Vegas TaskCraft • contact@vegastaskcraft.com
+                  Vegas TaskCraft • Precision Craftsman Solutions
                 </span>
               </div>
             </div>
@@ -349,7 +360,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     <span className="text-[11px] text-cyan-300 font-bold">Transparent Prices & 0% Hidden Taxes</span>
                   </div>
 
-                  {/* Service 1: TV Mounting */}
+                  {/* Service 1: TV Mounting (OFF BY DEFAULT) */}
                   <div className={`p-4 rounded-2xl border transition-all ${selectedServices.tv ? 'bg-[#10172A] border-cyan-500 shadow-[0_0_15px_rgba(0,240,255,0.15)]' : 'bg-[#0A101F] border-gray-800 opacity-60'}`}>
                     <div className="flex items-center justify-between cursor-pointer" onClick={() => setSelectedServices({ ...selectedServices, tv: !selectedServices.tv })}>
                       <label className="flex items-center gap-3 cursor-pointer">
@@ -395,7 +406,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     )}
                   </div>
 
-                  {/* Service 2: Furniture Assembly */}
+                  {/* Service 2: Furniture Assembly (OFF BY DEFAULT) */}
                   <div className={`p-4 rounded-2xl border transition-all ${selectedServices.furniture ? 'bg-[#10172A] border-cyan-500 shadow-[0_0_15px_rgba(0,240,255,0.15)]' : 'bg-[#0A101F] border-gray-800 opacity-60'}`}>
                     <div className="flex items-center justify-between cursor-pointer" onClick={() => setSelectedServices({ ...selectedServices, furniture: !selectedServices.furniture })}>
                       <label className="flex items-center gap-3 cursor-pointer">
@@ -438,7 +449,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     )}
                   </div>
 
-                  {/* Service 3: Art & Mirrors */}
+                  {/* Service 3: Art & Mirrors (OFF BY DEFAULT) */}
                   <div className={`p-4 rounded-2xl border transition-all ${selectedServices.art ? 'bg-[#10172A] border-cyan-500 shadow-[0_0_15px_rgba(0,240,255,0.15)]' : 'bg-[#0A101F] border-gray-800 opacity-60'}`}>
                     <div className="flex items-center justify-between cursor-pointer" onClick={() => setSelectedServices({ ...selectedServices, art: !selectedServices.art })}>
                       <label className="flex items-center gap-3 cursor-pointer">
@@ -488,7 +499,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     )}
                   </div>
 
-                  {/* Service 4: Curtains, Painting & Finishes */}
+                  {/* Service 4: Curtains, Painting & Finishes (OFF BY DEFAULT) */}
                   <div className={`p-4 rounded-2xl border transition-all ${selectedServices.repairs ? 'bg-[#10172A] border-cyan-500 shadow-[0_0_15px_rgba(0,240,255,0.15)]' : 'bg-[#0A101F] border-gray-800 opacity-60'}`}>
                     <div className="flex items-center justify-between cursor-pointer" onClick={() => setSelectedServices({ ...selectedServices, repairs: !selectedServices.repairs })}>
                       <label className="flex items-center gap-3 cursor-pointer">
@@ -569,7 +580,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     )}
                   </div>
 
-                  {/* Service 5: Smart Home & Security */}
+                  {/* Service 5: Smart Home & Security (OFF BY DEFAULT) */}
                   <div className={`p-4 rounded-2xl border transition-all ${selectedServices.smarthome ? 'bg-[#10172A] border-cyan-500 shadow-[0_0_15px_rgba(0,240,255,0.15)]' : 'bg-[#0A101F] border-gray-800 opacity-60'}`}>
                     <div className="flex items-center justify-between cursor-pointer" onClick={() => setSelectedServices({ ...selectedServices, smarthome: !selectedServices.smarthome })}>
                       <label className="flex items-center gap-3 cursor-pointer">
@@ -621,7 +632,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
                 </div>
 
-                {/* 2. Customer Contact Form */}
+                {/* 2. Customer Contact Form WITH GENERIC FICTITIOUS PLACEHOLDERS */}
                 <div className="space-y-4 pt-2">
                   <h4 className="text-xs font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] border border-cyan-400 shrink-0">2</span>
@@ -634,7 +645,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       <input
                         type="text"
                         required
-                        placeholder="e.g. Jonathan Rodriguez"
+                        placeholder="e.g. Alex Morgan"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
@@ -646,7 +657,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       <input
                         type="tel"
                         required
-                        placeholder="(702) 772-4116"
+                        placeholder="(702) 555-0199"
                         value={formData.phone}
                         onChange={handlePhoneChange}
                         className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-cyan-400 font-bold focus:border-cyan-400 focus:outline-none"
@@ -658,7 +669,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       <input
                         type="email"
                         required
-                        placeholder="e.g. vegastaskcraft@gmail.com"
+                        placeholder="e.g. client@example.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="w-full bg-[#10172A] border border-cyan-500/50 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none font-bold"
@@ -704,7 +715,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                       <input
                         type="text"
                         required
-                        placeholder="e.g. 3722 S Las Vegas Blvd, High-Rise Condo #1804"
+                        placeholder="e.g. 7420 Las Vegas Blvd S, Suite 100, Las Vegas, NV"
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
@@ -713,14 +724,14 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                   </div>
                 </div>
 
-                {/* 3. Final Summary WITHOUT TAX PERCENTAGE */}
+                {/* 3. Final Summary WITHOUT PRIVATE EMAIL TEXT */}
                 <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/40 shadow-lg space-y-3">
                   <div className="flex justify-between items-center text-sm font-black text-white">
                     <span>Total Net Booking Amount:</span>
                     <span className="text-2xl text-cyan-400 font-black">${grandTotal.toFixed(2)} USD</span>
                   </div>
                   <p className="text-[11px] text-cyan-300 font-semibold italic text-center">
-                    ✓ Transparent flat-rate pricing with 0% hidden taxes. Confirmation email sent instantly to client & vegastaskcraft@gmail.com.
+                    ✓ Transparent flat-rate pricing with 0% hidden taxes. Instant email confirmation & official receipt.
                   </p>
                 </div>
 
@@ -733,7 +744,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
 
               </form>
             ) : (
-              /* VISIT TAB ($25 On-Site Estimate Fee) WITH DYNAMIC 2-WEEK BUSINESS DAYS & LIVE PHONE FORMATTING */
+              /* VISIT TAB ($25 On-Site Estimate Fee) WITH GENERIC FICTITIOUS PLACEHOLDERS */
               <form onSubmit={handleStartPayment} className="space-y-6">
                 <div className="bg-[#10172A] p-5 rounded-2xl border border-cyan-500/40 space-y-3">
                   <div className="flex items-center gap-3">
@@ -753,7 +764,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Jonathan Rodriguez"
+                      placeholder="e.g. Alex Morgan"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
@@ -765,7 +776,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     <input
                       type="tel"
                       required
-                      placeholder="(702) 772-4116"
+                      placeholder="(702) 555-0199"
                       value={formData.phone}
                       onChange={handlePhoneChange}
                       className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-cyan-400 font-bold focus:border-cyan-400 focus:outline-none"
@@ -777,7 +788,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     <input
                       type="email"
                       required
-                      placeholder="e.g. vegastaskcraft@gmail.com"
+                      placeholder="e.g. client@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full bg-[#10172A] border border-cyan-500/50 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none font-bold"
@@ -824,7 +835,7 @@ export const DualBookingModal: React.FC<DualBookingModalProps> = ({
                     <input
                       type="text"
                       required
-                      placeholder="e.g. 6500 W Charleston Blvd, Las Vegas, NV 89146"
+                      placeholder="e.g. 7420 Las Vegas Blvd S, Suite 100, Las Vegas, NV"
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       className="w-full bg-[#10172A] border border-gray-700 rounded-xl p-3 text-white focus:border-cyan-400 focus:outline-none"
